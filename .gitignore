@@ -2,6 +2,10 @@
 *.o
 *.a
 *.so
+/.idea/
+/liongo.iml
+liongo
+
 
 # Folders
 _obj

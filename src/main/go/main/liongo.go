@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	Build "../build"
 )
 
 const VERSION = "0.0.1"
@@ -42,13 +43,13 @@ func main() {
 		Usage()
 		os.Exit(1)
 	case "build":
-		//gosk.Build()
+		Build.Build()
 	case "run":
 		if argsLength == 2 {
 			httpAddr = args[1]
 		}
 		fmt.Println("Listen at ", httpAddr)
-		//gosk.Run(httpAddr)
+		//Build.run(httpAddr)
 	case "version":
 		fmt.Print("liongo version " + VERSION)
 	}
