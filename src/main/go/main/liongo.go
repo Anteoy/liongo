@@ -56,7 +56,6 @@ func main() {
 		if err!=nil{
 			log.Fatal("Start error",err)
 		}
-	//Build.run(httpAddr)
 	case "version":
 		fmt.Print("liongo version " + VERSION)
 	}
