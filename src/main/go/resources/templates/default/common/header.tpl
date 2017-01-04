@@ -16,11 +16,4 @@
 	<script type="text/javascript" src="/assets/themes/{{"theme"|get}}/plugin/prettify/prettify.js"></script>
 	</head>
 	<body onload="prettyPrint()">
-		<div id="header">
-			<div id="header-inner"> 
-				<div id="title"><a href="/">{{"title"|get}}</a>
-				</div>            
-				<div id="subtitle">{{"subtitle"|get}}</div>        
-			</div>   
-		</div>
 {{end}}
