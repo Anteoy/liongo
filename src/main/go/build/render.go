@@ -262,6 +262,37 @@ func (self *RenderFactory) PreProcessPosts(root string, yamls map[string]interfa
 	return nil
 }
 
+//生成日期归档静态文件
+func (self *RenderFactory) RenderPosts(root string, yamls map[string]interface{}) error {
+	if !strings.HasSuffix(root, "/") {
+		root += "/"
+	}
+
+	yCfg := yamls["config.yml"]
+	var cfg = yCfg.(*yaml.File)
+	log.Println(cfg.Get("title"))
+	t := parseTemplate(root, POSTS_TPL, cfg)
+	for _,fileInfo := range articles {
+		//create dir /yyyy/MM/dd
+		p := processArticleUrl(*fileInfo)
+		if !isExists(PUBLICSH_DIR + "/articles/" + p) {
+			os.MkdirAll(PUBLICSH_DIR+"/articles/"+p, 0777)
+		}
+		targetFile := PUBLICSH_DIR + "/articles/" + fileInfo.Link
+		fout, err := os.Create(targetFile)
+		if err != nil {
+			log.Println("create file " + targetFile + " error!")
+			os.Exit(1)
+		}
+		defer fout.Close()
+		m := map[string]interface{}{"fi": fileInfo,"nav": navBarList, "cats": categories,"newly":articles[:NEWLY_ARTICLES_COUNT-1]}
+		t.Execute(fout, m)
+	}
+
+
+	return nil
+}
+
 func processArticleUrl(ar ArticleConfig) string {
 	y := strconv.Itoa(ar.Time.Year())
 	m := strconv.Itoa(int(ar.Time.Month()))
@@ -488,4 +519,5 @@ func (self *RenderFactory) Render(root string) {
 	yamlData := yp.Parse(root)
 	self.PreProcessPosts(root,yamlData)
 	self.RenderIndex(root, yamlData)
+	self.RenderPosts(root, yamlData)
 }
