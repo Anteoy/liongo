@@ -2,7 +2,6 @@ package build
 
 import (
 	"bufio"
-	"fmt"
 	"github.com/Anteoy/blackfriday"
 	"github.com/Anteoy/go-gypsy/yaml"
 	"html"
@@ -17,10 +16,11 @@ import (
 	"time"
     	"regexp"
 	"main/go/utils"
-	myconst "main/go/constant"
 )
 
 type RenderFactory struct{}
+//
+type Artic []*ArticleConfig
 
 const (
 	INDEX_TPL    = "index"
@@ -37,12 +37,27 @@ const (
 	PUBLICSH_DIR = "publish"
 )
 
+type MonthArchives []*MonthArchive
+
 const (
 	COMMON_HEADER_FILE = "header.tpl"
 	COMMON_FOOTER_FILE = "footer.tpl"
 	
 )
+type RssConfig struct {
+	Title  string
+	Link   string
+	Author string
+	Date   string
+	Desc   string
+}
 
+type CustomPage struct {
+	Id      string
+	Title   string
+	Content string
+}
+type YearArchives []*YearArchive
 var (
 	articles        Artic
 	articleListSize int = 5000
@@ -58,6 +73,18 @@ var (
 	NEWLY_ARTICLES_COUNT = 6
 	INDEX_ARTICLES_SHOW_COUNT = 15
 )
+
+type YearArchive struct {
+	Year   string
+	Months []*MonthArchive
+	months map[string]*MonthArchive
+}
+
+type MonthArchive struct {
+	Month    string
+	month    time.Month
+	Articles []*ArticleBase
+}
 
 func parseTemplate(root, tpl string, cfg *yaml.File) *template.Template {
 	//get theme template
@@ -134,6 +161,7 @@ func isExists(file string) bool {
 	return os.IsExist(err)
 }
 
+//渲染生成index文件
 func (self *RenderFactory) RenderIndex(root string, yamls map[string]interface{}) error {
 	if !strings.HasSuffix(root, "/") {
 		root += "/"
@@ -162,95 +190,6 @@ func (self *RenderFactory) RenderIndex(root string, yamls map[string]interface{}
 	return exErr
 }
 
-//render tags
-func (self *RenderFactory) RenderTag(root string, yamls map[string]interface{}) error {
-	if !strings.HasSuffix(root, "/") {
-		root += "/"
-	}
-	yCfg := yamls["config.yml"]
-	var cfg = yCfg.(*yaml.File)
-
-	t := parseTemplate(root, TAG_TPL, cfg)
-	targetFile := PUBLICSH_DIR + "/tag.html"
-	fout, err := os.Create(targetFile)
-	if err != nil {
-		log.Println("create file " + targetFile + " error!")
-		os.Exit(1)
-	}
-	defer fout.Close()
-
-
-	//log.Println(allTags)
-	m := map[string]interface{}{"tag": allTags, "nav": navBarList,"cats": categories,"newly":articles[:NEWLY_ARTICLES_COUNT-1]}
-	exErr := t.Execute(fout, m)
-	return exErr
-}
-
-//render categories
-func (self *RenderFactory) RenderCategories(root string, yamls map[string]interface{}) error {
-	if !strings.HasSuffix(root, "/") {
-		root += "/"
-	}
-
-	yCfg := yamls["config.yml"]
-	var cfg = yCfg.(*yaml.File)
-
-	t := parseTemplate(root, CATEGORY_TPL, cfg)
-	targetFile := PUBLICSH_DIR + "/category.html"
-	fout, err := os.Create(targetFile)
-	if err != nil {
-		log.Println("create file " + targetFile + " error!")
-		os.Exit(1)
-	}
-	defer fout.Close()
-
-
-	//log.Println(categories)
-	m := map[string]interface{}{"cats": categories, "nav": navBarList,"newly":articles[:NEWLY_ARTICLES_COUNT-1]}
-	exErr := t.Execute(fout, m)
-	return exErr
-}
-
-//render rss page
-func (self *RenderFactory) RenderRss(root string, yamls map[string]interface{}) error {
-	if !strings.HasSuffix(root, "/") {
-		root += "/"
-	}
-	yCfg := yamls["config.yml"]
-	var cfg = yCfg.(*yaml.File)
-	t := parseXMLTemplate(root, RSS_TPL, cfg)
-	targetFile := PUBLICSH_DIR + "/rss.xml"
-	fout, err := os.Create(targetFile)
-	if err != nil {
-		log.Println("create file " + targetFile + " error!")
-		os.Exit(1)
-	}
-	defer fout.Close()
-	rssCount, err := cfg.Get("rss.max")
-	if err != nil {
-		log.Println(err)
-	}
-	rssListSize, errconv := strconv.Atoi(rssCount)
-	if errconv != nil {
-		log.Println("rss max in config.yml is not a number!" + errconv.Error())
-	}
-	if len(articles) < rssListSize {
-		rssListSize = len(articles)
-	}
-	ars := articles[:rssListSize]
-
-	for _, ar := range ars {
-		rss = append(rss, RssConfig{ar.Title, ar.Link, ar.Author,
-			ar.Date, ar.Content})
-	}
-
-	r := Rss{time.Now().Format(time.RFC1123), rss}
-
-	exErr := t.Execute(fout, r)
-	return exErr
-}
-
-
 //pre process posts pages
 func (self *RenderFactory) PreProcessPosts(root string, yamls map[string]interface{}) error {
 	if !strings.HasSuffix(root, "/") {
@@ -259,12 +198,17 @@ func (self *RenderFactory) PreProcessPosts(root string, yamls map[string]interfa
 	//获取config.yml键值对节点信息
 	yCfg := yamls["config.yml"]
 	var cfg = yCfg.(*yaml.File)
-	articles = make([]*myconst.ArticleConfig, 0, articleListSize)
+	//存放article的常量数组 固定size 5000
+	articles = make([]*ArticleConfig, 0, articleListSize)
+	//读取posts下article开始
+	// returns
+	// a list of directory entries sorted by filename.
+	//获取文件夹下文件信息数组
 	fileInfos, err := ioutil.ReadDir(root + POST_DIR)
 	if err != nil {
 		log.Println(err)
 	}
-
+	//对所有md文件进行遍历处理
 	for _, fileInfo := range fileInfos {
 		if !fileInfo.IsDir() {
 			log.Println("begin process article -- " + fileInfo.Name())
@@ -278,13 +222,13 @@ func (self *RenderFactory) PreProcessPosts(root string, yamls map[string]interfa
 			}
 			trName := strings.TrimSuffix(fileName, ".md")
           		p := processArticleUrl(fi)
-			//deal markdown
+			//deal markdown markdown字符串转为ASCII 转为html代码
 			htmlByte := blackfriday.MarkdownCommon([]byte(mardownStr))
 			//init other article infos
 			htmlStr := html.UnescapeString(string(htmlByte))
-            re := regexp.MustCompile(`<pre><code>([\s\S]*?)</code></pre>`)
-            htmlStr = re.ReplaceAllString(htmlStr, `<pre class="prettyprint linenums">${1}</pre>`)
-
+		        re := regexp.MustCompile(`<pre><code>([\s\S]*?)</code></pre>`)
+		    	htmlStr = re.ReplaceAllString(htmlStr, `<pre class="prettyprint linenums">${1}</pre>`)
+			//增加正文和链接
 			fi.Content = htmlStr
 			fi.Link = p + trName + ".html"
 			//if abstract is empty,auto gen it
@@ -295,8 +239,8 @@ func (self *RenderFactory) PreProcessPosts(root string, yamls map[string]interfa
 					limit = len(rs)
 				}
 
-				abstract := subStr(htmlStr, 0, limit)
-				fi.Abstract = trimHTML(abstract)
+				abstract := utils.SubStr(htmlStr, 0, limit)
+				fi.Abstract = utils.TrimHTML(abstract)
 			}
 			if fi.Author == "" {
 				author, cerr := cfg.Get("meta.author")
@@ -318,40 +262,6 @@ func (self *RenderFactory) PreProcessPosts(root string, yamls map[string]interfa
 	return nil
 }
 
-
-
-//render posts pages
-func (self *RenderFactory) RenderPosts(root string, yamls map[string]interface{}) error {
-	if !strings.HasSuffix(root, "/") {
-		root += "/"
-	}
-
-
-	yCfg := yamls["config.yml"]
-	var cfg = yCfg.(*yaml.File)
-	//log.Println(cfg.Get("title"))
-	t := parseTemplate(root, POSTS_TPL, cfg)
-			for _,fileInfo := range articles {
-				//create dir /yyyy/MM/dd
-				p := processArticleUrl(*fileInfo)
-				if !isExists(PUBLICSH_DIR + "/articles/" + p) {
-					os.MkdirAll(PUBLICSH_DIR+"/articles/"+p, 0777)
-				}
-				targetFile := PUBLICSH_DIR + "/articles/" + fileInfo.Link
-				fout, err := os.Create(targetFile)
-				if err != nil {
-					log.Println("create file " + targetFile + " error!")
-					os.Exit(1)
-				}
-				defer fout.Close()
-				m := map[string]interface{}{"fi": fileInfo,"nav": navBarList, "cats": categories,"newly":articles[:NEWLY_ARTICLES_COUNT-1]}
-				t.Execute(fout, m)
-			}
-
-
-	return nil
-}
-
 func processArticleUrl(ar ArticleConfig) string {
 	y := strconv.Itoa(ar.Time.Year())
 	m := strconv.Itoa(int(ar.Time.Month()))
@@ -359,127 +269,10 @@ func processArticleUrl(ar ArticleConfig) string {
 	return y + "/" + m + "/" + d + "/"
 }
 
-//render custom pages
-func (self *RenderFactory) RenderPages(root string, yamls map[string]interface{}) error {
-	if !strings.HasSuffix(root, "/") {
-		root += "/"
-	}
-	yCfg := yamls["config.yml"]
-	var cfg = yCfg.(*yaml.File)
-	generatePages(yamls)
-
-	t := parseTemplate(root, PAGES_TPL, cfg)
-
-	for _, p := range pages {
-		p.Id = strings.TrimSuffix(p.Id, " ")
-		filePath := root + "pages/" + p.Id + ".md"
-		if !isExists(filePath) {
-			log.Println(filePath + " is not found!")
-			os.Exit(1)
-		}
-		f, err := os.Open(filePath)
-		if err != nil {
-			log.Println(err)
-
-		}
-		defer f.Close()
-		rd := bufio.NewReader(f)
-		var markdownStr string
-
-		for {
-			buf, _, err := rd.ReadLine()
-
-			if err == io.EOF {
-				break
-			} else {
-				content := string(buf)
-				markdownStr += content + "\n"
-			}
-
-		}
-
-		//deal markdown
-		htmlByte := blackfriday.MarkdownCommon([]byte(markdownStr))
-		//init other article infos
-		htmlStr := html.UnescapeString(string(htmlByte))
-		htmlStr = strings.Replace(htmlStr, "<pre><code", `<pre class="prettyprint linenums"`, -1)
-		htmlStr = strings.Replace(htmlStr, `</code>`, "", -1)
-		p.Content = htmlStr
-		if !isExists(PUBLICSH_DIR + "/pages/") {
-			os.MkdirAll(PUBLICSH_DIR+"/pages/", 0777)
-		}
-		targetFile := PUBLICSH_DIR + "/pages/" + p.Id + ".html"
-		fout, err := os.Create(targetFile)
-		if err != nil {
-			log.Println("create file " + targetFile + " error!")
-			os.Exit(1)
-		}
-		defer fout.Close()
-
-		m := map[string]interface{}{"p": p, "nav": navBarList,"cats": categories,"newly":articles[:NEWLY_ARTICLES_COUNT-1]}
-		t.Execute(fout, m)
-	}
-
-	return nil
-}
-
-//render archive
-func (self *RenderFactory) RenderArchives(root string, yamls map[string]interface{}) error {
-	if !strings.HasSuffix(root, "/") {
-		root += "/"
-	}
-	yCfg := yamls["config.yml"]
-	var cfg = yCfg.(*yaml.File)
-
-	t := parseTemplate(root, ARCHIVE_TPL, cfg)
-	targetFile := PUBLICSH_DIR + "/archive.html"
-	fout, err := os.Create(targetFile)
-	if err != nil {
-		log.Println("create file " + targetFile + " error!")
-		os.Exit(1)
-	}
-	defer fout.Close()
-
-	generateArchive()
-	//log.Println(allArchive)
-	m := map[string]interface{}{"archives": allArchive, "nav": navBarList,"cats": categories,"newly":articles[:NEWLY_ARTICLES_COUNT-1]}
-	exErr := t.Execute(fout, m)
-	return exErr
-
-}
-
-func generateArchive() {
-	archives = make(map[string]*YearArchive)
-	for _, ar := range articles {
-		y, m, _ := ar.Time.Date()
-		year := fmt.Sprintf("%v", y)
-		month := m.String()
-		yArchive := archives[year]
-		if yArchive == nil {
-			yArchive = &YearArchive{year, make([]*MonthArchive, 0), make(map[string]*MonthArchive)}
-			archives[year] = yArchive
-		}
-		mArchive := yArchive.months[month]
-		if mArchive == nil {
-			mArchive = &MonthArchive{month, m, make([]*ArticleBase, 0)}
-			yArchive.months[month] = mArchive
-		}
-		mArchive.Articles = append(mArchive.Articles, &ArticleBase{ar.Link, ar.Title})
-
-	}
-	allArchive = make(YearArchives, 0)
-	//sort by time
-	for _, yArchive := range archives {
-		monthCollect := make(MonthArchives, 0)
-		for _, mArchive := range yArchive.months {
-			monthCollect = append(monthCollect, mArchive)
-		}
-		sort.Sort(monthCollect)
-		yArchive.months = nil
-		yArchive.Months = monthCollect
-		allArchive = append(allArchive, yArchive)
-	}
-	sort.Sort(allArchive)
+type Tag struct {
+	Name     string
+	Articles []ArticleBase
+	Length   int
 }
 
 func generateTags() {
@@ -502,6 +295,17 @@ func generateTags() {
 	}
 }
 
+type ArticleBase struct {
+	Link  string
+	Title string
+}
+
+type Category struct {
+	Name     string
+	Articles []ArticleBase
+	Length   int
+}
+
 func generateCategories() {
 	categories = make(map[string]Category)
 	for _, ar := range articles {
@@ -519,8 +323,8 @@ func generateCategories() {
 	}
 }
 
-//process posts,get article title,post date
-func processArticleFile(filePath, fileName string) (string, myconst.ArticleConfig, error) {
+//process posts,get article title,post date 返回md正文，读取md配置组合，error
+func processArticleFile(filePath, fileName string) (string, ArticleConfig, error) {
 	f, err := os.Open(filePath)
 	if err != nil {
 		log.Println(err)
@@ -528,13 +332,16 @@ func processArticleFile(filePath, fileName string) (string, myconst.ArticleConfi
 	}
 	defer f.Close()
 	rd := bufio.NewReader(f)
+	//对article计数
 	var ct int = 0
 	var yamlStr, markdownStr string
 	for {
 		buf, _, err := rd.ReadLine()
 		if err == io.EOF {
+			//读取完毕
 			break
 		} else {
+			//使用行级对md文件进行标识
 			content := string(buf)
 			if content == "---" {
 				ct++
@@ -549,16 +356,16 @@ func processArticleFile(filePath, fileName string) (string, myconst.ArticleConfi
 
 		}
 
-	}
+	}//把md中---配置部分交于yaml进行处理
 	config := yaml.Config(strings.Replace(yamlStr, "---\n", "", -1))
-
+	//获取md中配置说明信息
 	title, err := config.Get("title")
 	date, err := config.Get("date")
 	tagCount, err := config.Count("tags")
 	if err != nil {
 		log.Println(err)
 	}
-
+//处理md中配置tag
 	var tags []TagConfig
 	trName := strings.TrimSuffix(fileName, ".md")
 	for i := 0; i < tagCount; i++ {
@@ -568,11 +375,11 @@ func processArticleFile(filePath, fileName string) (string, myconst.ArticleConfi
 		}
 		tags = append(tags, TagConfig{tagName, title, trName + ".html"})
 	}
-
+	//获取配置中分类
 	cat, err := config.Get("categories[0]")
 	abstract, err := config.Get("abstract")
 	author, err := config.Get("author")
-
+	//获取article 时间
 	t, terr := time.Parse("2006-01-02 15:04:05", date)
 	if terr != nil {
 		log.Println(terr)
@@ -588,6 +395,37 @@ func processArticleFile(filePath, fileName string) (string, myconst.ArticleConfi
 
 }
 
+type ArticleConfig struct {
+	Title    string
+	Date     string
+	ShortDate string
+	Category string
+	Tags     []TagConfig
+	Abstract string
+	Author   string
+	Time     time.Time
+	Link     string
+	Content  string
+	Nav      []NavConfig
+}
+
+type TagConfig struct {
+	Name         string
+	ArticleTitle string
+	ArticleLink  string
+}
+
+type NavConfig struct {
+	Name   string
+	Href   string
+	Target string
+}
+
+type ByDate struct{ Artic }
+//sort.Sort() 入参需覆写提供如下方法
+func (a Artic) Len() int            { return len(a) }
+func (a Artic) Swap(i, j int)       { a[i], a[j] = a[j], a[i] }
+func (a ByDate) Less(i, j int) bool { return a.Artic[i].Time.After(a.Artic[j].Time) }
 //sort articles by date
 func addAndSortArticles(arInfo ArticleConfig) {
 	//log.Println(len(articles))
@@ -595,8 +433,8 @@ func addAndSortArticles(arInfo ArticleConfig) {
 	if artLen < articleListSize {
 		articles = append(articles, &arInfo)
 	}
+	log.Println(len(articles))
 	sort.Sort(ByDate{articles})
-	//log.Println(len(articles))
 }
 
 func unescaped(str string) interface{} {
@@ -644,41 +482,10 @@ func generateNavBar(yamls map[string]interface{}) {
 	//log.Println(navBarList)
 }
 
-//generate custom pages
-func generatePages(yamls map[string]interface{}) {
-	yCfg := yamls["pages.yml"]
-	var cfg = yCfg.(*yaml.File)
-	ct, err := cfg.Count("")
-	if err != nil {
-		log.Println(err)
-	}
-	for i := 0; i < ct; i++ {
-		id, erri := cfg.Get("[" + strconv.Itoa(i) + "].id")
-		if nil != erri {
-			log.Println(erri)
-		}
-
-		title, errt := cfg.Get("[" + strconv.Itoa(i) + "].title")
-		if nil != errt {
-			log.Println(errt)
-		}
-
-		page := CustomPage{id, title, ""}
-		pages = append(pages, &page)
-	}
-
-}
-
 //root 资源文件的相对路径resources yamlData 读取配置文件的键值对
 func (self *RenderFactory) Render(root string) {
 	yp := new(utils.YamlParser)
 	yamlData := yp.Parse(root)
 	self.PreProcessPosts(root,yamlData)
-	self.RenderPosts(root, yamlData)
-	self.RenderCategories(root, yamlData)	
 	self.RenderIndex(root, yamlData)
-	self.RenderRss(root, yamlData)
-	self.RenderTag(root, yamlData)	
-	self.RenderArchives(root, yamlData)
-	self.RenderPages(root, yamlData)
 }

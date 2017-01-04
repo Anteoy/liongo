@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	Build "../build"
+	"net/http"
 )
 
 const VERSION = "0.0.1"
@@ -49,7 +50,8 @@ func main() {
 			httpAddr = args[1]
 		}
 		fmt.Println("Listen at ", httpAddr)
-		//Build.run(httpAddr)
+		http.Handle("/", http.FileServer(http.Dir("./publish")))
+	//Build.run(httpAddr)
 	case "version":
 		fmt.Print("liongo version " + VERSION)
 	}
