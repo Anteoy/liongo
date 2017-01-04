@@ -47,6 +47,7 @@ func main() {
 	case "build":
 		Build.Build()
 	case "run":
+		Build.Build()
 		if argsLength == 2 {
 			httpAddr = args[1]
 		}

@@ -16,6 +16,7 @@ import (
 	"time"
     	"regexp"
 	"main/go/utils"
+	"fmt"
 )
 
 type RenderFactory struct{}
@@ -38,6 +39,18 @@ const (
 )
 
 type MonthArchives []*MonthArchive
+//用于sort
+func (m MonthArchives) Len() int {
+	return len(m)
+}
+
+func (m MonthArchives) Swap(i, j int) {
+	m[i], m[j] = m[j], m[i]
+}
+
+func (m MonthArchives) Less(i, j int) bool {
+	return m[i].month > m[j].month
+}
 
 const (
 	COMMON_HEADER_FILE = "header.tpl"
@@ -58,6 +71,18 @@ type CustomPage struct {
 	Content string
 }
 type YearArchives []*YearArchive
+//用于sort
+func (y YearArchives) Len() int {
+	return len(y)
+}
+
+func (y YearArchives) Swap(i, j int) {
+	y[i], y[j] = y[j], y[i]
+}
+
+func (y YearArchives) Less(i, j int) bool {
+	return y[i].Year > y[j].Year
+}
 var (
 	articles        Artic
 	articleListSize int = 5000
@@ -293,6 +318,66 @@ func (self *RenderFactory) RenderPosts(root string, yamls map[string]interface{}
 	return nil
 }
 
+//渲染生成archives分类静态文件
+func (self *RenderFactory) RenderArchives(root string, yamls map[string]interface{}) error {
+	if !strings.HasSuffix(root, "/") {
+		root += "/"
+	}
+	yCfg := yamls["config.yml"]
+	var cfg = yCfg.(*yaml.File)
+
+	t := parseTemplate(root, ARCHIVE_TPL, cfg)
+	targetFile := PUBLICSH_DIR + "/archive.html"
+	fout, err := os.Create(targetFile)
+	if err != nil {
+		log.Println("create file " + targetFile + " error!")
+		os.Exit(1)
+	}
+	defer fout.Close()
+
+	generateArchive()
+	//log.Println(allArchive)
+	m := map[string]interface{}{"archives": allArchive, "nav": navBarList,"cats": categories,"newly":articles[:NEWLY_ARTICLES_COUNT-1]}
+	exErr := t.Execute(fout, m)
+	return exErr
+
+}
+
+//生成分类
+func generateArchive() {
+	archives = make(map[string]*YearArchive)
+	for _, ar := range articles {
+		y, m, _ := ar.Time.Date()
+		year := fmt.Sprintf("%v", y)
+		month := m.String()
+		yArchive := archives[year]
+		if yArchive == nil {
+			yArchive = &YearArchive{year, make([]*MonthArchive, 0), make(map[string]*MonthArchive)}
+			archives[year] = yArchive
+		}
+		mArchive := yArchive.months[month]
+		if mArchive == nil {
+			mArchive = &MonthArchive{month, m, make([]*ArticleBase, 0)}
+			yArchive.months[month] = mArchive
+		}
+		mArchive.Articles = append(mArchive.Articles, &ArticleBase{ar.Link, ar.Title})
+
+	}
+	allArchive = make(YearArchives, 0)
+	//sort by time
+	for _, yArchive := range archives {
+		monthCollect := make(MonthArchives, 0)
+		for _, mArchive := range yArchive.months {
+			monthCollect = append(monthCollect, mArchive)
+		}
+		sort.Sort(monthCollect)
+		yArchive.months = nil
+		yArchive.Months = monthCollect
+		allArchive = append(allArchive, yArchive)
+	}
+	sort.Sort(allArchive)
+}
+
 func processArticleUrl(ar ArticleConfig) string {
 	y := strconv.Itoa(ar.Time.Year())
 	m := strconv.Itoa(int(ar.Time.Month()))
@@ -520,4 +605,5 @@ func (self *RenderFactory) Render(root string) {
 	self.PreProcessPosts(root,yamlData)
 	self.RenderIndex(root, yamlData)
 	self.RenderPosts(root, yamlData)
+	self.RenderArchives(root, yamlData)
 }
