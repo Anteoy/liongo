@@ -25,11 +25,8 @@ type Artic []*ArticleConfig
 
 const (
 	INDEX_TPL    = "index"
-	TAG_TPL      = "tag"
 	POSTS_TPL    = "posts"
 	PAGES_TPL    = "pages"
-	RSS_TPL      = "rss"
-	CATEGORY_TPL = "category"
 	ARCHIVE_TPL  = "archive"
 )
 
@@ -86,10 +83,7 @@ func (y YearArchives) Less(i, j int) bool {
 var (
 	articles        Artic
 	articleListSize int = 5000
-	rss             []RssConfig
-	rssListSize     int = 10
 	navBarList      []NavConfig
-	allTags         map[string]Tag
 	categories      map[string]Category
 	pages           []*CustomPage
 	archives        map[string]*YearArchive
