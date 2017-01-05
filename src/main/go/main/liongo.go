@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"os"
 	Build "../build"
+	"net/http"
+	"log"
+	"main/go/newPosts"
 )
 
 const VERSION = "0.0.1"
@@ -34,27 +37,42 @@ func main() {
 	fmt.Println(argsLength)
 	//判断输入命令长度
 	if argsLength == 0 || argsLength > 3 {
-		Usage()
+		UseInfo()
 		os.Exit(1)
 	}
 	//通过第一个参数进行识别
 	switch args[0] {
-	default:
-		Usage()
-		os.Exit(1)
 	case "build":
 		Build.Build()
 	case "run":
+		Build.Build()
 		if argsLength == 2 {
 			httpAddr = args[1]
 		}
 		fmt.Println("Listen at ", httpAddr)
-		//Build.run(httpAddr)
+		http.Handle("/", http.FileServer(http.Dir("./publish")))
+		err := http.ListenAndServe(httpAddr,nil)
+		if err!=nil{
+			log.Fatal("Start error",err)
+		}
+	case "new":
+		args2 := args[1]
+		//如果第二个参数为空 则直接返回并输出提示信息
+		if args2 == "" && len(args2)==0 {
+			UseInfo()
+			os.Exit(1)
+		}
+		addFactory := new(newPosts.AddFactory)
+		addFactory.New(args2)
 	case "version":
 		fmt.Print("liongo version " + VERSION)
+	default:
+		UseInfo()
+		os.Exit(1)
 	}
+
 }
 
-func Usage() {
+func UseInfo() {
 	fmt.Println(USAGE)
 }

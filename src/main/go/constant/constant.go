@@ -1,5 +1,6 @@
 package utils
 
+/*
 import "time"
 
 const (
@@ -31,4 +32,4 @@ type NavConfig struct {
 	Name   string
 	Href   string
 	Target string
-}
+}*/

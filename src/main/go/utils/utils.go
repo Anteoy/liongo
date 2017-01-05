@@ -5,7 +5,32 @@ import (
 	"io/ioutil"
 	"io"
 	"log"
+	"regexp"
 )
+
+func TrimHTML(str string) string {
+	if str == "" {
+		return str
+	}
+	re, _ := regexp.Compile(`<[\s\S]+?(>|$)`)
+	newstr := re.ReplaceAllString(str, "")
+	return newstr
+}
+
+func SubStr(str string, start, end int) string {
+	if start < 0 {
+		log.Panic("start position is wrong!")
+	}
+	if end > len(str) {
+		log.Panic("end positon is wrong!")
+	}
+	if start > end {
+		log.Panic("wrong position!")
+	}
+
+	rs := []rune(str)
+	return string(rs[start:end])
+}
 
 /**
 检测文件是否存在 Stat返回fileInfo
