@@ -231,7 +231,7 @@ func (self *RenderFactory) PreProcessPosts(root string, yamls map[string]interfa
 	//读取posts下article开始
 	// returns
 	// a list of directory entries sorted by filename.
-	//获取文件夹下文件信息数组
+	//获取文件夹下文件信息数组 return []FileInfo
 	fileInfos, err := ioutil.ReadDir(root + POST_DIR)
 	if err != nil {
 		log.Println(err)
@@ -241,18 +241,20 @@ func (self *RenderFactory) PreProcessPosts(root string, yamls map[string]interfa
 		if !fileInfo.IsDir() {
 			log.Println("begin process article -- " + fileInfo.Name())
 			fileName := fileInfo.Name()
-			//change markdown
+			//获取posts文件夹下md文件信息 原始markdownstring config
 			mardownStr, fi, err := processArticleFile(root+POST_DIR+"/"+fileName, fileName)
-			//create post html file
 			if err != nil {
 				log.Println("preprocess article file error!")
 				os.Exit(1)
 			}
+			//去掉文件.md后缀
 			trName := strings.TrimSuffix(fileName, ".md")
+			//根据.md中配置生成年月日文件路径字符串
           		p := processArticleUrl(fi)
-			//deal markdown markdown字符串转为ASCII 转为html代码
+			log.Println(p)
+			//markdown字符串转为ASCII html代码
 			htmlByte := blackfriday.MarkdownCommon([]byte(mardownStr))
-			//init other article infos
+			//反转义实体如“& lt;”成为“<” 把byte转位strings
 			htmlStr := html.UnescapeString(string(htmlByte))
 		        re := regexp.MustCompile(`<pre><code>([\s\S]*?)</code></pre>`)
 		    	htmlStr = re.ReplaceAllString(htmlStr, `<pre class="prettyprint linenums">${1}</pre>`)
@@ -277,15 +279,14 @@ func (self *RenderFactory) PreProcessPosts(root string, yamls map[string]interfa
 				}
 				fi.Author = author
 			}
-			//sort by date
+			//添加article到articles 并对此进行排序 传入前面获取的fi(ArticleConfig)
 			addAndSortArticles(fi)
 
 
 
 		}
 	}
-	generateCategories()
-	generateTags()
+	//生成自定义多余页面导航条 存入navBarList 数组
 	generateNavBar(yamls)
 	return nil
 }
@@ -481,7 +482,8 @@ func generateArchive() {
 	}
 	sort.Sort(allArchive)
 }
-
+//ArticleConfig 解析获取的.md --- --- 中配置文件
+//string 根据年月日生成article路径
 func processArticleUrl(ar ArticleConfig) string {
 	y := strconv.Itoa(ar.Time.Year())
 	m := strconv.Itoa(int(ar.Time.Month()))
@@ -495,25 +497,6 @@ type Tag struct {
 	Length   int
 }
 
-func generateTags() {
-	allTags = make(map[string]Tag)
-	for _, ar := range articles {
-		for _, tg := range ar.Tags {
-			//log.Println(tg)
-			t, ok := allTags[tg.Name]
-			if ok {
-				t.Articles = append(t.Articles, ArticleBase{ar.Link, ar.Title})
-				t.Length = len(t.Articles)
-				allTags[tg.Name] = t
-			} else {
-				art := ArticleBase{ar.Link, ar.Title}
-				arts := make([]ArticleBase, 0)
-				arts = append(arts, art)
-				allTags[tg.Name] = Tag{tg.Name, arts, 1}
-			}
-		}
-	}
-}
 
 type ArticleBase struct {
 	Link  string
@@ -525,26 +508,11 @@ type Category struct {
 	Articles []ArticleBase
 	Length   int
 }
-
-func generateCategories() {
-	categories = make(map[string]Category)
-	for _, ar := range articles {
-		c, ok := categories[ar.Category]
-		if ok {
-			c.Articles = append(c.Articles, ArticleBase{ar.Link, ar.Title})
-			c.Length = len(c.Articles)
-			categories[ar.Category] = c
-		} else {
-			art := ArticleBase{ar.Link, ar.Title}
-			arts := make([]ArticleBase, 0)
-			arts = append(arts, art)
-			categories[ar.Category] = Category{ar.Category, arts, 1}
-		}
-	}
-}
-
+//获取posts文件夹下md文件信息 原始markdownstring config
+//filePath posts下文件全路径 fileName 文件名
 //process posts,get article title,post date 返回md正文，读取md配置组合，error
 func processArticleFile(filePath, fileName string) (string, ArticleConfig, error) {
+	//打开文件
 	f, err := os.Open(filePath)
 	if err != nil {
 		log.Println(err)
@@ -552,8 +520,8 @@ func processArticleFile(filePath, fileName string) (string, ArticleConfig, error
 	}
 	defer f.Close()
 	rd := bufio.NewReader(f)
-	//对article计数
-	var ct int = 0
+	//flag主要标识程序处理md文件中 --- --- 读取各格式文件问题
+	var flag int = 0
 	var yamlStr, markdownStr string
 	for {
 		buf, _, err := rd.ReadLine()
@@ -564,19 +532,22 @@ func processArticleFile(filePath, fileName string) (string, ArticleConfig, error
 			//使用行级对md文件进行标识
 			content := string(buf)
 			if content == "---" {
-				ct++
+				flag++
 			}
-			if ct == 2 {
+			if flag == 2 {
 				if content != "---" {
+					//获取article 正文markdownStr
 					markdownStr += content + "\n"
 				}
 			} else {
+				//获取article正文前配置信息
 				yamlStr += content + "\n"
 			}
 
 		}
 
-	}//把md中---配置部分交于yaml进行处理
+	}
+	//把md中---配置部分交于yaml进行处理（md中配置也基于yaml） 去掉所有---\n
 	config := yaml.Config(strings.Replace(yamlStr, "---\n", "", -1))
 	//获取md中配置说明信息
 	title, err := config.Get("title")
@@ -585,8 +556,9 @@ func processArticleFile(filePath, fileName string) (string, ArticleConfig, error
 	if err != nil {
 		log.Println(err)
 	}
-//处理md中配置tag
+	//处理md中配置tag
 	var tags []TagConfig
+	//去掉后缀
 	trName := strings.TrimSuffix(fileName, ".md")
 	for i := 0; i < tagCount; i++ {
 		tagName, err := config.Get("tags[" + strconv.Itoa(i) + "]")
@@ -646,7 +618,7 @@ type ByDate struct{ Artic }
 func (a Artic) Len() int            { return len(a) }
 func (a Artic) Swap(i, j int)       { a[i], a[j] = a[j], a[i] }
 func (a ByDate) Less(i, j int) bool { return a.Artic[i].Time.After(a.Artic[j].Time) }
-//sort articles by date
+//添加article到articles 并对此进行排序
 func addAndSortArticles(arInfo ArticleConfig) {
 	//log.Println(len(articles))
 	artLen := len(articles)
@@ -675,6 +647,7 @@ func xmlEscapString(str string) string{
 	str = strings.Replace(str,"@@PRE_END",`</pre>`,-1)
 	return str
 }
+//生成自定义多余页面导航条 存入navBarList 数组
 func generateNavBar(yamls map[string]interface{}) {
 	yCfg := yamls["nav.yml"]
 	var cfg = yCfg.(*yaml.File)
@@ -700,7 +673,7 @@ func generateNavBar(yamls map[string]interface{}) {
 		navBarList = append(navBarList, nav)
 
 	}
-	//log.Println(navBarList)
+	log.Println(navBarList)
 }
 
 //root 资源文件的相对路径resources yamlData 读取配置文件的键值对
