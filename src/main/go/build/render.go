@@ -111,25 +111,28 @@ type MonthArchive struct {
 	Articles []*ArticleBase
 }
 
+//传入路径和配置信息 返回一个template config.yml tpl 主题所使用的或自定义tmp名 融合footer header body为一个tpl
 func parseTemplate(root, tpl string, cfg *yaml.File) *template.Template {
-	//get theme template
-	themeFold, errt := cfg.Get("theme")
+	//默认default
+	themeFolder, errt := cfg.Get("theme")
 	if errt != nil {
-		log.Println("get theme error!check config.yml")
+		log.Println("get theme error!check config.yml at the theme value!")
 		os.Exit(1)
 	}
 
-	file := root + "templates/" + themeFold + "/" + tpl + ".tpl"
+	file := root + "templates/" + themeFolder + "/" + tpl + ".tpl"
 	if !isExists(file) {
 		log.Println(file + " can not be found!")
 		os.Exit(1)
 	}
+	log.Println("test")
+	log.Println(cfg.Get)
 	t := template.New(tpl + ".tpl")
 	t.Funcs(template.FuncMap{"get": cfg.Get})
 	t.Funcs(template.FuncMap{"unescaped": unescaped})
 
-	headerTpl := root + "templates/" + themeFold + "/common/" + COMMON_HEADER_FILE
-	footerTpl := root + "templates/" + themeFold + "/common/" + COMMON_FOOTER_FILE
+	headerTpl := root + "templates/" + themeFolder + "/common/" + COMMON_HEADER_FILE
+	footerTpl := root + "templates/" + themeFolder + "/common/" + COMMON_FOOTER_FILE
 
 	if !isExists(headerTpl) {
 		log.Println(headerTpl + " can not be found!")
@@ -343,6 +346,107 @@ func (self *RenderFactory) RenderArchives(root string, yamls map[string]interfac
 
 }
 
+//pages/about.md
+func (self *RenderFactory) RenderPages(root string, yamls map[string]interface{}) error {
+	//判断结尾是否/
+	if !strings.HasSuffix(root, "/") {
+		root += "/"
+	}
+	yCfg := yamls["config.yml"]
+	var cfg = yCfg.(*yaml.File)
+	//获取配置文件页面信息
+	getPagesInfo(yamls)
+
+	t := parseTemplate(root, PAGES_TPL, cfg)
+
+	//pages为前面解析好的CustomPage数组
+	for _, p := range pages {
+		p.Id = strings.TrimSuffix(p.Id, " ")
+		filePath := root + "pages/" + p.Id + ".md"
+		if !isExists(filePath) {
+			log.Println(filePath + " is not found!")
+			os.Exit(1)
+		}
+		f, err := os.Open(filePath)
+		if err != nil {
+			log.Println(err)
+
+		}
+		defer f.Close()
+		rd := bufio.NewReader(f)
+		var markdownStr string
+		//以行读取md文件
+		for {
+			buf, _, err := rd.ReadLine()
+
+			if err == io.EOF {
+				break
+			} else {
+				content := string(buf)
+				markdownStr += content + "\n"
+			}
+
+		}
+
+		//转化位二进制html
+		htmlByte := blackfriday.MarkdownCommon([]byte(markdownStr))
+		//转化位htmlstrings
+		htmlStr := html.UnescapeString(string(htmlByte))
+		//-1无限制完全替换
+		htmlStr = strings.Replace(htmlStr, "<pre><code", `<pre class="prettyprint linenums"`, -1)
+		htmlStr = strings.Replace(htmlStr, `</code>`, "", -1)
+
+		p.Content = htmlStr//设置markdown文章内容
+		if !isExists(PUBLICSH_DIR + "/pages/") {
+			os.MkdirAll(PUBLICSH_DIR+"/pages/", 0777)
+		}
+		targetFile := PUBLICSH_DIR + "/pages/" + p.Id + ".html"
+		//创建target html
+		fout, err := os.Create(targetFile)
+		if err != nil {
+			log.Println("create file " + targetFile + " error!")
+			os.Exit(1)
+		}
+		defer fout.Close()
+		//p .md article信息 nav 自定义的额外导航条信息 暂移除 "cats": categories "newly":articles[:NEWLY_ARTICLES_COUNT-1]
+		m := map[string]interface{}{"p": p, "nav": navBarList}
+		t.Execute(fout, m)
+	}
+
+	return nil
+}
+
+//获取配置文件页面信息
+func getPagesInfo(yamls map[string]interface{}) {
+	yCfg := yamls["pages.yml"]
+	var cfg = yCfg.(*yaml.File)
+	//统计配置pages.yml中配置个数
+	ct, err := cfg.Count("")
+	if err != nil {
+		log.Println(err)
+	}
+	for i := 0; i < ct; i++ {
+		//strconv.Itoa转换为字符串拼接
+		//获取配置的id和title
+		id, erri := cfg.Get("[" + strconv.Itoa(i) + "].id")
+		log.Println("[" + strconv.Itoa(i) + "].id")
+		log.Println(id)
+		if nil != erri {
+			log.Println(erri)
+		}
+
+		title, errt := cfg.Get("[" + strconv.Itoa(i) + "].title")
+		if nil != errt {
+			log.Println(errt)
+		}
+		log.Println("[" + strconv.Itoa(i) + "].title")
+		log.Println(title)
+		page := CustomPage{id, title, ""}
+		//追加到pages
+		pages = append(pages, &page)
+	}
+
+}
 //生成分类
 func generateArchive() {
 	archives = make(map[string]*YearArchive)
@@ -530,7 +634,7 @@ type TagConfig struct {
 	ArticleTitle string
 	ArticleLink  string
 }
-
+//导航 struct
 type NavConfig struct {
 	Name   string
 	Href   string
@@ -553,6 +657,7 @@ func addAndSortArticles(arInfo ArticleConfig) {
 	sort.Sort(ByDate{articles})
 }
 
+//转义
 func unescaped(str string) interface{} {
 	re := regexp.MustCompile(`<pre class="prettyprint linenums">([\s\S]*?)</pre>`)
 	str = re.ReplaceAllStringFunc(str,xmlEscapString)
@@ -606,4 +711,5 @@ func (self *RenderFactory) Render(root string) {
 	self.RenderIndex(root, yamlData)
 	self.RenderPosts(root, yamlData)
 	self.RenderArchives(root, yamlData)
+	self.RenderPages(root, yamlData)//pages/about.md
 }
