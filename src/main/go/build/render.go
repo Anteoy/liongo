@@ -347,7 +347,7 @@ func (self *RenderFactory) RenderArchives(root string, yamls map[string]interfac
 
 }
 
-//pages/about.md
+//渲染pages下自定义导航 默认pages/about.md
 func (self *RenderFactory) RenderPages(root string, yamls map[string]interface{}) error {
 	//判断结尾是否/
 	if !strings.HasSuffix(root, "/") {
