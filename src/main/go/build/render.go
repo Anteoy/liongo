@@ -19,7 +19,7 @@ import (
 	"fmt"
 )
 
-type RenderFactory struct{}
+type BaseFactory struct{}
 //
 type Artic []*ArticleConfig
 
@@ -184,7 +184,7 @@ func isExists(file string) bool {
 }
 
 //渲染生成index文件
-func (self *RenderFactory) RenderIndex(root string, yamls map[string]interface{}) error {
+func (baseFactory *BaseFactory) RenderIndex(root string, yamls map[string]interface{}) error {
 	if !strings.HasSuffix(root, "/") {
 		root += "/"
 	}
@@ -213,7 +213,7 @@ func (self *RenderFactory) RenderIndex(root string, yamls map[string]interface{}
 }
 
 //pre process posts pages
-func (self *RenderFactory) PreProcessPosts(root string, yamls map[string]interface{}) error {
+func (baseFactory *BaseFactory) PreProcessPosts(root string, yamls map[string]interface{}) error {
 	if !strings.HasSuffix(root, "/") {
 		root += "/"
 	}
@@ -286,7 +286,7 @@ func (self *RenderFactory) PreProcessPosts(root string, yamls map[string]interfa
 }
 
 //生成日期归档静态文件
-func (self *RenderFactory) RenderPosts(root string, yamls map[string]interface{}) error {
+func (baseFactory *BaseFactory) RenderPosts(root string, yamls map[string]interface{}) error {
 	if !strings.HasSuffix(root, "/") {
 		root += "/"
 	}
@@ -317,7 +317,7 @@ func (self *RenderFactory) RenderPosts(root string, yamls map[string]interface{}
 }
 
 //渲染生成archives分类静态文件
-func (self *RenderFactory) RenderArchives(root string, yamls map[string]interface{}) error {
+func (baseFactory *BaseFactory) RenderArchives(root string, yamls map[string]interface{}) error {
 	if !strings.HasSuffix(root, "/") {
 		root += "/"
 	}
@@ -342,7 +342,7 @@ func (self *RenderFactory) RenderArchives(root string, yamls map[string]interfac
 }
 
 //渲染pages下自定义导航 默认pages/about.md
-func (self *RenderFactory) RenderPages(root string, yamls map[string]interface{}) error {
+func (baseFactory *BaseFactory) RenderPages(root string, yamls map[string]interface{}) error {
 	//判断结尾是否/
 	if !strings.HasSuffix(root, "/") {
 		root += "/"
@@ -671,12 +671,12 @@ func generateNavBar(yamls map[string]interface{}) {
 }
 
 //root 资源文件的相对路径resources yamlData 读取配置文件的键值对
-func (self *RenderFactory) Render(root string) {
+func (baseFactory *BaseFactory) Render(root string) {
 	yp := new(utils.YamlParser)
 	yamlData := yp.Parse(root)
-	self.PreProcessPosts(root,yamlData)
-	self.RenderIndex(root, yamlData)
-	self.RenderPosts(root, yamlData)
-	self.RenderArchives(root, yamlData)
-	self.RenderPages(root, yamlData)//pages/about.md
+	baseFactory.PreProcessPosts(root,yamlData)
+	baseFactory.RenderIndex(root, yamlData)
+	baseFactory.RenderPosts(root, yamlData)
+	baseFactory.RenderArchives(root, yamlData)
+	baseFactory.RenderPages(root, yamlData)//pages/about.md
 }

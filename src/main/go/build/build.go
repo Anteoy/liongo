@@ -18,7 +18,7 @@ func Build() {
 		}
 	}
 	//开始生成渲染文件
-	var rf = new(RenderFactory)
+	var rf = new(BaseFactory)
 	rf.Render(RENDER_DIR)
 	//复制assets
 	err := utils.CopyDir(RENDER_DIR+"/assets", PUBLICSH_DIR+"/assets")
