@@ -9,40 +9,168 @@
 	<meta name="author" content="meta&#39;s author or article&#39;s author"/>        
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 	<title>blog title - subtitle</title>
-	<link rel="stylesheet" href="/assets/themes/default-zh/plugin/prettify/normalize.css"/>
-	<link rel="stylesheet" href="/assets/themes/default-zh/plugin/prettify/prettify_night.css"/>
-	<link rel="stylesheet" href="/assets/themes/default-zh/main.css"/>
+	<link rel="stylesheet" href="/assets/themes/default/plugin/prettify/normalize.css"/>
+	<link rel="stylesheet" href="/assets/themes/default/plugin/prettify/prettify_night.css"/>
+	<link rel="stylesheet" href="/assets/themes/default/main.css"/>
 	<link rel="shortcut icon" href="/fav.ico"/>
-	<script type="text/javascript" src="/assets/themes/default-zh/plugin/prettify/prettify.js"></script>
+	<script type="text/javascript" src="/assets/themes/default/plugin/prettify/prettify.js"></script>
 	</head>
 	<body onload="prettyPrint()">
-		<div id="header">
-			<div id="header-inner"> 
-				<div id="title"><a href="/">blog title</a>
-				</div>            
-				<div id="subtitle">subtitle</div>        
-			</div>   
-		</div>
 
 <div class="top-nav">
 			<ul>
-				<li><a href="/" >首页</a></li>
-				<li><a href="/tag.html">标签</a></li>
-				<li><a href="/category.html">分类</a></li>
-				<li><a href="/archive.html">归档</a></li>
+				<li><a href="/" >Index</a></li>
+				<li><a href="/tag.html">Tags</a></li>
+				<li><a href="/category.html">Categories</a></li>
+				<li><a href="/archive.html">Archive</a></li>
 				
-				<li><a href="/rss.xml" class="rss" title="订阅"></a></li>
+				<li><a href="/rss.xml" class="rss" title="feed"></a></li>
 			</ul>
 </div>
 <div style="clear:both;"></div>
 <div class="main">
 	<div class="main-inner">
 		 <div id="article-title">
-		 	<a href="/"></a>
+		 	<a href="/2014/1/20/world.html">java构造函数以及static关键</a>
 		 </div>
-		 <div id="article-meta">作者   | 发布于  </div>
+		 <div id="article-meta">Author meta&#39;s author or article&#39;s author  | Posted 2014-01-20 20:12:00 </div>
 
 		  <div id="article-tags">
 		  
 		  </div>
-		 <div id="article-content"> 
+		 <div id="article-content"> <p>###关于java构造器</p>
+
+<ol>
+<li>原本无显示编码构造器，则有一个默认的隐式（隐藏的无参构造器），但是，当显示指定了构造器，则这个默认隐式的构造器将不存在，比如此时无法new无参的构造器（除非显示地编写声明无参的构造函数）。如下：</li>
+</ol>
+
+<pre class="prettyprint linenums">
+ package com.anteoy.coreJava.constructor;
+
+/**
+ * Created by zhoudazhuang
+ * Date: 17-1-3
+ * Time: 上午10:46
+ * Description :
+
+ */
+
+public class TestObj {
+    public TestObj(){
+
+    }
+    public TestObj(String o,String oo ,String ooo){
+
+    }
+}
+
+</pre>
+
+<pre class="prettyprint linenums">
+package com.anteoy.coreJava.constructor;
+
+
+
+/**
+
+ * Created by zhoudazhuang
+
+ * Date: 17-1-3
+
+ * Time: 上午10:46
+
+ * Description : public TestObj(){}没有无参构造new it则会报错
+
+ */
+
+public class NewObj {
+
+    public static void main(String[] args) {
+
+        TestObj obj = new TestObj();
+
+    }
+
+}
+
+</pre>
+
+<ol>
+<li>子类构造器若调用父类</li>
+</ol>
+
+<p>如果子类构造器没有显式地调用父类的构造器，则将自动调用父类的默认（没有参数）的构造器。如果父类没有不带参数的构造器，并且在子类的构造器中又没有显式地调用父类的构造器，则j编译器将报语法错误</p>
+
+<pre class="prettyprint linenums">
+ package com.anteoy.coreJava.constructor;
+
+/**
+ * Created by zhoudazhuang
+ * Date: 17-1-3
+ * Time: 上午10:54
+ * Description :
+ */
+public class SonObj extends TestObj{
+    public SonObj(){
+        super();//调用父类构造器
+    }
+}
+</pre>
+
+<p>###关于java static关键字</p>
+
+<ol>
+<li><p>static修饰的变量（类变量，与类在jvm属同一时期加载，早于对象加载，jvm加载时加载一起）存在于jvm静态域中。</p></li>
+
+<li><p>static属于类级别，但个人认为可以抽象地看成此static属于这个类（比如调用时可以显式地加上类名前缀），只不过static修饰的变量或常量，方法等和类在使用时，是属于同一级别（等级的）。</p></li>
+
+<li><p>在不同类里面可以定义名称相同的static变量（static final也是可以的）。</p></li>
+</ol>
+
+<pre class="prettyprint linenums">
+ package com.anteoy.coreJava.others;
+
+/**
+ * Created by zhoudazhuang
+ * Date: 16-12-28
+ * Time: 下午4:38
+ * Description : Ia,Ib接口有同名变量a，b只有其中一个有
+ */
+public class OoTest implements Ia,Ib{
+    public void oo(){
+        OoTest ooTest = new OoTest();
+//        int a = this.a; //编译报错
+        int a = Ia.a;//编译通过
+        int c = this.b;//编译通过
+    }
+}
+</pre>
+
+<ol>
+<li><p>关于初始化块和静态初始化块，初始化块{}是构造器的补充，不接受参数，定义一些所有对象共有的属性，方法等，主要可提高可维护性，和初始化块的复用性。主要区别：</p>
+
+<ul>
+<li><p>初始化顺序 静态初始化块–初始化块–构造方法</p></li>
+
+<li><p>静态初始化块只初始化一次，不能初始化普通非static变量</p></li>
+</ul></li>
+</ol>
+ </div>
+		<hr/>
+	</div>
+</div>
+
+</div>
+
+<script type="text/javascript" src="/assets/themes/default/jquery.js"></script>
+
+
+<div id="footer">
+ 	<div id="footer-inner">
+ 		<p id="copyright">Copyright (c) 2015 - 2016 owner of copyright &nbsp;
+ 		Powered by <a href="https://github.com/Anteoy/liongo">liongo</a>
+ 		</p>
+ 		</div>  
+ 	</div>
+ </body>
+ </html>

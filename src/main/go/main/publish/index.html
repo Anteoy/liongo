@@ -9,43 +9,57 @@
 	<meta name="author" content="meta&#39;s author or article&#39;s author"/>        
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 	<title>blog title - subtitle</title>
-	<link rel="stylesheet" href="/assets/themes/default-zh/plugin/prettify/normalize.css"/>
-	<link rel="stylesheet" href="/assets/themes/default-zh/plugin/prettify/prettify_night.css"/>
-	<link rel="stylesheet" href="/assets/themes/default-zh/main.css"/>
+	<link rel="stylesheet" href="/assets/themes/default/plugin/prettify/normalize.css"/>
+	<link rel="stylesheet" href="/assets/themes/default/plugin/prettify/prettify_night.css"/>
+	<link rel="stylesheet" href="/assets/themes/default/main.css"/>
 	<link rel="shortcut icon" href="/fav.ico"/>
-	<script type="text/javascript" src="/assets/themes/default-zh/plugin/prettify/prettify.js"></script>
+	<script type="text/javascript" src="/assets/themes/default/plugin/prettify/prettify.js"></script>
 	</head>
 	<body onload="prettyPrint()">
-		<div id="header">
-			<div id="header-inner"> 
-				<div id="title"><a href="/">blog title</a>
-				</div>            
-				<div id="subtitle">subtitle</div>        
-			</div>   
-		</div>
 
 <div class="top-nav">
 	<ul>
-		<li><a href="/" class="on-sel">首页</a></li>
-		<li><a href="/tag.html">标签</a></li>
-		<li><a href="/category.html">分类</a></li>
-		<li><a href="/archive.html">归档</a></li>
+		<li><a href="/" class="on-sel">Index</a></li>
+		
+		
+		<li><a href="/archive.html">Archive</a></li>
 		
 		<li><a href="/pages/about.html" target="_self">About</a></li>
 		
 		<li><a href="https://github.com/Anteoy/liongo" target="_blank">github</a></li>
 		
-		<li><a href="/rss.xml" class="rss" title="订阅"></a></li>
+		
 	</ul>
 </div>
-<div style="clear:both;"></div>
+
+<div style="clear:both;height:50px" id="interval"></div>
 <div class="main">
 	<div class="main-inner">
 		<div class="article-list">
 		
 			<div class="article">
+				<p class="title"><a href="/articles/2017/1/5/zhoudazhuang.html">zhoudazhuang</a></p>
+				<p class="abstract">&lt;abstract&gt;: &nbsp;&nbsp;<a href="/articles/2017/1/5/zhoudazhuang.html">Read more</a></p>
+				<p class="meta">Author meta&#39;s author or article&#39;s author | Posted 2017-01-05 21:42:09 | Tags 
+				
+				</p>
+			</div> 	
+		
+			<div class="article">
+				<p class="title"><a href="/articles/2014/1/20/sample.html">java构造函数以及static关键</a></p>
+				<p class="abstract">&lt;abstract&gt;: &nbsp;&nbsp;<a href="/articles/2014/1/20/sample.html">Read more</a></p>
+				<p class="meta">Author meta&#39;s author or article&#39;s author | Posted 2014-01-20 20:12:00 | Tags 
+				
+				<a class="tag" href="/tag.html#golang">golang</a>
+				
+				<a class="tag" href="/tag.html#code">code</a>
+				
+				</p>
+			</div> 	
+		
+			<div class="article">
 				<p class="title"><a href="/articles/2014/1/20/world.html">java构造函数以及static关键</a></p>
-				<p class="abstract">&lt;摘要&gt;: ###关于java构造器
+				<p class="abstract">&lt;abstract&gt;: ###关于java构造器
 
 
 原本无显示编码构造器，则有一个默认的隐式（隐藏的无参构造器），但是，当显示指定了构造器，则这个默认隐式的构造器将不存在，比如此时无法new无参的构造器（除非显示地编写声明无参的构造函数）。如下：
@@ -112,8 +126,8 @@ public class NewObj {
  package com.anteoy.coreJava.constructor;
 
 /**
- * Created by zhoudazhuang&nbsp;&nbsp;<a href="/articles/2014/1/20/world.html">阅读更多</a></p>
-				<p class="meta">作者 meta&#39;s author or article&#39;s author | 发布于 2014-01-20 20:12:00 | Tags 
+ * Created by zhoudazhuang&nbsp;&nbsp;<a href="/articles/2014/1/20/world.html">Read more</a></p>
+				<p class="meta">Author meta&#39;s author or article&#39;s author | Posted 2014-01-20 20:12:00 | Tags 
 				
 				<a class="tag" href="/tag.html#golang">golang</a>
 				
@@ -128,9 +142,8 @@ public class NewObj {
 
 <div id="footer">
  	<div id="footer-inner">
- 		<p id="copyright">Copyright (c) 2015 - 2016 owner of copyright
- 		&nbsp;
- 		Powered by <a href="https://github.com/scottkiss/gosk">gosk</a>
+ 		<p id="copyright">Copyright (c) 2015 - 2016 owner of copyright &nbsp;
+ 		Powered by <a href="https://github.com/Anteoy/liongo">liongo</a>
  		</p>
  		</div>  
  	</div>

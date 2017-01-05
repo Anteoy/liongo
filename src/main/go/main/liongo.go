@@ -58,7 +58,7 @@ func main() {
 	case "new":
 		args2 := args[1]
 		//如果第二个参数为空 则直接返回并输出提示信息
-		if args2 == nil {
+		if args2 == "" && len(args2)==0 {
 			UseInfo()
 			os.Exit(1)
 		}
