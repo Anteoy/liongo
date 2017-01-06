@@ -1,32 +1,52 @@
-{{template "header"}}
+<html>
+	<head>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<meta name="description" content="{{"meta.description"|get}}"/>
+	<meta name="keywords" content="{{"meta.keywords"|get}}"/>
+	<meta name="author" content="{{"meta.author"|get}}"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+	<title>{{"title"|get}} - {{"subtitle"|get}}</title>
+	<link rel="stylesheet" href="/assets/themes/{{"theme"|get}}/plugin/prettify/normalize.css"/>
+	<link rel="stylesheet" href="/assets/themes/{{"theme"|get}}/plugin/prettify/prettify_{{"codetheme"|get}}.css"/>
+	<link rel="stylesheet" href="/assets/themes/{{"theme"|get}}/main.css"/>
+	<link rel="shortcut icon" href="/fav.ico"/>
+	<script type="text/javascript" src="/assets/themes/{{"theme"|get}}/plugin/prettify/prettify.js"></script>
+	</head>
+	<body onload="prettyPrint()" style="text-align: center">
 <div class="top-nav">
 	<ul>
 	    <li><a href="/" class="on-sel">Index</li>
-		<li><a href="/blog.html" class="on-sel">Blog</a></li>
+		<li><a href="/blog.html" >Blog</a></li>
 		<li><a href="/archive.html">Archive</a></li>
 		{{range .nav}}
 		<li><a href="{{.Href}}" target="{{.Target}}">{{.Name}}</a></li>
 		{{end}}
-		<!-- <li><a href="/rss.xml" class="rss" title="feed"></a></li> -->
 	</ul>
 </div>
+	<div style="clear:both;height:50px" id="interval"></div><!-- 中间间隔 -->
+	<!-- start welcome -->
+	<div style="color:white" id="welcome" class="main">
+    	<p>welcome to anteoy’s site</p>
 
-<div style="clear:both;height:50px" id="interval"></div><!-- 中间间隔 -->
-<div class="main">
-	<div class="main-inner">
-		<div class="article-list">
-		{{range .ar}}
-			<div class="article">
-				<p class="title"><a href="/articles/{{.Link}}">{{.Title}}</a></p>
-				<p class="abstract">&lt;abstract&gt;: {{.Abstract}}&nbsp;&nbsp;<a href="/articles/{{.Link}}">Read more</a></p>
-				<p class="meta">Author {{.Author}} | Posted {{.Date}} | Tags 
-				{{range .Tags}}
-				<a class="tag" href="/tag.html#{{.Name}}">{{.Name}}</a>
-				{{end}}
-				</p>
-			</div> 	
-		{{end}}
-		</div>
-	</div>
-</div>
+    	<p>there you can find my blog and some things about me</p>
+
+    	<p>you can click down</p>
+
+    	    <li><a href="/blog.html" >Blog</a></li>
+
+    	    <li><a href="/pages/about.html" >About me</a></li>
+
+    	<p>it’s powered by <a href="www.github.com">anteoy·liongo</a>, you can click my github to get the source code ,if you
+    		find anything or some advise,please contact me,the email address is anteoy@gmail.com,you can also find me at there
+    	</p>
+
+    	<p>
+    		<a href="https://github.com/Anteoy"><img
+    				src="https://raw.githubusercontent.com/Anteoy/liongo/dev/src/main/go/resources/pictures/github.png"
+    				alt="github" style="height:80px"/>
+    		</a>
+    	</p>
+    </div>
+
 {{template "footer"}}

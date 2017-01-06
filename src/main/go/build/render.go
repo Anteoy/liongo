@@ -24,8 +24,8 @@ type BaseFactory struct{}
 type Artic []*ArticleConfig
 
 const (
-	INDEX_TPL = "welcome"
-	BLOG_LIST_TPL = "index"
+	INDEX_TPL = "index"
+	BLOG_LIST_TPL = "blog"
 	POSTS_TPL    = "posts"
 	PAGES_TPL    = "pages"
 	ARCHIVE_TPL  = "archive"
