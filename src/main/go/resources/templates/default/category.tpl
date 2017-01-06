@@ -1,9 +1,8 @@
 {{template "header"}}
 <div class="top-nav">
 			<ul>
-				<li><a href="/">Index</a></li>
-				<li><a href="/tag.html">Tags</a></li>
-				<li><a href="/category.html" class="on-sel">Categories</a></li>
+			    <li><a href="/" class="on-sel">Index</li>
+				<li><a href="/blog.html">Blog</a></li>
 				<li><a href="/archive.html">Archive</a></li>
 				{{range .nav}}
 				<li><a href="{{.Href}}" target="{{.Target}}">{{.Name}}</a></li>
