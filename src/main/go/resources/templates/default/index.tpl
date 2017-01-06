@@ -47,10 +47,10 @@
     				src="https://raw.githubusercontent.com/Anteoy/liongo/dev/src/main/go/resources/pictures/github.png"
     				alt="github" style="height:80px"/>
     		</a>
-    		<a href="https://github.com/Anteoy"><img
-                				src="https://raw.githubusercontent.com/Anteoy/liongo/dev/src/main/go/resources/pictures/github.png"
-                				alt="github" style="height:80px"/>
-                		</a>
+    		<a href="https://coding.net/u/zhoudafu"><img
+                src="https://raw.githubusercontent.com/Anteoy/liongo/dev/src/main/go/resources/pictures/coding1.png"
+                alt="github" style="height:80px"/>
+            </a>
                 		<a href="https://github.com/Anteoy"><img
                                         				src="https://raw.githubusercontent.com/Anteoy/liongo/dev/src/main/go/resources/pictures/github.png"
                                         				alt="github" style="height:80px"/>
