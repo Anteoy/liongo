@@ -52,7 +52,7 @@
                 alt="github" style="height:80px"/>
             </a>
             <a href="http://blog.csdn.net/yan_chou"><img
-                    src="https://raw.githubusercontent.com/Anteoy/liongo/dev/src/main/go/resources/pictures/csdn.jpg"
+                    src="https://raw.githubusercontent.com/Anteoy/liongo/dev/src/main/go/resources/pictures/csdn.png"
                     alt="github" style="height:80px"/>
             </a>
             <a href="https://twitter.com/AnteoyChou"><img
