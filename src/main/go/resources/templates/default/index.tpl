@@ -51,14 +51,14 @@
                 src="https://raw.githubusercontent.com/Anteoy/liongo/dev/src/main/go/resources/pictures/coding1.png"
                 alt="github" style="height:80px"/>
             </a>
-                		<a href="https://github.com/Anteoy"><img
-                                        				src="https://raw.githubusercontent.com/Anteoy/liongo/dev/src/main/go/resources/pictures/github.png"
-                                        				alt="github" style="height:80px"/>
-                                        		</a>
-                                        		<a href="https://github.com/Anteoy"><img
-                                                                				src="https://raw.githubusercontent.com/Anteoy/liongo/dev/src/main/go/resources/pictures/github.png"
-                                                                				alt="github" style="height:80px"/>
-                                                                		</a>
+            <a href="http://blog.csdn.net/yan_chou"><img
+                    src="https://raw.githubusercontent.com/Anteoy/liongo/dev/src/main/go/resources/pictures/csdn.jpg"
+                    alt="github" style="height:80px"/>
+            </a>
+            <a href="https://twitter.com/AnteoyChou"><img
+                src="https://raw.githubusercontent.com/Anteoy/liongo/dev/src/main/go/resources/pictures/twitter.jpg"
+                alt="github" style="height:80px"/>
+            </a>
     	</p>
     </div>
 
