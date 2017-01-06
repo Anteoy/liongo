@@ -33,10 +33,9 @@
 
     	<p>you can click down</p>
 
-    	1. [blog](../oo.html)
+    	    <li><a href="/blog.html" >Blog</a></li>
 
-    	2. [about me](../oo.html)
-
+    	    <li><a href="/pages/about.html" >About me</a></li>
 
     	<p>it’s powered by <a href="www.github.com">anteoy·liongo</a>, you can click my github to get the source code ,if you
     		find anything or some advise,please contact me,the email address is anteoy@gmail.com,you can also find me at there
@@ -45,7 +44,7 @@
     	<p>
     		<a href="https://github.com/Anteoy"><img
     				src="https://raw.githubusercontent.com/Anteoy/liongo/dev/src/main/go/resources/pictures/github.png"
-    				alt="github"/>
+    				alt="github" style="height:100px"/>
     		</a>
     	</p>
     </div>
