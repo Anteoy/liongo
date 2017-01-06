@@ -25,7 +25,7 @@
 		{{end}}
 	</ul>
 </div>
-	<div style="clear:both;height:50px" id="interval"></div><!-- 中间间隔 -->
+	<div style="clear:both;height:260px" id="interval"></div><!-- 中间间隔 -->
 	<!-- start welcome -->
 	<div style="color:white" id="welcome" class="main">
     	<p>welcome to anteoy’s site</p>
