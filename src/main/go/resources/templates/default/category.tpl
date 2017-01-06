@@ -4,10 +4,10 @@
 			    <li><a href="/" class="on-sel">Index</li>
 				<li><a href="/blog.html">Blog</a></li>
 				<li><a href="/archive.html">Archive</a></li>
+				<li><a href="/pages/about.html" >About</a></li>
 				{{range .nav}}
 				<li><a href="{{.Href}}" target="{{.Target}}">{{.Name}}</a></li>
 				{{end}}
-				<li><a href="/rss.xml" class="rss" title="feed"></a></li>
 			</ul>
 </div>
 <div style="clear:both;"></div>
