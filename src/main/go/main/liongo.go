@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	Build "../build"
+	Build "github.com/Anteoy/liongo/src/main/go/build"
 	"net/http"
 	"log"
 
