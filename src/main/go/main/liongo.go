@@ -7,7 +7,8 @@ import (
 	Build "../build"
 	"net/http"
 	"log"
-	"main/go/newPosts"
+
+	"github.com/Anteoy/liongo/src/main/go/newPosts"
 )
 
 const VERSION = "0.0.1"

@@ -15,7 +15,7 @@ import (
 	"strings"
 	"time"
     	"regexp"
-	"main/go/utils"
+	"github.com/Anteoy/liongo/src/main/go/utils"
 	"fmt"
 )
 
