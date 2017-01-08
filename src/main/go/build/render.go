@@ -24,7 +24,8 @@ type BaseFactory struct{}
 type Artic []*ArticleConfig
 
 const (
-	INDEX_TPL    = "index"
+	INDEX_TPL = "index"
+	BLOG_LIST_TPL = "blog"
 	POSTS_TPL    = "posts"
 	PAGES_TPL    = "pages"
 	ARCHIVE_TPL  = "archive"
@@ -32,7 +33,7 @@ const (
 
 const (
 	POST_DIR     = "posts"
-	PUBLICSH_DIR = "publish"
+	PUBLISH = "publish"
 )
 
 type MonthArchives []*MonthArchive
@@ -148,31 +149,24 @@ func parseTemplate(root, tpl string, cfg *yaml.File) *template.Template {
 	return t
 }
 
-func parseXMLTemplate(root, tpl string, cfg *yaml.File) *template.Template {
-	//get theme template
-	themeFold, errt := cfg.Get("theme")
-	if errt != nil {
-		log.Println("get theme error!check config.yml")
-		os.Exit(1)
+func (baseFactory *BaseFactory) RenderIndex (root string,yamls map[string]interface{}) error {
+	if !strings.HasSuffix(root,"/"){
+		root += "/"
 	}
-	file := root + "/templates/" + themeFold + "/" + tpl + ".tpl"
-	if !isExists(file) {
-		log.Println(file + " can not be found!")
-		os.Exit(1)
-	}
-	t := template.New(tpl + ".tpl")
-	t.Funcs(template.FuncMap{"get": cfg.Get})
-	t.Funcs(template.FuncMap{"unescaped": unescaped})
-	t.Funcs(template.FuncMap{"xmlheader": xmlHeader})
+	pEiz := yamls["config.yml"]
+	var cfg = pEiz.(*yaml.File)
+	t := parseTemplate(root,INDEX_TPL,cfg)
 
-	t, err := t.ParseFiles(file)
+	targetFile := PUBLISH + "/index.html"
+	fout,err :=os.Create(targetFile)
 	if err != nil {
-		log.Println("parse " + tpl + " Template error!" + err.Error())
+		log.Println("create file " + targetFile + " error!")
 		os.Exit(1)
 	}
-
-	log.Println("parse " + tpl + " Template complete!")
-	return t
+	defer fout.Close()
+	m := map[string]interface{}{"nav": navBarList,"cats": categories}
+	exErr := t.Execute(fout, m)
+	return exErr
 }
 
 func isExists(file string) bool {
@@ -184,16 +178,16 @@ func isExists(file string) bool {
 }
 
 //渲染生成index文件
-func (baseFactory *BaseFactory) RenderIndex(root string, yamls map[string]interface{}) error {
+func (baseFactory *BaseFactory) RenderBlogList(root string, yamls map[string]interface{}) error {
 	if !strings.HasSuffix(root, "/") {
 		root += "/"
 	}
 
 	yCfg := yamls["config.yml"]
 	var cfg = yCfg.(*yaml.File)
-	t := parseTemplate(root, INDEX_TPL, cfg)
+	t := parseTemplate(root, BLOG_LIST_TPL, cfg)
 
-	targetFile := PUBLICSH_DIR + "/index.html"
+	targetFile := PUBLISH + "/blog.html"
 	fout, err := os.Create(targetFile)
 	if err != nil {
 		log.Println("create file " + targetFile + " error!")
@@ -298,10 +292,10 @@ func (baseFactory *BaseFactory) RenderPosts(root string, yamls map[string]interf
 	for _,fileInfo := range articles {
 		//create dir /yyyy/MM/dd
 		p := processArticleUrl(*fileInfo)
-		if !isExists(PUBLICSH_DIR + "/articles/" + p) {
-			os.MkdirAll(PUBLICSH_DIR+"/articles/"+p, 0777)
+		if !isExists(PUBLISH + "/articles/" + p) {
+			os.MkdirAll(PUBLISH +"/articles/"+p, 0777)
 		}
-		targetFile := PUBLICSH_DIR + "/articles/" + fileInfo.Link
+		targetFile := PUBLISH + "/articles/" + fileInfo.Link
 		fout, err := os.Create(targetFile)
 		if err != nil {
 			log.Println("create file " + targetFile + " error!")
@@ -325,7 +319,7 @@ func (baseFactory *BaseFactory) RenderArchives(root string, yamls map[string]int
 	var cfg = yCfg.(*yaml.File)
 
 	t := parseTemplate(root, ARCHIVE_TPL, cfg)
-	targetFile := PUBLICSH_DIR + "/archive.html"
+	targetFile := PUBLISH + "/archive.html"
 	fout, err := os.Create(targetFile)
 	if err != nil {
 		log.Println("create file " + targetFile + " error!")
@@ -392,10 +386,11 @@ func (baseFactory *BaseFactory) RenderPages(root string, yamls map[string]interf
 		htmlStr = strings.Replace(htmlStr, `</code>`, "", -1)
 
 		p.Content = htmlStr//设置markdown文章内容
-		if !isExists(PUBLICSH_DIR + "/pages/") {
-			os.MkdirAll(PUBLICSH_DIR+"/pages/", 0777)
+		log.Println(p.Content)
+		if !isExists(PUBLISH + "/pages/") {
+			os.MkdirAll(PUBLISH +"/pages/", 0777)
 		}
-		targetFile := PUBLICSH_DIR + "/pages/" + p.Id + ".html"
+		targetFile := PUBLISH + "/pages/" + p.Id + ".html"
 		//创建target html
 		fout, err := os.Create(targetFile)
 		if err != nil {
@@ -675,7 +670,8 @@ func (baseFactory *BaseFactory) Render(root string) {
 	yp := new(utils.YamlParser)
 	yamlData := yp.Parse(root)
 	baseFactory.PreProcessPosts(root,yamlData)
-	baseFactory.RenderIndex(root, yamlData)
+	baseFactory.RenderIndex(root,yamlData)
+	baseFactory.RenderBlogList(root, yamlData)
 	baseFactory.RenderPosts(root, yamlData)
 	baseFactory.RenderArchives(root, yamlData)
 	baseFactory.RenderPages(root, yamlData)//pages/about.md

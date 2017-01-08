@@ -5,11 +5,13 @@
 /.idea/
 /liongo.iml
 liongo
-
+src/main/go/main/publish/*
+src/main/go/main/publish/test.html
 
 # Folders
 _obj
 _test
+src/main/go/main/publish/*
 
 # Architecture specific extensions/prefixes
 *.[568vq]

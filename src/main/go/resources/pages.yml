@@ -1,2 +1,5 @@
-- id: about 
+#配置pages编译 不提供nav
+- id: about
   title: About
+- id: welcome
+  title: Welcome

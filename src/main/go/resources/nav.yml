@@ -1,6 +1,11 @@
-- label: About
-  href: /pages/about.html
-  target: _self
+#配置动态nav 建议在tpl中添加
+#- label: About
+#  href: /pages/about.html
+#  target: _self
+
+#- label: Welcome
+#  href: /welcome.html
+#  target: _self
 
 - label: github
   href: https://github.com/Anteoy/liongo
