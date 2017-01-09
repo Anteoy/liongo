@@ -670,9 +670,9 @@ func (baseFactory *BaseFactory) Render(root string) {
 	yp := new(utils.YamlParser)
 	yamlData := yp.Parse(root)
 	baseFactory.PreProcessPosts(root,yamlData)
-	baseFactory.RenderIndex(root,yamlData)
-	baseFactory.RenderBlogList(root, yamlData)
-	baseFactory.RenderPosts(root, yamlData)
-	baseFactory.RenderArchives(root, yamlData)
-	baseFactory.RenderPages(root, yamlData)//pages/about.md
+	go baseFactory.RenderIndex(root,yamlData)
+	go baseFactory.RenderBlogList(root, yamlData)
+	go baseFactory.RenderPosts(root, yamlData)
+	go baseFactory.RenderArchives(root, yamlData)
+	go baseFactory.RenderPages(root, yamlData)//pages/about.md
 }
