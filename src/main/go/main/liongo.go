@@ -4,10 +4,12 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	Build "../build"
+	Build "github.com/Anteoy/liongo/src/main/go/build"
 	"net/http"
 	"log"
-	"main/go/newPosts"
+
+	"github.com/Anteoy/liongo/src/main/go/newPosts"
+	"strings"
 )
 
 const VERSION = "0.0.1"
@@ -48,6 +50,9 @@ func main() {
 		Build.Build()
 		if argsLength == 2 {
 			httpAddr = args[1]
+		}
+		if argsLength == 3 && strings.EqualFold(args[1], "-p") {
+			httpAddr = ":"+args[2]
 		}
 		fmt.Println("Listen at ", httpAddr)
 		http.Handle("/", http.FileServer(http.Dir("./publish")))
