@@ -318,6 +318,7 @@ func (baseFactory *BaseFactory) RenderArchives(root string, yamls map[string]int
 
 	t := parseTemplate(root, ARCHIVE_TPL, cfg)
 	targetFile := PUBLISH + "/archive.html"
+	//创建targetFile
 	fout, err := os.Create(targetFile)
 	if err != nil {
 		log.Println("create file " + targetFile + " error!")
@@ -325,6 +326,7 @@ func (baseFactory *BaseFactory) RenderArchives(root string, yamls map[string]int
 	}
 	defer fout.Close()
 
+	//时间归档处理
 	generateArchive()
 	//log.Println(allArchive)
 	m := map[string]interface{}{"archives": allArchive, "nav": navBarList,"cats": categories,"newly":articles[:NEWLY_ARTICLES_COUNT-1]}
