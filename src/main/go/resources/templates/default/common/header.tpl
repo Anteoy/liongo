@@ -8,7 +8,6 @@
 	<meta name="keywords" content="{{"meta.keywords"|get}}"/>        
 	<meta name="author" content="{{"meta.author"|get}}"/>        
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
-	<title>{{"title"|get}} - {{"subtitle"|get}}</title>
 	<link rel="stylesheet" href="/assets/themes/{{"theme"|get}}/plugin/prettify/normalize.css"/>
 	<link rel="stylesheet" href="/assets/themes/{{"theme"|get}}/plugin/prettify/prettify_{{"codetheme"|get}}.css"/>
 	<link rel="stylesheet" href="/assets/themes/{{"theme"|get}}/main.css"/>

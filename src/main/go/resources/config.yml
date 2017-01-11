@@ -1,6 +1,3 @@
-title: blog title
-subtitle: subtitle
-link: blog URL
 meta:
   description: meta's description
   keywords: keyword,more keyword
@@ -12,10 +9,3 @@ copyright:
   ICP: icp(for china)
 theme: default
 codetheme: night
-rss:
-  title: RSS title
-  desc: RSS description
-  lang: zh-cn
-  max: 8
-duoshuoShortname: your account
-disqus_shortname: your disqus_shortname

@@ -61,13 +61,6 @@ const (
 	COMMON_FOOTER_FILE = "footer.tpl"
 	
 )
-type RssConfig struct {
-	Title  string
-	Link   string
-	Author string
-	Date   string
-	Desc   string
-}
 
 type CustomPage struct {
 	Id      string
@@ -126,7 +119,6 @@ func parseTemplate(root, tpl string, cfg *yaml.File) *template.Template {
 		log.Println(file + " can not be found!")
 		os.Exit(1)
 	}
-	log.Println("test")
 	log.Println(cfg.Get)
 	t := template.New(tpl + ".tpl")
 	t.Funcs(template.FuncMap{"get": cfg.Get})
@@ -392,7 +384,7 @@ func (baseFactory *BaseFactory) RenderPages(root string, yamls map[string]interf
 		htmlStr = strings.Replace(htmlStr, `</code>`, "", -1)
 
 		p.Content = htmlStr//设置markdown文章内容
-		log.Println(p.Content)
+		//log.Println(p.Content)
 		if !isExists(PUBLISH + "/pages/") {
 			os.MkdirAll(PUBLISH +"/pages/", 0777)
 		}
@@ -676,9 +668,9 @@ func (baseFactory *BaseFactory) Render(root string) {
 	yp := new(utils.YamlParser)
 	yamlData := yp.Parse(root)
 	baseFactory.PreProcessPosts(root,yamlData)
-	go baseFactory.RenderIndex(root,yamlData)//生成index.html
-	go baseFactory.RenderBlogList(root, yamlData)//生成博客列表页面
-	go baseFactory.RenderPosts(root, yamlData)//生成博客文章页面
-	go baseFactory.RenderArchives(root, yamlData)//生成归档页面
-	go baseFactory.RenderPages(root, yamlData)//pages/about.md
+	baseFactory.RenderIndex(root,yamlData)//生成index.html
+	baseFactory.RenderBlogList(root, yamlData)//生成博客列表页面
+	baseFactory.RenderPosts(root, yamlData)//生成博客文章页面
+	baseFactory.RenderArchives(root, yamlData)//生成归档页面
+	baseFactory.RenderPages(root, yamlData)//pages/about.md
 }

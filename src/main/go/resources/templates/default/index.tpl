@@ -6,7 +6,6 @@
 	<meta name="keywords" content="{{"meta.keywords"|get}}"/>
 	<meta name="author" content="{{"meta.author"|get}}"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
-	<title>{{"title"|get}} - {{"subtitle"|get}}</title>
 	<link rel="stylesheet" href="/assets/themes/{{"theme"|get}}/plugin/prettify/normalize.css"/>
 	<link rel="stylesheet" href="/assets/themes/{{"theme"|get}}/plugin/prettify/prettify_{{"codetheme"|get}}.css"/>
 	<link rel="stylesheet" href="/assets/themes/{{"theme"|get}}/main.css"/>
@@ -18,7 +17,7 @@
 	<ul>
 	    <li><a href="/" class="on-sel">Index</li>
 		<li><a href="/blog.html" >Blog</a></li>
-		<li><a href="/archive.html">Archive</a></li>
+		<li><a href="/archive.html">Date</a></li>
 		<li><a href="/pages/about.html" >About</a></li>
 		{{range .nav}}
 		<li><a href="{{.Href}}" target="{{.Target}}">{{.Name}}</a></li>
