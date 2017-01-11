@@ -31,6 +31,12 @@ const (
 	ARCHIVE_TPL  = "archive"
 )
 
+type GobuildItf interface {
+	testItf1()
+	testItf2()
+}
+
+
 const (
 	POST_DIR     = "posts"
 	PUBLISH = "publish"
@@ -670,9 +676,9 @@ func (baseFactory *BaseFactory) Render(root string) {
 	yp := new(utils.YamlParser)
 	yamlData := yp.Parse(root)
 	baseFactory.PreProcessPosts(root,yamlData)
-	go baseFactory.RenderIndex(root,yamlData)
-	go baseFactory.RenderBlogList(root, yamlData)
-	go baseFactory.RenderPosts(root, yamlData)
-	go baseFactory.RenderArchives(root, yamlData)
+	go baseFactory.RenderIndex(root,yamlData)//生成index.html
+	go baseFactory.RenderBlogList(root, yamlData)//生成博客列表页面
+	go baseFactory.RenderPosts(root, yamlData)//生成博客文章页面
+	go baseFactory.RenderArchives(root, yamlData)//生成归档页面
 	go baseFactory.RenderPages(root, yamlData)//pages/about.md
 }
