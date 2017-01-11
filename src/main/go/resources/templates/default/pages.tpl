@@ -3,7 +3,7 @@
 	<ul>
 	    <li><a href="/" >Index</li>
 		<li><a href="/blog.html">Blog</a></li>
-		<li><a href="/archive.html">Archive</a></li>
+		<li><a href="/archive.html">Date</a></li>
 		<li><a href="/pages/about.html" class="on-sel">About</a></li>
 		{{range .nav}}
 		<li><a href="{{.Href}}" target="{{.Target}}" >{{.Name}}</a></li>

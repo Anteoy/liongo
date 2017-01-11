@@ -62,7 +62,7 @@ func (addFactory *AddFactory) New(title string){
 	line7 :="---"+"\n"
 	//var d1 = []byte(line1);
 
-	log.Println(line1)
+	//log.Println(line1)
 	_, err1 := io.WriteString(f, line0) //写入文件(字符串)
 	_, err1 = io.WriteString(f, line1) //写入文件(字符串)
 	_, err1 = io.WriteString(f, line2) //写入文件(字符串)
@@ -76,7 +76,7 @@ func (addFactory *AddFactory) New(title string){
 	defer f.Close()
 	check(err1)
 	//fmt.Printf("写入 %d 个字节n", n);
-	log.Println(fileName)
+	//log.Println(fileName)
 }
 
 //处理sample.md文件 提供于new指令
