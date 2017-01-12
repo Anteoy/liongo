@@ -29,6 +29,7 @@ const (
 	POSTS_TPL    = "posts"
 	PAGES_TPL    = "pages"
 	ARCHIVE_TPL  = "archive"
+	CLASSIFY_TPL = "classify"
 )
 
 type GobuildItf interface {
@@ -84,7 +85,7 @@ var (
 	articles        Artic
 	articleListSize int = 5000
 	navBarList      []NavConfig
-	categories      map[string]Category
+	classifies      map[string]Category
 	pages           []*CustomPage
 	archives        map[string]*YearArchive
 	allArchive      YearArchives
@@ -147,7 +148,7 @@ func parseTemplate(root, tpl string, cfg *yaml.File) *template.Template {
 	return t
 }
 
-func (baseFactory *BaseFactory) RenderIndex (root string,yamls map[string]interface{}) error {
+func (baseFactory *BaseFactory) GenerateIndex(root string,yamls map[string]interface{}) error {
 	if !strings.HasSuffix(root,"/"){
 		root += "/"
 	}
@@ -162,7 +163,7 @@ func (baseFactory *BaseFactory) RenderIndex (root string,yamls map[string]interf
 		os.Exit(1)
 	}
 	defer fout.Close()
-	m := map[string]interface{}{"nav": navBarList,"cats": categories}
+	m := map[string]interface{}{"nav": navBarList,"cats": classifies}
 	exErr := t.Execute(fout, m)
 	return exErr
 }
@@ -176,7 +177,7 @@ func isExists(file string) bool {
 }
 
 //渲染生成index文件
-func (baseFactory *BaseFactory) RenderBlogList(root string, yamls map[string]interface{}) error {
+func (baseFactory *BaseFactory) GenerateBlogList(root string, yamls map[string]interface{}) error {
 	if !strings.HasSuffix(root, "/") {
 		root += "/"
 	}
@@ -199,7 +200,7 @@ func (baseFactory *BaseFactory) RenderBlogList(root string, yamls map[string]int
 		NEWLY_ARTICLES_COUNT = len(articles)
 	}
 
-	m := map[string]interface{}{"ar": articles[:INDEX_ARTICLES_SHOW_COUNT], "nav": navBarList,"cats": categories,"newly":articles[:NEWLY_ARTICLES_COUNT]}
+	m := map[string]interface{}{"ar": articles[:INDEX_ARTICLES_SHOW_COUNT], "nav": navBarList,"cats": classifies,"newly":articles[:NEWLY_ARTICLES_COUNT]}
 	exErr := t.Execute(fout, m)
 	return exErr
 }
@@ -272,13 +273,15 @@ func (baseFactory *BaseFactory) PreProcessPosts(root string, yamls map[string]in
 
 		}
 	}
+	//分类预处理
+	generateClassifies()
 	//生成自定义多余页面导航条 存入navBarList 数组
 	generateNavBar(yamls)
 	return nil
 }
 
 //生成日期归档静态文件
-func (baseFactory *BaseFactory) RenderPosts(root string, yamls map[string]interface{}) error {
+func (baseFactory *BaseFactory) GeneratePosts(root string, yamls map[string]interface{}) error {
 	if !strings.HasSuffix(root, "/") {
 		root += "/"
 	}
@@ -300,7 +303,7 @@ func (baseFactory *BaseFactory) RenderPosts(root string, yamls map[string]interf
 			os.Exit(1)
 		}
 		defer fout.Close()
-		m := map[string]interface{}{"fi": fileInfo,"nav": navBarList, "cats": categories,"newly":articles[:NEWLY_ARTICLES_COUNT-1]}
+		m := map[string]interface{}{"fi": fileInfo,"nav": navBarList, "cats": classifies,"newly":articles[:NEWLY_ARTICLES_COUNT-1]}
 		t.Execute(fout, m)
 	}
 
@@ -309,7 +312,7 @@ func (baseFactory *BaseFactory) RenderPosts(root string, yamls map[string]interf
 }
 
 //渲染生成archives分类静态文件
-func (baseFactory *BaseFactory) RenderArchives(root string, yamls map[string]interface{}) error {
+func (baseFactory *BaseFactory) GenerateArchives(root string, yamls map[string]interface{}) error {
 	if !strings.HasSuffix(root, "/") {
 		root += "/"
 	}
@@ -329,14 +332,57 @@ func (baseFactory *BaseFactory) RenderArchives(root string, yamls map[string]int
 	//时间归档处理
 	generateArchive()
 	//log.Println(allArchive)
-	m := map[string]interface{}{"archives": allArchive, "nav": navBarList,"cats": categories,"newly":articles[:NEWLY_ARTICLES_COUNT-1]}
+	m := map[string]interface{}{"archives": allArchive, "nav": navBarList,"cats": classifies,"newly":articles[:NEWLY_ARTICLES_COUNT-1]}
 	exErr := t.Execute(fout, m)
 	return exErr
 
 }
 
+//分类预处理方法
+func generateClassifies() {
+	classifies = make(map[string]Category)//key为类别，value为Category包含名字，article数组和长度的Category结构体
+	//对获取到的所有articles进行处理
+	for _, ar := range articles {
+		c, ok := classifies[ar.Category]
+		if ok {
+			c.Articles = append(c.Articles, ArticleBase{ar.Link, ar.Title})
+			c.Length = len(c.Articles)
+			classifies[ar.Category] = c
+		} else {//当此分类为新分类时
+			art := ArticleBase{ar.Link, ar.Title}
+			arts := make([]ArticleBase, 0)
+			arts = append(arts, art)
+			classifies[ar.Category] = Category{ar.Category, arts, 1}//则新建一个并注入
+		}
+	}
+}
+
+//生成分类页面
+func (baseFactory *BaseFactory) GenerateClassify(root string, yamls map[string]interface{}) error {
+	if !strings.HasSuffix(root, "/") {
+		root += "/"
+	}
+
+	yCfg := yamls["config.yml"]
+	var cfg = yCfg.(*yaml.File)
+
+	t := parseTemplate(root, CLASSIFY_TPL, cfg)
+	targetFile := PUBLISH + "/classify.html"
+	fout, err := os.Create(targetFile)
+	if err != nil {
+		log.Println("create file " + targetFile + " error!")
+		os.Exit(1)
+	}
+	defer fout.Close()
+
+
+	m := map[string]interface{}{"cats": classifies, "nav": navBarList}
+	exErr := t.Execute(fout, m)
+	return exErr
+}
+
 //渲染pages下自定义导航 默认pages/about.md
-func (baseFactory *BaseFactory) RenderPages(root string, yamls map[string]interface{}) error {
+func (baseFactory *BaseFactory) GeneratePages(root string, yamls map[string]interface{}) error {
 	//判断结尾是否/
 	if !strings.HasSuffix(root, "/") {
 		root += "/"
@@ -440,36 +486,36 @@ func getPagesInfo(yamls map[string]interface{}) {
 //生成分类
 func generateArchive() {
 	archives = make(map[string]*YearArchive)
-	for _, ar := range articles {
-		y, m, _ := ar.Time.Date()
+	for _, ar := range articles {//排序好的ArticleConfig指针数组
+		y, m, _ := ar.Time.Date()//获取当前的year和month
 		year := fmt.Sprintf("%v", y)
-		month := m.String()
+		month := m.String() // annotation // String returns the English name of the month ("January", "February", ...).
 		yArchive := archives[year]
-		if yArchive == nil {
+		if yArchive == nil {//判断是否有此yearArchive日期分类
 			yArchive = &YearArchive{year, make([]*MonthArchive, 0), make(map[string]*MonthArchive)}
-			archives[year] = yArchive
+			archives[year] = yArchive//放入新的以年分类的Key
 		}
 		mArchive := yArchive.months[month]
-		if mArchive == nil {
+		if mArchive == nil {//是否存在月份小分类
 			mArchive = &MonthArchive{month, m, make([]*ArticleBase, 0)}
-			yArchive.months[month] = mArchive
+			yArchive.months[month] = mArchive//新建并赋值于yArchive，内层嵌套
 		}
-		mArchive.Articles = append(mArchive.Articles, &ArticleBase{ar.Link, ar.Title})
+		mArchive.Articles = append(mArchive.Articles, &ArticleBase{ar.Link, ar.Title})//年月下嵌入此article
 
 	}
 	allArchive = make(YearArchives, 0)
-	//sort by time
+	//对archives内部使用yArchive.months进行排序
 	for _, yArchive := range archives {
 		monthCollect := make(MonthArchives, 0)
-		for _, mArchive := range yArchive.months {
+		for _, mArchive := range yArchive.months {//获取内部months
 			monthCollect = append(monthCollect, mArchive)
 		}
-		sort.Sort(monthCollect)
+		sort.Sort(monthCollect)//月份排序
 		yArchive.months = nil
 		yArchive.Months = monthCollect
-		allArchive = append(allArchive, yArchive)
+		allArchive = append(allArchive, yArchive)//放入此年的yArchive到allArchive
 	}
-	sort.Sort(allArchive)
+	sort.Sort(allArchive)//对year进行排序
 }
 //ArticleConfig 解析获取的.md --- --- 中配置文件
 //string 根据年月日生成article路径
@@ -666,13 +712,14 @@ func generateNavBar(yamls map[string]interface{}) {
 }
 
 //root 资源文件的相对路径resources yamlData 读取配置文件的键值对
-func (baseFactory *BaseFactory) Render(root string) {
+func (baseFactory *BaseFactory) Generate(root string) {
 	yp := new(utils.YamlParser)
 	yamlData := yp.Parse(root)
 	baseFactory.PreProcessPosts(root,yamlData)
-	baseFactory.RenderIndex(root,yamlData)//生成index.html
-	baseFactory.RenderBlogList(root, yamlData)//生成博客列表页面
-	baseFactory.RenderPosts(root, yamlData)//生成博客文章页面
-	baseFactory.RenderArchives(root, yamlData)//生成归档页面
-	baseFactory.RenderPages(root, yamlData)//pages/about.md
+	baseFactory.GenerateIndex(root,yamlData)//生成index.html
+	baseFactory.GenerateBlogList(root, yamlData)//生成博客列表页面
+	baseFactory.GeneratePosts(root, yamlData)//生成博客文章页面
+	baseFactory.GenerateArchives(root, yamlData)//生成归档页面
+	baseFactory.GeneratePages(root, yamlData)//pages/about.md
+	baseFactory.GenerateClassify(root, yamlData)//pages/about.md
 }
