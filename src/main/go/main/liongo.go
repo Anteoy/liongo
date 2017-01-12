@@ -4,11 +4,11 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	Build "github.com/Anteoy/liongo/src/main/go/build"
+	Build "../build"
 	"net/http"
 	"log"
 
-	"github.com/Anteoy/liongo/src/main/go/newPosts"
+	"../newPosts"
 	"strings"
 )
 
