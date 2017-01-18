@@ -2,7 +2,7 @@ package build
 
 import (
 	"log"
-	"github.com/Anteoy/liongo/src/main/go/utils"
+	"../utils"
 	"os"
 )
 const (
@@ -19,7 +19,7 @@ func Build() {
 	}
 	//开始生成渲染文件
 	var rf = new(BaseFactory)
-	rf.Render(RENDER_DIR)
+	rf.Generate(RENDER_DIR)
 	//复制assets
 	err := utils.CopyDir(RENDER_DIR+"/assets", PUBLISH +"/assets")
 	if err != nil {
