@@ -12,7 +12,7 @@ var db *sql.DB
 
 func init() {
 	var err error
-	db, err = sql.Open("mysql", "root:123@tcp(localhost:3306)/chargeManager?charset=utf8")
+	db, err = sql.Open("mysql", "root:123@tcp(localhost:3306)/liongo?charset=utf8")
 	checkErr(err)
 	db.SetMaxOpenConns(2000)
 	db.SetMaxIdleConns(1000)
@@ -34,19 +34,18 @@ func querryBlogList() {
 }
 
 func GetUserForEmail(email string) *m.User {
-	rows, err := db.Query(`select * from user where email = ?`, email)
+	rows, err := db.Query(`select * from user where name = ?`, email)
 	checkErr(err)
 	if !checkErr(err) {
 		for rows.Next() {
 			var id int
 			var name string
-			var passwd string
-			var friends string
-			var other string
+			var password string
+			var email string
 			rows.Columns()
-			err = rows.Scan(&id, &name, &passwd, &friends, &other)
+			err = rows.Scan(&id, &name, &password, &email)
 			checkErr(err)
-			user := &m.User{Id: id, Name: name, Password: passwd,Email: nil}
+			user := &m.User{Id: id, Name: name, Password: password,Email: email}
 			return user
 		}
 	}
@@ -94,7 +93,7 @@ func GetUserForAppKey(appKey string) *m.User {
 			rows.Columns()
 			err = rows.Scan(&id, &name, &passwd, &friends, &other,&appKey)
 			checkErr(err)
-			user := &m.User{Id: id, Name: name, Password: passwd, Email: nil}
+			user := &m.User{Id: id, Name: name, Password: passwd, Email: ""}
 			return user
 		}
 	}
