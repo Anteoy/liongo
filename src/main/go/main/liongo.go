@@ -57,15 +57,13 @@ func main() {
 		if argsLength == 2 && strings.EqualFold(args[1],"--note"){
 			fmt.Println("starting run with note !!!")
 			http.Handle("/",http.FileServer(http.Dir("./publish")))
-			http.HandlerFunc("/",http.FileServer(http.Dir("./publish")))
-			http.HandleFunc("/",http.FileServer(http.Dir("./publish")))
-			http.Handle("/lionnote", func() {
-
-			})
+			//http.HandleFunc("/lionnote", func() {
+			//
+			//})
 			return
 		}
 		fmt.Println("Listen at ", httpAddr)
-		http.Handle("/", http.FileServer(http.Dir("./publish")))
+		http.Handle("/", http.FileServer(http.Dir("../views/serve")))
 		err := http.ListenAndServe(httpAddr,nil)
 		if err!=nil{
 			log.Fatal("Start error",err)

@@ -40,7 +40,7 @@ type GobuildItf interface {
 
 const (
 	POST_DIR     = "posts"
-	PUBLISH = "publish"
+	PUBLISH = "../views/serve"
 )
 
 type MonthArchives []*MonthArchive
