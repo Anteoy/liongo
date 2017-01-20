@@ -44,7 +44,7 @@ func IsExists(file string) bool {
 }
 
 //复制文件
-func copyFile(src, dst string) (w int64, err error) {
+func CopyFile(src, dst string) (w int64, err error) {
 	f, err := os.Open(src)
 	if err != nil {
 		return
@@ -83,7 +83,7 @@ func CopyDir(source, dest string) (err error) {
 				log.Println(err)
 			}
 		} else {
-			_, err = copyFile(sfp, dfp)
+			_, err = CopyFile(sfp, dfp)
 			if err != nil {
 				log.Println(err)
 			}

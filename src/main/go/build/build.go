@@ -26,7 +26,9 @@ func Build() {
 		log.Println(err)
 	}
 	//复制网站图标自定义文件
-	err = utils.CopyDir(RENDER_DIR+"/pictures", PUBLISH)
+	err = utils.CopyDir(RENDER_DIR+"/images/icon", PUBLISH)
+	//复制网站images
+	err = utils.CopyDir(RENDER_DIR+"/images", PUBLISH+"/images")
 	log.Println("blog process ok！")
 
 }

@@ -1,8 +1,9 @@
 package controller
 
 import (
-	"net/http"
 	"io"
+	"net/http"
+	"../dao/mysql"
 )
 
 func Login(w http.ResponseWriter, r *http.Request) {
@@ -20,14 +21,10 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 	passwd := passwds[0]
 	user := mysql.GetUserForEmail(id)
-	if user != nil && user.Passwd == passwd {
-		if err := addSessionId(w, r, id); err != nil {
-			goto addSIIsError
-		}
+	if user != nil && user.Password == passwd {
 		http.ServeFile(w, r, "./static/html/index.html")
 	} else {
 		http.ServeFile(w, r, "./static/html/login.html")
 	}
-	addSIIsError:
-	http.ServeFile(w, r, "./static/html/login.html")
+
 }

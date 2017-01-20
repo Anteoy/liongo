@@ -30,6 +30,7 @@ const (
 	PAGES_TPL    = "pages"
 	ARCHIVE_TPL  = "archive"
 	CLASSIFY_TPL = "classify"
+	PNOTELOGIN_TPL = "pnotelogin"
 )
 
 type GobuildItf interface {
@@ -278,6 +279,26 @@ func (baseFactory *BaseFactory) PreProcessPosts(root string, yamls map[string]in
 	//生成自定义多余页面导航条 存入navBarList 数组
 	generateNavBar(yamls)
 	return nil
+}
+
+//生成pnote login静态文件
+func (baseFactory *BaseFactory) GeneratePnotelogin(root string,yamls map[string]interface{}) error {
+	if !strings.HasSuffix(root, "/") {
+		root += "/"
+	}
+	yCfg := yamls["config.yml"]
+	var cfg = yCfg.(*yaml.File)
+	t := parseTemplate(root, PNOTELOGIN_TPL, cfg)
+	targetFile := PUBLISH + "/pnotelogin.html"
+	//创建targetFile
+	fout, err := os.Create(targetFile)
+	if err != nil {
+		log.Println("create file " + targetFile + " error!")
+		os.Exit(1)
+	}
+	defer fout.Close()
+	exErr := t.Execute(fout,nil)
+	return exErr
 }
 
 //生成日期归档静态文件
@@ -722,4 +743,5 @@ func (baseFactory *BaseFactory) Generate(root string) {
 	baseFactory.GenerateArchives(root, yamlData)//生成归档页面
 	baseFactory.GeneratePages(root, yamlData)//pages/about.md
 	baseFactory.GenerateClassify(root, yamlData)//pages/about.md
+	baseFactory.GeneratePnotelogin(root,yamlData)//生成pnote admin or guest login
 }

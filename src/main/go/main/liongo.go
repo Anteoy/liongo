@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	Build "../build"
+	c "../controller"
 	"net/http"
 	"log"
 
@@ -56,15 +57,14 @@ func main() {
 		}
 		if argsLength == 2 && strings.EqualFold(args[1],"--note"){
 			fmt.Println("starting run with note !!!")
-			http.Handle("/",http.FileServer(http.Dir("./publish")))
-			//http.HandleFunc("/lionnote", func() {
+			http.HandleFunc("/login", c.Login)
+			//http.HandleFunc("/lionnote", func() {//TODO
 			//
 			//})
-			return
 		}
 		fmt.Println("Listen at ", httpAddr)
 		http.Handle("/", http.FileServer(http.Dir("../views/serve")))
-		err := http.ListenAndServe(httpAddr,nil)
+		err := http.ListenAndServe(":8080",nil)// TODO httpAddr
 		if err!=nil{
 			log.Fatal("Start error",err)
 		}
