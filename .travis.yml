@@ -4,5 +4,6 @@ go:
   - 1.7
 
 script:
+  - export GOPATH=./src/main/go/main/
   - go test -v ./src/main/go/main/...
   - go -v
