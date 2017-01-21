@@ -1,9 +1,0 @@
-language: go
-
-go:
-  - 1.7
-
-script:
-  - GOPATH=./
-  - go test -v ./src/main/go/main/...
-  - go -v
