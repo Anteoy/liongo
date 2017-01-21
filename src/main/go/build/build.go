@@ -9,7 +9,7 @@ const (
 	RENDER_DIR = "../resources"
 )
 func Build() {
-	//publish
+	//publish \t
 	if !utils.IsExists(PUBLISH) {
 		//创建777权限目录
 		err := os.Mkdir(PUBLISH, 0777)
