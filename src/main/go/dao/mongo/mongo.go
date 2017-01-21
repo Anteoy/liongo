@@ -1,10 +1,7 @@
 package mongo
 
 import (
-	"fmt"
 	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
-	"log"
 )
 
 type Person struct {

@@ -15,7 +15,7 @@ import (
 	"strings"
 	"time"
     	"regexp"
-	"../utils"
+	"main/go/utils"
 	"fmt"
 )
 

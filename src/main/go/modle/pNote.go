@@ -2,7 +2,6 @@ package modle
 
 //mongo note struct
 type Note struct {
-	Name     string `json:"name"`
-	Content  string `json:"content"`
-	timestamp int64
-} 
+	Name     string  `json:"name"`
+	Content  string  `json:"content"`
+}
