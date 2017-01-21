@@ -6,6 +6,7 @@
                 <li><a href="/archive.html">Date</a></li>
 				<li><a href="/classify.html" class="on-sel" class="on-sel">Classify</a></li>
                 <li><a href="/pages/about.html" >About</a></li>
+                <li><a href="/pnotelogin.html" >Pnote</a></li>
                 {{range .nav}}
                 <li><a href="{{.Href}}" target="{{.Target}}">{{.Name}}</a></li>
                 {{end}}

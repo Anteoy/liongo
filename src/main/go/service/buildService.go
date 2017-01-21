@@ -1,8 +1,8 @@
-package build
+package service
 
 import (
 	"log"
-	"../utils"
+	"github.com/Anteoy/liongo/src/main/go/utils"
 	"os"
 )
 const (
@@ -26,7 +26,10 @@ func Build() {
 		log.Println(err)
 	}
 	//复制网站图标自定义文件
-	err = utils.CopyDir(RENDER_DIR+"/pictures", PUBLISH)
+	err = utils.CopyDir(RENDER_DIR+"/images/icon", PUBLISH)
+	//复制网站images
+	err = utils.CopyDir(RENDER_DIR+"/images", PUBLISH+"/images")
+	err = utils.CopyDir(RENDER_DIR+"/css", PUBLISH+"/css")
 	log.Println("blog process ok！")
 
 }

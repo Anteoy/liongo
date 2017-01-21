@@ -5,8 +5,8 @@
 /.idea/
 /liongo.iml
 liongo
-src/main/go/main/publish/*
-src/main/go/main/publish/test.html
+
+src/main/go/views/serve/*
 
 # Folders
 _obj

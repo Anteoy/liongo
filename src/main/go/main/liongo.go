@@ -4,12 +4,13 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	Build "../build"
+	Build "github.com/Anteoy/liongo/src/main/go/service"
 	"net/http"
 	"log"
 
-	"../newPosts"
+	"github.com/Anteoy/liongo/src/main/go/newPosts"
 	"strings"
+	"github.com/Anteoy/liongo/src/main/go/controller"
 )
 
 const VERSION = "0.0.1"
@@ -54,9 +55,17 @@ func main() {
 		if argsLength == 3 && strings.EqualFold(args[1], "-p") {
 			httpAddr = ":"+args[2]
 		}
+		if argsLength == 2 && strings.EqualFold(args[1],"--note"){
+			fmt.Println("starting run with note !!!")
+			pNoteController:=new(controller.PNoteController)
+			http.HandleFunc("/login", pNoteController.Login)
+			//http.HandleFunc("/lionnote", func() {//TODO
+			//
+			//})
+		}
 		fmt.Println("Listen at ", httpAddr)
-		http.Handle("/", http.FileServer(http.Dir("./publish")))
-		err := http.ListenAndServe(httpAddr,nil)
+		http.Handle("/", http.FileServer(http.Dir("../views/serve")))
+		err := http.ListenAndServe(":8080",nil)// TODO httpAddr
 		if err!=nil{
 			log.Fatal("Start error",err)
 		}
