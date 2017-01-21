@@ -6,7 +6,8 @@
 /liongo.iml
 liongo
 
-src/main/go/views/serve/*
+/views/serve/*
+/src/github.com/
 
 # Folders
 _obj
