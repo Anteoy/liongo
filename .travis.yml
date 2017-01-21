@@ -5,3 +5,4 @@ go:
 
 script:
   #- go test -v ./src/main/go/main/...
+  - go -v
