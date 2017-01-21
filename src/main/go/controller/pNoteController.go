@@ -3,9 +3,9 @@ package controller
 import (
 	"io"
 	"net/http"
-	"../dao/mysql"
-	"../modle"
 	"fmt"
+	"github.com/Anteoy/liongo/src/main/go/dao/mysql"
+	"github.com/Anteoy/liongo/src/main/go/modle"
 )
 
 type PNoteController struct{}

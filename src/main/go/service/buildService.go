@@ -2,7 +2,7 @@ package service
 
 import (
 	"log"
-	"../utils"
+	"github.com/Anteoy/liongo/src/main/go/utils"
 	"os"
 )
 const (

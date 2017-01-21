@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"../service"
+	"github.com/Anteoy/liongo/src/main/go/service"
 )
 
 const VERSION = "0.0.1"
