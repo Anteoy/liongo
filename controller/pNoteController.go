@@ -4,8 +4,8 @@ import (
 	"io"
 	"net/http"
 	"fmt"
-	"github.com/Anteoy/liongo/src/main/go/dao/mysql"
-	"github.com/Anteoy/liongo/src/main/go/modle"
+	"github.com/Anteoy/liongo/dao/mysql"
+	"github.com/Anteoy/liongo/modle"
 )
 
 type PNoteController struct{}

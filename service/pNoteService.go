@@ -3,8 +3,8 @@ package service
 import (
 	"github.com/Anteoy/blackfriday"
 	"qiniupkg.com/x/log.v7"
-	"github.com/Anteoy/liongo/src/main/go/modle"
-	"github.com/Anteoy/liongo/src/main/go/dao/mongo"
+	"github.com/Anteoy/liongo/modle"
+	"github.com/Anteoy/liongo/dao/mongo"
 	"regexp"
 	"html"
 	"fmt"

@@ -4,13 +4,13 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	Build "github.com/Anteoy/liongo/src/main/go/service"
+	Build "github.com/Anteoy/liongo/service"
 	"net/http"
 	"log"
 
-	"github.com/Anteoy/liongo/src/main/go/newPosts"
+	"github.com/Anteoy/liongo/newPosts"
 	"strings"
-	"github.com/Anteoy/liongo/src/main/go/controller"
+	"github.com/Anteoy/liongo/controller"
 )
 
 const VERSION = "0.0.1"

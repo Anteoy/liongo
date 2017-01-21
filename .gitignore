@@ -8,6 +8,7 @@ liongo
 
 /views/serve/*
 /src/github.com/
+/pkg/
 
 # Folders
 _obj

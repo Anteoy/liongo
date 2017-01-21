@@ -3,7 +3,7 @@ package mysql
 import (
 	"database/sql"
 	"log"
-	m "github.com/Anteoy/liongo/src/main/go/modle"
+	m "github.com/Anteoy/liongo/modle"
 	_ "github.com/go-sql-driver/mysql"
 )
 
