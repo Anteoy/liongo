@@ -3,7 +3,7 @@ package mysql
 import (
 	"database/sql"
 	"log"
-	m "main/go/modle"
+	m "../../modle"
 
 	_ "github.com/go-sql-driver/mysql"
 )

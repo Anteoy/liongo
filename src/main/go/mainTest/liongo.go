@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"main/go/service"
+	"../service"
 )
 
 const VERSION = "0.0.1"

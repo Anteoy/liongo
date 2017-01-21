@@ -2,7 +2,7 @@ package service
 
 import (
 	"log"
-	"main/go/utils"
+	"../utils"
 	"os"
 )
 const (

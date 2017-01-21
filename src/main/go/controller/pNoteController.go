@@ -3,8 +3,8 @@ package controller
 import (
 	"io"
 	"net/http"
-	"main/go/dao/mysql"
-	"main/go/modle"
+	"../dao/mysql"
+	"../modle"
 	"fmt"
 )
 

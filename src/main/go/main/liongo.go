@@ -10,7 +10,7 @@ import (
 
 	"../newPosts"
 	"strings"
-	"main/go/controller"
+	"../controller"
 )
 
 const VERSION = "0.0.1"
