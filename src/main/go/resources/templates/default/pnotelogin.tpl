@@ -1,4 +1,5 @@
 {{template "header"}}
+<!-- <link href="/css/bootstrap.min.css" rel="stylesheet"> -->
 <div class="top-nav">
 			<ul>
                 <li><a href="/" >Index</li>
@@ -13,30 +14,23 @@
             </ul>
 </div>
 <div style="clear:both;height:50px" id="interval"></div><!-- 中间间隔 -->
-<div class="main">
+<div class="main" style="color: white;text-align:center">
 	<div class="main-container loginBox" style="position: absolute;z-index: 999;width: 100%;height: 100%;">
-    		<div class="loginHead"><img src="/static/images/logosystem.png" alt="" style="height:60px;margin-top:5px;"></div>
     		<div class="loginContent">
     			<span class="firstLogin">admin or guest 账户登录</span>
-    			<!--<span style="float:right;cursor: pointer" ><img src="/static/images/loginColse.png" alt="" ></span>-->
-    			<div><img src="/static/images/loginLine.png" alt="" class="img-responsive"></div>
-    			<div style="margin-top: 30px;margin-left: 80px;">
+    			<div style="margin-top: 30px">
     				 <input type="text" placeholder="用户名" id="username" class="loginUser loginUserbg1">
     			</div>
-    			<div style="margin-top: 30px;margin-left: 80px;">
+    			<div style="margin-top: 30px;">
     				<input type="password" placeholder="密码" id="password" class="loginUser loginUserbg2">
     			</div>
-    			<div style="margin-top: 30px;margin-left: 80px;">
+    			<div style="margin-top: 30px;">
     				<input type="checkbox"  class="loginRember" style="vertical-align: top"> <span class="loginRemberWord">记住密码</span>
     			</div>
-    			<div style="margin-top: 30px;margin-left: 120px;" class="loginBtn fl" id="commit"  onclick="checkLogin()">
+    			<div style="margin-top: 30px;" class="loginBtn fl" id="commit"  onclick="checkLogin()">
     				登&nbsp录
     			</div>
-    			<div style="margin-top: 30px;margin-left: 30px;" class="loginBtnreset fl" onclick="reset()">
-    				重&nbsp置
-    			</div>
     		</div>
-    		<div class="loginFoot">©Copyright 2016 liongo Technology Co.,Ltd.</div>
     </div>
 </div>
 <script type="text/javascript">

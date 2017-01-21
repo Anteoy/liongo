@@ -3,10 +3,16 @@ package controller
 import (
 	"io"
 	"net/http"
-	"../dao/mysql"
+	"main/go/dao/mysql"
+	"main/go/modle"
+	"fmt"
 )
 
-func Login(w http.ResponseWriter, r *http.Request) {
+type PNoteController struct{}
+
+
+
+func (pNoteController *PNoteController)Login(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	ids := r.Form["id"]
 	if ids == nil {
@@ -22,9 +28,17 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	passwd := passwds[0]
 	user := mysql.GetUserForEmail(id)
 	if user != nil && user.Password == passwd {
-		http.ServeFile(w, r, "./static/html/index.html")
+		fmt.Fprint(w,"<h1>login success!!!</h1>")
+		//http.ServeFile(w, r, "./static/html/index.html")
 	} else {
-		http.ServeFile(w, r, "./static/html/login.html")
+		fmt.Fprint(w,"<h1>login faild!!!用户名或密码不正确！！！</h1>")
+		//http.ServeFile(w, r, "./static/html/login.html")
 	}
+
+}
+
+//获取笔记md文件并存入mongo
+
+func (pNoteController *PNoteController) DataTomongo(notemd *modle.Note){
 
 }

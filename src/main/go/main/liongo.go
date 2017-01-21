@@ -4,13 +4,13 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	Build "../build"
-	c "../controller"
+	Build "../service"
 	"net/http"
 	"log"
 
 	"../newPosts"
 	"strings"
+	"main/go/controller"
 )
 
 const VERSION = "0.0.1"
@@ -57,7 +57,8 @@ func main() {
 		}
 		if argsLength == 2 && strings.EqualFold(args[1],"--note"){
 			fmt.Println("starting run with note !!!")
-			http.HandleFunc("/login", c.Login)
+			pNoteController:=new(controller.PNoteController)
+			http.HandleFunc("/login", pNoteController.Login)
 			//http.HandleFunc("/lionnote", func() {//TODO
 			//
 			//})

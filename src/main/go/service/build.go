@@ -29,6 +29,7 @@ func Build() {
 	err = utils.CopyDir(RENDER_DIR+"/images/icon", PUBLISH)
 	//复制网站images
 	err = utils.CopyDir(RENDER_DIR+"/images", PUBLISH+"/images")
+	err = utils.CopyDir(RENDER_DIR+"/css", PUBLISH+"/css")
 	log.Println("blog process ok！")
 
 }
