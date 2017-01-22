@@ -12,6 +12,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 	"html/template"
 	"os"
+	"net/http"
 )
 
 type PNoteService struct{}
@@ -42,7 +43,7 @@ func (p *PNoteService) DealNoteUpload(md string)  error {
 	return nil
 }
 //从Mongo中拉取具体note
-func (p *PNoteService) GetNoteByName(name string,yamls map[string]interface{}) error {
+func (p *PNoteService) GetNoteByName(name string,yamls map[string]interface{},w http.ResponseWriter, r *http.Request) error {
 	if len(name) == 0 {
 		fmt.Println("传入Note name为空，请检查！！！")
 		return nil
@@ -86,7 +87,8 @@ func (p *PNoteService) GetNoteByName(name string,yamls map[string]interface{}) e
 	fout, err := os.Create(targetFile)
 	m := map[string]interface{}{"fi": note,"nav": navBarList, "cats": classifies}
 	//执行模板的merge操作，输出到fout
-	t.Execute(os.Stdout, m)
+	t.Execute(fout, m)
+	http.ServeFile(w, r, targetFile)
 	defer mongo.Session.Close()
 	defer fout.Close()
 	return nil

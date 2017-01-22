@@ -32,7 +32,7 @@ func main() {
 	//pNoteService.DealNoteUpload(ss)
 	yp := new(utils.YamlParser)
 	yamlData := yp.Parse("../resources")
-	pNoteService.GetNoteByName(ss,yamlData)
+	pNoteService.GetNoteByName(ss,yamlData,nil,nil)
 }
 
 func UseInfo() {
