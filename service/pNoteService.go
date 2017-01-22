@@ -5,9 +5,13 @@ import (
 	"qiniupkg.com/x/log.v7"
 	"github.com/Anteoy/liongo/modle"
 	"github.com/Anteoy/liongo/dao/mongo"
+	"github.com/Anteoy/go-gypsy/yaml"
 	"regexp"
 	"html"
 	"fmt"
+	"gopkg.in/mgo.v2/bson"
+	"html/template"
+	"os"
 )
 
 type PNoteService struct{}
@@ -37,4 +41,54 @@ func (p *PNoteService) DealNoteUpload(md string)  error {
 	}
 	return nil
 }
-//从Mongo中拉去note
+//从Mongo中拉取具体note
+func (p *PNoteService) GetNoteByName(name string,yamls map[string]interface{}) error {
+	if len(name) == 0 {
+		fmt.Println("传入Note name为空，请检查！！！")
+		return nil
+	}
+	//从mongo中获取noteinfo
+	//获取连接
+	c := mongo.Session.DB("liongo").C("note")
+	//获取数据
+	note := modle.Note{}
+	err := c.Find(bson.M{"name": "test1"}).One(&note)
+	if err != nil {
+		log.Error(err)
+		panic(err)
+	}
+	fmt.Println(note.Content)
+	fmt.Println(note.Name)
+	//new 模板对象
+	t := template.New("pSpecificNote.tpl")
+	yCfg := yamls["config.yml"]
+	var cfg = yCfg.(*yaml.File)
+	//向模板中注入函数
+	t.Funcs(template.FuncMap{"unescaped": unescaped})
+	t.Funcs(template.FuncMap{"get": cfg.Get})
+
+	//openfile := "../resources/templates/default/pSpecificNote.tpl"
+	//
+	//if !isExists(openfile) {
+	//	log.Println(openfile + " can not be found!")
+	//	os.Exit(1)
+	//}
+
+
+	//从模板文件解析
+	t, errp := t.ParseFiles("/root/IdeaProjects/liongo/src/github.com/Anteoy/liongo/resources/templates/default/pSpecificNote.tpl")
+	if errp != nil {
+		log.Error(errp)
+		panic(err)
+	}
+	//创建html文件
+	targetFile := PUBLISH + "/notes/" + note.Name+".html"
+	fout, err := os.Create(targetFile)
+	m := map[string]interface{}{"fi": note,"nav": navBarList, "cats": classifies}
+	//执行模板的merge操作，输出到fout
+	t.Execute(os.Stdout, m)
+	defer mongo.Session.Close()
+	defer fout.Close()
+	return nil
+
+}
