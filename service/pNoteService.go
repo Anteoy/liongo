@@ -94,3 +94,22 @@ func (p *PNoteService) GetNoteByName(name string,yamls map[string]interface{},w 
 	return nil
 
 }
+
+//查询mongo中所有数据
+func (p *PNoteService) QueryAll(){
+	//从mongo中获取noteinfo
+	//获取连接
+	c := mongo.Session.DB("liongo").C("note")
+	//获取数据
+	notes := make([]modle.Note,100)
+	err := c.Find(bson.M{}).All(&notes)
+
+	if err != nil {
+		log.Error(err)
+		panic(err)
+	}
+	for index,value := range notes{
+		fmt.Printf("notes[%d]=%d \n", index, value)
+	}
+	defer mongo.Session.Close()
+}
