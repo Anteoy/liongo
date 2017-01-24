@@ -32,7 +32,8 @@ func main() {
 	//yp := new(utils.YamlParser)
 	//yamlData := yp.Parse("../resources")
 	//pNoteService.GetNoteByName(ss,yamlData,nil,nil)
-	pNoteService.QueryAll()
+	//pNoteService.QueryAll()
+	pNoteService.PreProcessNotes()
 }
 
 func UseInfo() {
