@@ -17,6 +17,11 @@ type Note struct {
 	Date     string  `json:"date"`
 	Time     time.Time `json:"time"`
 }
+//提供note list html
+type NoteBase struct {
+	Title    string	 `json:"title"`
+	Link	string `json:"link"`
+}
 
 
 

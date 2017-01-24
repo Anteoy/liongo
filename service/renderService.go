@@ -31,6 +31,7 @@ const (
 	ARCHIVE_TPL  = "archive"
 	CLASSIFY_TPL = "classify"
 	PNOTELOGIN_TPL = "pnotelogin"
+	PNOTELIST_TPL  = "pnotelist"
 )
 
 type GobuildItf interface {
@@ -504,7 +505,7 @@ func getPagesInfo(yamls map[string]interface{}) {
 	}
 
 }
-//生成分类
+//按照日期生成分类
 func generateArchive() {
 	yearArchivemap = make(map[string]*YearArchive)
 	for _, ar := range articles {//排序好的ArticleConfig指针数组
@@ -544,7 +545,7 @@ func generateArchive() {
 	}
 	sort.Sort(allArchive)//对year进行排序
 }
-//ArticleConfig 解析获取的.md --- --- 中配置文件
+//ArticleConfig 解析获取的.md --- --- 中配置文件struct
 //string 根据年月日生成article路径
 func processArticleUrl(ar ArticleConfig) string {
 	y := strconv.Itoa(ar.Time.Year())
@@ -743,6 +744,7 @@ func generateNavBar(yamls map[string]interface{}) {
 
 //root 资源文件的相对路径resources yamlData 读取配置文件的键值对
 func (baseFactory *BaseFactory) Generate(root string) {
+	//博客初始化处理
 	yp := new(utils.YamlParser)
 	yamlData := yp.Parse(root)
 	baseFactory.PreProcessPosts(root,yamlData)
@@ -753,4 +755,9 @@ func (baseFactory *BaseFactory) Generate(root string) {
 	baseFactory.GeneratePages(root, yamlData)//pages/about.md
 	baseFactory.GenerateClassify(root, yamlData)//pages/about.md
 	baseFactory.GeneratePnotelogin(root,yamlData)//生成pnote admin or guest login
+
+	//pNote初始化处理
+	var pNoteService = new(PNoteService)
+	pNoteService.PreProcessNotes()
+	pNoteService.GeneratorPnotelist(root,yamlData)
 }

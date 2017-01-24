@@ -16,10 +16,27 @@ import (
 	"net/http"
 	"time"
 	"sort"
+	"strings"
+	"strconv"
 )
 
 type PNoteService struct{}
 
+
+type MonthNotes []*MonthNote
+
+//用于sort
+func (m MonthNotes) Len() int {
+	return len(m)
+}
+
+func (m MonthNotes) Swap(i, j int) {
+	m[i], m[j] = m[j], m[i]
+}
+
+func (m MonthNotes) Less(i, j int) bool {
+	return m[i].month > m[j].month
+}
 //缓存mongo note数据信息
 
 //某年的note
@@ -32,7 +49,7 @@ type YearNote struct {
 type MonthNote struct {
 	Month    string //几月
 	month    time.Month //// A Month specifies a month of the year (January = 1, ...).
-	Notes []*modle.Note
+	NotesBase []*m.NoteBase
 }
 //所有的note储存
 type YearNotes []*YearNote
@@ -73,7 +90,7 @@ func AddAndSortNotes(noteInfo m.Note) {
 var (
 	notes        Notes
 	allNotes YearNotes //所有使用年分类的Notes
-	yearNotesmap map[string]*YearArchive //某年所有Note map
+	yearNotesmap map[string]*YearNote //某年所有Note map
 	notesListSize int = 5000 //最大slice
 )
 
@@ -94,10 +111,152 @@ func (p *PNoteService) PreProcessNotes() error{
 	sort.Sort(NotesByDate{notes})
 	for index,value := range notes{
 		fmt.Printf("notes[%d]=%d \n", index, value)
+		//TODO 处理 url
+		processNoteUrl(*value)
 	}
 	defer mongo.Session.Close()
 	return nil
 }
+
+
+//string 根据年月日生成note link TODO
+func processNoteUrl(ar m.Note) string {
+	y := strconv.Itoa(ar.Time.Year())
+	m := strconv.Itoa(int(ar.Time.Month()))
+	d := strconv.Itoa(ar.Time.Day())
+	return y + "/" + m + "/" + d + "/"
+}
+//根据pre获取的notes 进行生成.html操作
+func (p *PNoteService) GeneratorNotes() error{
+	//根据不同日期生成不同
+	return nil
+}
+//根据pre获取的notes进行生成pnotelist.html操作
+func (p *PNoteService) GeneratorPnotelist(root string, yamls map[string]interface{}) error{
+	if !strings.HasSuffix(root, "/") {
+		root += "/"
+	}
+	yCfg := yamls["config.yml"]
+	var cfg = yCfg.(*yaml.File)
+	t := testparseTemplate(root, PNOTELIST_TPL, cfg)
+	targetFile := PUBLISH + "/pnotelist.html"
+	//创建targetFile
+	fout, err := os.Create(targetFile)
+	if err != nil {
+		log.Println("create file " + targetFile + " error!")
+		os.Exit(1)
+	}
+	defer fout.Close()
+	//时间归档处理
+	generatePnotelist()
+	//debug pipei tmp
+	for index,value := range allNotes{
+		fmt.Printf("notes[%d]=%d \n", index, value)
+		//fmt.Println(value.Months)
+		for _,value1 := range value.Months{
+			fmt.Println(value1.Month)
+			for _,value2 := range value1.NotesBase {
+				fmt.Println(value2.Link+" "+value2.Title)
+			}
+		}
+		fmt.Println(value.months)
+		fmt.Println(value.Year)//.Year
+	}
+	m := map[string]interface{}{"archives": allNotes, "nav": navBarList,"cats": classifies} ////注意 这里如果传入参数有误 将会影响到tmp生成的完整性 如footer等 并且此时程序不会报错
+	exErr := t.Execute(fout, m)
+	return exErr
+}
+
+//传入路径和配置信息 返回一个template config.yml tpl 主题所使用的或自定义tmp名 融合footer header body为一个tpl
+func testparseTemplate(root, tpl string, cfg *yaml.File) *template.Template {
+	//默认default
+	themeFolder, errt := cfg.Get("theme")
+	if errt != nil {
+		log.Println("get theme error!check config.yml at the theme value!")
+		os.Exit(1)
+	}
+
+	file := root + "templates/" + themeFolder + "/" + tpl + ".tpl"
+	if !isExists(file) {
+		log.Println(file + " can not be found!")
+		os.Exit(1)
+	}
+	log.Println(cfg.Get)
+	t := template.New(tpl + ".tpl")
+	t.Funcs(template.FuncMap{"get": cfg.Get})
+	t.Funcs(template.FuncMap{"unescaped": unescaped})
+
+	headerTpl := root + "templates/" + themeFolder + "/common/" + COMMON_HEADER_FILE
+	footerTpl := root + "templates/" + themeFolder + "/common/" + COMMON_FOOTER_FILE
+
+	if !isExists(headerTpl) {
+		log.Println(headerTpl + " can not be found!")
+		os.Exit(1)
+	}
+
+	if !isExists(footerTpl) {
+		log.Println(footerTpl + " can not be found!")
+		os.Exit(1)
+	}
+
+	t, err := t.ParseFiles(file, headerTpl, footerTpl)
+	if err != nil {
+		log.Println("parse " + tpl + " Template error!" + err.Error())
+		os.Exit(1)
+	}
+
+	log.Println("parse " + tpl + " Template complete!")
+	return t
+}
+
+//根据事件生成有序的notes list
+func generatePnotelist() error{
+	yearNotesmap = make(map[string]*YearNote)//初始化存储某年notes的map
+	for _, iter := range notes {//排序好的Note指针数组
+		y, m, _ := iter.Time.Date()//获取当前的note year和month
+		year := fmt.Sprintf("%v", y)
+		month := m.String() // annotation // String returns the English name of the month ("January", "February", ...).
+		yNote := yearNotesmap[year]//作为Key储存在yearNotesmap中
+		if yNote == nil {//判断是否有此yearNote日期分类 如果没有则
+			//新建一个存入
+			//某年的note
+			//type YearNote struct {
+			//	Year   string //如2017
+			//	Months []*MonthNote // 如1,2,3月
+			//	months map[string]*MonthNote //如 1月的MonthNote
+			//}
+			yNote = &YearNote{year, make([]*MonthNote, 0), make(map[string]*MonthNote)}
+			yearNotesmap[year] = yNote//放入新的以年分类的Key
+		}
+		//确认当前note的月份是否在yNote的months节点中存在
+		mNote := yNote.months[month]
+		if mNote == nil {//是否存在月份小分类
+			//不存在则新建立一个并放如其中
+			oo := &modle.NoteBase{"test.do","test"}
+			fmt.Println(oo.Link)
+			mNote = &MonthNote{month, m, make([]*modle.NoteBase, 0)}//这里开始用m 一直报错undefined,,,m是最近定义了 不会编译为model
+			yNote.months[month] = mNote//新建并赋值于yNote，内层嵌套
+		}
+		mNote.NotesBase = append(mNote.NotesBase, &modle.NoteBase{"www.todo.do", iter.Title})//年月下嵌入此article
+
+	}
+	allNotes = make(YearNotes, 0)
+	//对notes内部使用yNote.months进行排序
+	for _, yNote := range yearNotesmap {
+		//实例化MonthNotes
+		monthCollect := make(MonthNotes, 0)
+		//把某年的month全部放入这个数组中
+		for _, mNote := range yNote.months {//获取内部months
+			monthCollect = append(monthCollect, mNote)
+		}
+		sort.Sort(monthCollect)//月份排序
+		yNote.months = nil //months map[string]*MonthArchive TODO
+		yNote.Months = monthCollect //放入archives struct中Months节点 Months []*MonthArchive 再植入yNote的Months
+		allNotes = append(allNotes, yNote)//放入此年的yArchive到allArchive
+	}
+	return nil
+}
+
 
 //处理Note上传
 func (p *PNoteService) DealNoteUpload(md string)  error {
