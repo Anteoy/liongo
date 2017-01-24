@@ -110,8 +110,14 @@ func (p *PNoteService) DealNoteUpload(md string)  error {
 	//正则匹配并替换
 	re := regexp.MustCompile(`<pre><code>([\s\S]*?)</code></pre>`)
 	htmlStr = re.ReplaceAllString(htmlStr, `<pre class="prettyprint linenums">${1}</pre>`)
+	//时间解析
+	time, terr := time.Parse("2006-01-02 15:04:05", "2017-01-20 20:12:00")
+	if terr != nil {
+		log.Println(terr)
+	}
+	fmt.Println(time)
 	//装配struct
-	note := &modle.Note{Name: "test1", Content: htmlStr}
+	note := &modle.Note{Name: "test1", Content: htmlStr,Title: "title1",Date: "2017-01-20 20:12:00",Time:time}
 	fmt.Printf(note.Content)
 	c := mongo.Session.DB("liongo").C("note")
 	err := c.Insert(&note)
