@@ -88,7 +88,7 @@ var (
 	navBarList      []NavConfig
 	classifies      map[string]Category
 	pages           []*CustomPage
-	archives        map[string]*YearArchive
+	yearArchivemap        map[string]*YearArchive
 	allArchive      YearArchives
 
 	NEWLY_ARTICLES_COUNT = 6
@@ -229,7 +229,7 @@ func (baseFactory *BaseFactory) PreProcessPosts(root string, yamls map[string]in
 		if !fileInfo.IsDir() {
 			log.Println("begin process article -- " + fileInfo.Name())
 			fileName := fileInfo.Name()
-			//获取posts文件夹下md文件信息 原始markdownstring config
+			//获取posts文件夹下md文件信息 原始markdownstring config fi = ArticleConfig
 			mardownStr, fi, err := processArticleFile(root+POST_DIR+"/"+fileName, fileName)
 			if err != nil {
 				log.Println("preprocess article file error!")
@@ -267,7 +267,7 @@ func (baseFactory *BaseFactory) PreProcessPosts(root string, yamls map[string]in
 				}
 				fi.Author = author
 			}
-			//添加article到articles 并对此进行排序 传入前面获取的fi(ArticleConfig)
+			//添加article到articles 并对此进行排序 传入前面获取的fi(ArticleConfig) TODO 提高效率
 			addAndSortArticles(fi)
 
 
@@ -312,7 +312,7 @@ func (baseFactory *BaseFactory) GeneratePosts(root string, yamls map[string]inte
 	log.Println(cfg.Get("title"))
 	t := parseTemplate(root, POSTS_TPL, cfg)
 	for _,fileInfo := range articles {
-		//create dir /yyyy/MM/dd
+		//根据时间生成日期类目录 /yyyy/MM/dd
 		p := processArticleUrl(*fileInfo)
 		if !isExists(PUBLISH + "/articles/" + p) {
 			os.MkdirAll(PUBLISH +"/articles/"+p, 0777)
@@ -332,7 +332,7 @@ func (baseFactory *BaseFactory) GeneratePosts(root string, yamls map[string]inte
 	return nil
 }
 
-//渲染生成archives分类静态文件
+//渲染生成archives时间归档静态文件
 func (baseFactory *BaseFactory) GenerateArchives(root string, yamls map[string]interface{}) error {
 	if !strings.HasSuffix(root, "/") {
 		root += "/"
@@ -506,15 +506,15 @@ func getPagesInfo(yamls map[string]interface{}) {
 }
 //生成分类
 func generateArchive() {
-	archives = make(map[string]*YearArchive)
+	yearArchivemap = make(map[string]*YearArchive)
 	for _, ar := range articles {//排序好的ArticleConfig指针数组
-		y, m, _ := ar.Time.Date()//获取当前的year和month
+		y, m, _ := ar.Time.Date()//获取当前的ArticleConfig year和month
 		year := fmt.Sprintf("%v", y)
 		month := m.String() // annotation // String returns the English name of the month ("January", "February", ...).
-		yArchive := archives[year]
+		yArchive := yearArchivemap[year]
 		if yArchive == nil {//判断是否有此yearArchive日期分类
 			yArchive = &YearArchive{year, make([]*MonthArchive, 0), make(map[string]*MonthArchive)}
-			archives[year] = yArchive//放入新的以年分类的Key
+			yearArchivemap[year] = yArchive//放入新的以年分类的Key
 		}
 		mArchive := yArchive.months[month]
 		if mArchive == nil {//是否存在月份小分类
@@ -525,15 +525,21 @@ func generateArchive() {
 
 	}
 	allArchive = make(YearArchives, 0)
+	test := yearArchivemap
+	if test == nil {
+		log.Println("test archives!")
+	}
 	//对archives内部使用yArchive.months进行排序
-	for _, yArchive := range archives {
+	for _, yArchive := range yearArchivemap {
 		monthCollect := make(MonthArchives, 0)
+		//Months []*MonthArchive
+		//months map[string]*MonthArchive
 		for _, mArchive := range yArchive.months {//获取内部months
 			monthCollect = append(monthCollect, mArchive)
 		}
 		sort.Sort(monthCollect)//月份排序
-		yArchive.months = nil
-		yArchive.Months = monthCollect
+		yArchive.months = nil //months map[string]*MonthArchive TODO
+		yArchive.Months = monthCollect //放入archives struct中Months节点 Months []*MonthArchive
 		allArchive = append(allArchive, yArchive)//放入此年的yArchive到allArchive
 	}
 	sort.Sort(allArchive)//对year进行排序
@@ -669,7 +675,9 @@ type NavConfig struct {
 	Target string
 }
 
-type ByDate struct{ Artic }
+type ByDate struct{
+	Artic
+}
 //sort.Sort() 入参需覆写提供如下方法
 func (a Artic) Len() int            { return len(a) }
 func (a Artic) Swap(i, j int)       { a[i], a[j] = a[j], a[i] }
@@ -684,6 +692,7 @@ func addAndSortArticles(arInfo ArticleConfig) {
 	log.Println(len(articles))
 	sort.Sort(ByDate{articles})
 }
+//
 
 //转义
 func unescaped(str string) interface{} {
@@ -740,7 +749,7 @@ func (baseFactory *BaseFactory) Generate(root string) {
 	baseFactory.GenerateIndex(root,yamlData)//生成index.html
 	baseFactory.GenerateBlogList(root, yamlData)//生成博客列表页面
 	baseFactory.GeneratePosts(root, yamlData)//生成博客文章页面
-	baseFactory.GenerateArchives(root, yamlData)//生成归档页面
+	baseFactory.GenerateArchives(root, yamlData)//生成按日期归档页面
 	baseFactory.GeneratePages(root, yamlData)//pages/about.md
 	baseFactory.GenerateClassify(root, yamlData)//pages/about.md
 	baseFactory.GeneratePnotelogin(root,yamlData)//生成pnote admin or guest login

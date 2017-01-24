@@ -6,6 +6,7 @@ import (
 	"github.com/Anteoy/liongo/modle"
 	"github.com/Anteoy/liongo/dao/mongo"
 	"github.com/Anteoy/go-gypsy/yaml"
+	m "github.com/Anteoy/liongo/modle"
 	"regexp"
 	"html"
 	"fmt"
@@ -13,9 +14,86 @@ import (
 	"html/template"
 	"os"
 	"net/http"
+	"time"
+	"sort"
 )
 
 type PNoteService struct{}
+
+//缓存mongo note数据信息
+
+//某年的note
+type YearNote struct {
+	Year   string //如2017
+	Months []*MonthNote // 如1,2,3月
+	months map[string]*MonthNote //如 1月的MonthNote
+}
+//某月的note
+type MonthNote struct {
+	Month    string //几月
+	month    time.Month //// A Month specifies a month of the year (January = 1, ...).
+	Notes []*modle.Note
+}
+//所有的note储存
+type YearNotes []*YearNote
+//用于sort
+func (y YearNotes) Len() int {
+	return len(y)
+}
+
+func (y YearNotes) Swap(i, j int) {
+	y[i], y[j] = y[j], y[i]
+}
+
+func (y YearNotes) Less(i, j int) bool {
+	return y[i].Year > y[j].Year
+}
+
+type Notes []*m.Note
+
+type NotesByDate struct{
+	Notes
+}
+
+//sort.Sort() 入参需覆写提供如下方法
+func (a Notes) Len() int            { return len(a) }
+func (a Notes) Swap(i, j int)       { a[i], a[j] = a[j], a[i] }
+func (a NotesByDate) Less(i, j int) bool { return a.Notes[i].Time.After(a.Notes[j].Time) }
+//添加article到articles 并对此进行排序 每次传入一个Note
+func AddAndSortNotes(noteInfo m.Note) {
+	artLen := len(notes)
+	if artLen < notesListSize {
+		notes = append(notes, &noteInfo)
+	}
+	log.Println(len(notes))
+	sort.Sort(NotesByDate{notes})
+}
+
+//初始化待用变量
+var (
+	notes        Notes
+	allNotes YearNotes //所有使用年分类的Notes
+	yearNotesmap map[string]*YearArchive //某年所有Note map
+	notesListSize int = 5000 //最大slice
+)
+
+//处理数据库中note 对struct进行装配排序生成到struct
+func (p *PNoteService) PreProcessNotes() error{
+
+	//存放article的常量数组 固定最大size 1000
+	notes = make([]*m.Note, 0, notesListSize) //make 初始化notes
+	//从mongo中获取noteinfo
+	//获取连接
+	c := mongo.Session.DB("liongo").C("note")
+	//获取全部数据
+	err := c.Find(bson.M{}).All(&notes)
+	if err != nil {
+		log.Error(err)
+		panic(err)
+	}
+	sort.Sort(NotesByDate{notes})
+	return nil
+}
 
 //处理Note上传
 func (p *PNoteService) DealNoteUpload(md string)  error {
@@ -103,7 +181,6 @@ func (p *PNoteService) QueryAll(){
 	//获取数据
 	notes := make([]modle.Note,100)
 	err := c.Find(bson.M{}).All(&notes)
-
 	if err != nil {
 		log.Error(err)
 		panic(err)
