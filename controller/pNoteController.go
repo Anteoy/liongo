@@ -32,8 +32,8 @@ func (pNoteController *PNoteController)Login(w http.ResponseWriter, r *http.Requ
 	passwd := passwds[0]
 	user := mysql.GetUserForEmail(id)
 	if user != nil && user.Password == passwd {
-		fmt.Fprint(w,"<h1>login success!!!</h1>")
-		http.ServeFile(w, r, "./static/html/index.html")
+		//fmt.Fprint(w,"<h1>login success!!!</h1>")
+		http.ServeFile(w, r, "../views/serve/pnotelist.html") //ok
 	} else {
 		fmt.Fprint(w,"<h1>login faild!!!用户名或密码不正确！！！</h1>")
 		http.ServeFile(w, r, "./static/html/login.html")
