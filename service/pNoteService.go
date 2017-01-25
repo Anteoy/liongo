@@ -114,7 +114,7 @@ func (p *PNoteService) PreProcessNotes() error{
 		//TODO 处理 url
 		processNoteUrl(*value)
 	}
-	defer mongo.Session.Close()
+	//defer mongo.Session.Close()
 	return nil
 }
 
@@ -162,7 +162,7 @@ func (p *PNoteService) GeneratorPnotelist(root string, yamls map[string]interfac
 		fmt.Println(value.months)
 		fmt.Println(value.Year)//.Year
 	}
-	m := map[string]interface{}{"archives": allNotes, "nav": navBarList,"cats": classifies} ////注意 这里如果传入参数有误 将会影响到tmp生成的完整性 如footer等 并且此时程序不会报错
+	m := map[string]interface{}{"archives": allNotes, "nav": navBarList,"cats": classifies} ////注意 这里如果传入参数有误 将会影响到tmp生成的完整性 如footer等 并且此时程序不会报错 但会产生意想不到的结果
 	exErr := t.Execute(fout, m)
 	return exErr
 }
@@ -237,7 +237,7 @@ func generatePnotelist() error{
 			mNote = &MonthNote{month, m, make([]*modle.NoteBase, 0)}//这里开始用m 一直报错undefined,,,m是最近定义了 不会编译为model
 			yNote.months[month] = mNote//新建并赋值于yNote，内层嵌套
 		}
-		mNote.NotesBase = append(mNote.NotesBase, &modle.NoteBase{"www.todo.do", iter.Title})//年月下嵌入此article
+		mNote.NotesBase = append(mNote.NotesBase, &modle.NoteBase{iter.Title, iter.Title})//年月下嵌入此article TODO 暂时使用title作为Link标识
 
 	}
 	allNotes = make(YearNotes, 0)
@@ -289,12 +289,8 @@ func (p *PNoteService) DealNoteUpload(md string)  error {
 	}
 	return nil
 }
-//从Mongo中拉取具体note
-func (p *PNoteService) GetNoteByName(name string,yamls map[string]interface{},w http.ResponseWriter, r *http.Request) error {
-	if len(name) == 0 {
-		fmt.Println("传入Note name为空，请检查！！！")
-		return nil
-	}
+//从Mongo中拉取具体note 拉取并生成所有Notes
+func (p *PNoteService) GetNoteByName(yamls map[string]interface{},w http.ResponseWriter, r *http.Request) error {
 	//从mongo中获取noteinfo
 	//获取连接
 	c := mongo.Session.DB("liongo").C("note")
@@ -307,43 +303,80 @@ func (p *PNoteService) GetNoteByName(name string,yamls map[string]interface{},w 
 	}
 	fmt.Println(note.Content)
 	fmt.Println(note.Name)
-	//new 模板对象
-	t := template.New("pSpecificNote.tpl")
-	yCfg := yamls["config.yml"]
-	var cfg = yCfg.(*yaml.File)
-	//向模板中注入函数
-	t.Funcs(template.FuncMap{"unescaped": unescaped})
-	t.Funcs(template.FuncMap{"get": cfg.Get})
+	pnoteservice := new(PNoteService)
+	notes := pnoteservice.QueryAllFromMgo()
+	for index,value := range *notes{ //* 遍历所有的mgo notes
+		fmt.Printf("notes[%d]=%d \n", index, value)
+		//new 模板对象
+		t := template.New("pSpecificNote.tpl")
+		yCfg := yamls["config.yml"]
+		var cfg = yCfg.(*yaml.File)
+		//向模板中注入函数
+		t.Funcs(template.FuncMap{"unescaped": unescaped})
+		t.Funcs(template.FuncMap{"get": cfg.Get})
 
-	//openfile := "../resources/templates/default/pSpecificNote.tpl"
-	//
-	//if !isExists(openfile) {
-	//	log.Println(openfile + " can not be found!")
-	//	os.Exit(1)
-	//}
+		//openfile := "../resources/templates/default/pSpecificNote.tpl"
+		//
+		//if !isExists(openfile) {
+		//	log.Println(openfile + " can not be found!")
+		//	os.Exit(1)
+		//}
 
 
-	//从模板文件解析
-	t, errp := t.ParseFiles("/root/IdeaProjects/liongo/src/github.com/Anteoy/liongo/resources/templates/default/pSpecificNote.tpl")
-	if errp != nil {
-		log.Error(errp)
-		panic(err)
+		//从模板文件解析
+		t, errp := t.ParseFiles("/root/IdeaProjects/liongo/src/github.com/Anteoy/liongo/resources/templates/default/pSpecificNote.tpl")
+		if errp != nil {
+			log.Error(errp)
+			panic(err)
+		}
+		//创建html文件
+		targetFile := PUBLISH + "/notes/" + value.Title+".html"
+		fout, err := os.Create(targetFile)
+		if errp != nil {
+			log.Error(errp)
+			panic(err)
+		}
+		m := map[string]interface{}{"fi": value,"nav": navBarList, "cats": classifies}
+		//执行模板的merge操作，输出到fout
+		t.Execute(fout, m)
 	}
-	//创建html文件
-	targetFile := PUBLISH + "/notes/" + note.Name+".html"
-	fout, err := os.Create(targetFile)
-	m := map[string]interface{}{"fi": note,"nav": navBarList, "cats": classifies}
-	//执行模板的merge操作，输出到fout
-	t.Execute(fout, m)
-	http.ServeFile(w, r, targetFile)
-	defer mongo.Session.Close()
-	defer fout.Close()
+	////new 模板对象 TODO 取消测试版本
+	//t := template.New("pSpecificNote.tpl")
+	//yCfg := yamls["config.yml"]
+	//var cfg = yCfg.(*yaml.File)
+	////向模板中注入函数
+	//t.Funcs(template.FuncMap{"unescaped": unescaped})
+	//t.Funcs(template.FuncMap{"get": cfg.Get})
+	//
+	////openfile := "../resources/templates/default/pSpecificNote.tpl"
+	////
+	////if !isExists(openfile) {
+	////	log.Println(openfile + " can not be found!")
+	////	os.Exit(1)
+	////}
+	//
+	//
+	////从模板文件解析
+	//t, errp := t.ParseFiles("/root/IdeaProjects/liongo/src/github.com/Anteoy/liongo/resources/templates/default/pSpecificNote.tpl")
+	//if errp != nil {
+	//	log.Error(errp)
+	//	panic(err)
+	//}
+	////创建html文件
+	//targetFile := PUBLISH + "/notes/" + note.Name+".html"
+	//fout, err := os.Create(targetFile)
+	//m := map[string]interface{}{"fi": note,"nav": navBarList, "cats": classifies}
+	////执行模板的merge操作，输出到fout
+	//t.Execute(fout, m)
+	//http.ServeFile(w, r, targetFile)
+	//defer mongo.Session.Close()
+	//defer fout.Close()
 	return nil
 
 }
 
 //查询mongo中所有数据
-func (p *PNoteService) QueryAll(){
+func (p *PNoteService) QueryAllFromMgo() *[]modle.Note{
 	//从mongo中获取noteinfo
 	//获取连接
 	c := mongo.Session.DB("liongo").C("note")
@@ -357,5 +390,6 @@ func (p *PNoteService) QueryAll(){
 	for index,value := range notes{
 		fmt.Printf("notes[%d]=%d \n", index, value)
 	}
-	defer mongo.Session.Close()
+	//defer mongo.Session.Close() TODO
+	return &notes //&dizhi
 }

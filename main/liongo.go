@@ -11,6 +11,7 @@ import (
 	"github.com/Anteoy/liongo/newPosts"
 	"strings"
 	"github.com/Anteoy/liongo/controller"
+	"github.com/Anteoy/liongo/utils"
 )
 
 const VERSION = "0.0.1"
@@ -59,6 +60,12 @@ func main() {
 			fmt.Println("starting run with note !!!")
 			pNoteController:=new(controller.PNoteController)
 			http.HandleFunc("/login", pNoteController.Login)
+			http.HandleFunc("/notes",pNoteController.GetNote)
+			pNoteService := new(Build.PNoteService)
+			//pNoteService.DealNoteUpload(ss)
+			yp := new(utils.YamlParser)
+			yamlData := yp.Parse("../resources")
+			pNoteService.GetNoteByName(yamlData,nil,nil)//从mgo中搜集并生成所有notes
 			//http.HandleFunc("/lionnote", func() {//TODO
 			//
 			//})

@@ -21,11 +21,16 @@
 			{{range .Months}}
 				<h2>{{.Month}}</h2>
 				{{range .NotesBase}}
-           			<p><a href="/articles/{{.Link}}">{{.Title}}</a></p>
+           			<p><a href="javascript:void(0)" onclick=goNote({{.Link}})>{{.Title}}</a></p>
            		{{end}}
             {{end}}
        	{{end}}
         </div>
 		</div>
 </div>
+<script>
+	function goNote(link){
+		window.open("/notes?link="+link)
+	}
+</script>
 {{template "footer"}}

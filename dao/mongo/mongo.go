@@ -9,6 +9,10 @@ type Person struct {
 	Phone string
 }
 
+type DataStore struct {
+	session *mgo.Session
+}
+
 // 数据连接
 var Session *mgo.Session
 

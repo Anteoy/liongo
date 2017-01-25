@@ -8,7 +8,7 @@ import (
 )
 
 func TestMongo(t *testing.T) {
-	c := Session.DB("test").C("people")
+	c := Session.Copy().DB("test").C("people")
 	err := c.Insert(&Person{"Ale", "+55 53 8116 9639"},
 		&Person{"Cla", "+55 53 8402 8510"})
 	if err != nil {
@@ -22,7 +22,7 @@ func TestMongo(t *testing.T) {
 	}
 
 	fmt.Println("Phone:", result.Phone)
-	defer Session.Close()
+	//defer Session.Close()
 	cc := Session.DB("test2").C("people")
 	err = cc.Insert(&Person{"Ale", "+55 53 8116 9639"},
 		&Person{"Cla", "+55 53 8402 8510"})

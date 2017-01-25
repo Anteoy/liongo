@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/Anteoy/liongo/service"
+	"github.com/Anteoy/liongo/utils"
 )
 
 const VERSION = "0.0.1"
@@ -27,13 +28,12 @@ var httpAddr = ":8080"
 
 func main() {
 	pNoteService := new(service.PNoteService)
-	//var ss string = "#For my memory scan ##1. 右上角资源监测 避免公司低配资源占用问题"
-	////pNoteService.DealNoteUpload(ss)
-	//yp := new(utils.YamlParser)
-	//yamlData := yp.Parse("../resources")
-	//pNoteService.GetNoteByName(ss,yamlData,nil,nil)
+	//pNoteService.DealNoteUpload(ss)
+	yp := new(utils.YamlParser)
+	yamlData := yp.Parse("../resources")
+	pNoteService.GetNoteByName(yamlData,nil,nil)//从mgo中搜集并生成所有notes
 	//pNoteService.QueryAll()
-	pNoteService.PreProcessNotes()
+	//pNoteService.PreProcessNotes()
 }
 
 func UseInfo() {
