@@ -18,6 +18,7 @@ import (
 	"sort"
 	"strings"
 	"strconv"
+	"gopkg.in/mgo.v2"
 )
 
 type PNoteService struct{}
@@ -101,7 +102,12 @@ func (p *PNoteService) PreProcessNotes() error{
 	notes = make([]*m.Note, 0, notesListSize) //make 初始化notes
 	//从mongo中获取noteinfo
 	//获取连接
-	c := mongo.Session.DB("liongo").C("note")
+	// c := mongo.Session.DB("liongo").C("note")
+	var ch chan *mgo.Session= make(chan *mgo.Session,1)
+	go mongo.GetMongoSession(ch)
+	var sess *mgo.Session//must init
+	sess = <- (chan *mgo.Session)(ch)//must do
+	c :=sess.DB("liongo").C("note")
 	//获取全部数据
 	err := c.Find(bson.M{}).All(&notes)
 	if err != nil {
@@ -115,6 +121,7 @@ func (p *PNoteService) PreProcessNotes() error{
 		processNoteUrl(*value)
 	}
 	//defer mongo.Session.Close()
+	defer sess.Close()
 	return nil
 }
 
@@ -293,8 +300,13 @@ func (p *PNoteService) DealNoteUpload(md string)  error {
 func (p *PNoteService) GetNoteByName(yamls map[string]interface{},w http.ResponseWriter, r *http.Request) error {
 	//从mongo中获取noteinfo
 	//获取连接
-	c := mongo.Session.DB("liongo").C("note")
-	//获取数据
+	//c := mongo.Session.DB("liongo").C("note")
+
+	var ch chan *mgo.Session= make(chan *mgo.Session,1)
+	go mongo.GetMongoSession(ch)
+	var sess *mgo.Session//must init
+	sess = <- (chan *mgo.Session)(ch)//must do
+	c :=sess.DB("liongo").C("note")//获取数据
 	note := modle.Note{}
 	err := c.Find(bson.M{"name": "test1"}).One(&note)
 	if err != nil {
@@ -324,7 +336,7 @@ func (p *PNoteService) GetNoteByName(yamls map[string]interface{},w http.Respons
 
 
 		//从模板文件解析
-		t, errp := t.ParseFiles("/root/IdeaProjects/liongo/src/github.com/Anteoy/liongo/resources/templates/default/pSpecificNote.tpl")
+		t, errp := t.ParseFiles("/root/IdeaProjects/trunk/liongo/src/github.com/Anteoy/liongo/resources/templates/default/pSpecificNote.tpl")
 		if errp != nil {
 			log.Error(errp)
 			panic(err)
@@ -371,6 +383,7 @@ func (p *PNoteService) GetNoteByName(yamls map[string]interface{},w http.Respons
 	//http.ServeFile(w, r, targetFile)
 	//defer mongo.Session.Close()
 	//defer fout.Close()
+	defer sess.Close()
 	return nil
 
 }
@@ -379,7 +392,12 @@ func (p *PNoteService) GetNoteByName(yamls map[string]interface{},w http.Respons
 func (p *PNoteService) QueryAllFromMgo() *[]modle.Note{
 	//从mongo中获取noteinfo
 	//获取连接
-	c := mongo.Session.DB("liongo").C("note")
+	// c := mongo.Session.DB("liongo").C("note")
+	var ch chan *mgo.Session= make(chan *mgo.Session,1)
+	go mongo.GetMongoSession(ch)
+	var sess *mgo.Session//must init
+	sess = <- (chan *mgo.Session)(ch)//must do
+	c :=sess.DB("liongo").C("note")
 	//获取数据
 	notes := make([]modle.Note,100)
 	err := c.Find(bson.M{}).All(&notes)
@@ -391,5 +409,6 @@ func (p *PNoteService) QueryAllFromMgo() *[]modle.Note{
 		fmt.Printf("notes[%d]=%d \n", index, value)
 	}
 	//defer mongo.Session.Close() TODO
+	defer sess.Close()
 	return &notes //&dizhi
 }

@@ -40,3 +40,8 @@ func Mgo() {
 	session.SetMode(mgo.Monotonic, true)
 
 }
+
+func GetMongoSession(ch chan *mgo.Session){
+	session := Session.Copy()
+	ch <- session //error &session
+}
