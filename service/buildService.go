@@ -30,6 +30,9 @@ func Build() {
 	//复制网站images
 	err = utils.CopyDir(RENDER_DIR+"/images", PUBLISH+"/images")
 	err = utils.CopyDir(RENDER_DIR+"/css", PUBLISH+"/css")
+	//复制pnote upload commit.html
+	err = utils.CopyDir(RENDER_DIR+"/html", PUBLISH+"/protohtml")
 	log.Println("blog process ok！")
+
 
 }

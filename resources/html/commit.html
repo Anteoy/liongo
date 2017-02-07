@@ -23,7 +23,12 @@
             $.ajax({
                 url:"/PNCommit",
                 data:data,
-                success:function () {
+                success:function (data) {
+                    console.info(data)
+                    if(JSON.parse(data).Code == 502){
+                        alert("登录过期，请重新登录！！")
+                        window.location.href = "/pnotelogin.html"
+                    }
                     console.info("connect success!")
                 },
                 error: function () {

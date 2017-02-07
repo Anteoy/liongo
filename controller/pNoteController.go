@@ -16,14 +16,39 @@ import (
 	"html"
 	"time"
 	"gopkg.in/mgo.v2"
+	_ "github.com/Anteoy/liongo/utils/memory" //must this is the first init ,it cost any time
 	"github.com/Anteoy/liongo/dao/mongo"
+	"github.com/Anteoy/liongo/utils/session"
+	"encoding/json"
 )
 
 type PNoteController struct{}
 
+//初始化session
+var globalSessions *session.Manager
+
+func init() {
+	globalSessions, _ = session.NewSessionManager("memory", "goSessionid", 3600)
+	go globalSessions.GC()
+	fmt.Println("fd")
+}
 
 
 func (pNoteController *PNoteController)Login(w http.ResponseWriter, r *http.Request) {
+
+	//start session
+	sess := globalSessions.SessionStart(w, r)
+	fmt.Println(sess.SessionID())
+	fmt.Println(sess.Get(sess.SessionID()))
+	//test
+	//if sess.Get(sess.SessionID()) == nil {
+	//	io.WriteString(w, "no sesssion")
+	//	return
+	//}
+	//value设值为sessionid
+	if sess.Get(sess.SessionID()) == nil {
+		sess.Set(sess.SessionID(),sess.SessionID())
+	}
 	r.ParseForm()
 	ids := r.Form["id"]
 	if ids == nil {
@@ -76,8 +101,34 @@ func (pNoteController *PNoteController) DataTomongo(notemd *modle.Note){
 
 }
 
+type CommonReturnModel struct{
+	Code string `json:"Code"`
+	Message string `json:"message"`
+}
+
 //处理pnote上传
 func (pNoteController *PNoteController) PNCommit(w http.ResponseWriter, r *http.Request){
+
+	//start session
+	sessA := globalSessions.SessionStart(w, r)
+	fmt.Println(sessA.SessionID())
+	fmt.Println(sessA.Get(sessA.SessionID()))
+	//test
+	//if sess.Get(sess.SessionID()) == nil {
+	//	io.WriteString(w, "no sesssion")
+	//	return
+	//}
+	//value设值为sessionid
+	if sessA.Get(sessA.SessionID()) == nil {
+		s := CommonReturnModel {
+			Code:         "502",
+			Message:  `session 失效，請重新登录！`,
+		}
+		b, _ := json.Marshal(s)
+		w.Write(b)
+		return
+	}
+
 	r.ParseForm()
 	titles := r.Form["title"]
 	title := titles[0]

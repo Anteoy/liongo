@@ -34,6 +34,7 @@ The commands are:
 
 var httpAddr = ":8080"
 
+
 func main() {
 	flag.Parse()
 	args := flag.Args()
@@ -58,6 +59,7 @@ func main() {
 		}
 		if argsLength == 2 && strings.EqualFold(args[1],"--note"){
 			fmt.Println("starting run with note !!!")
+
 			pNoteController:=new(controller.PNoteController)
 			http.HandleFunc("/login", pNoteController.Login)
 			http.HandleFunc("/notes",pNoteController.GetNote)
