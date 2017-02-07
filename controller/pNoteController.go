@@ -10,6 +10,13 @@ import (
 	"fmt"
 	//"os"
 	"github.com/Anteoy/liongo/service"
+	"regexp"
+	"log"
+	"github.com/Anteoy/blackfriday"
+	"html"
+	"time"
+	"gopkg.in/mgo.v2"
+	"github.com/Anteoy/liongo/dao/mongo"
 )
 
 type PNoteController struct{}
@@ -66,5 +73,68 @@ func (p *PNoteController) GetNote(w http.ResponseWriter,r  *http.Request)  {
 //获取笔记md文件并存入mongo
 
 func (pNoteController *PNoteController) DataTomongo(notemd *modle.Note){
+
+}
+
+//处理pnote上传
+func (pNoteController *PNoteController) PNCommit(w http.ResponseWriter, r *http.Request){
+	r.ParseForm()
+	titles := r.Form["title"]
+	title := titles[0]
+	if len(title) == 0 {
+		io.WriteString(w, "请输入标题")//TODO
+		return
+	}
+	fmt.Println(title)
+	contents := r.Form["content"]
+	content := contents[0]
+	if len(content) == 0 {
+		io.WriteString(w, "请输入正文")//TODO
+		return
+	}
+	fmt.Println(content)
+
+	//md处理
+	// 判断是否为空
+	if len(content) == 0 {
+		log.Fatal("md is nil")
+		return
+	}
+	//处理md为html
+	//markdown字符串转为ASCII html代码
+	htmlByte := blackfriday.MarkdownCommon([]byte(content))
+	//反转义实体如“& lt;”成为“<” 把byte转位strings
+	htmlStr := html.UnescapeString(string(htmlByte))
+	//正则匹配并替换
+	re := regexp.MustCompile(`<pre><code>([\s\S]*?)</code></pre>`)
+	htmlStr = re.ReplaceAllString(htmlStr, `<pre class="prettyprint linenums">${1}</pre>`)
+	fmt.Println(htmlStr)
+
+	//构造struct
+	//timestamp
+	timestamp := time.Now().Unix()
+	//格式化为字符串,tm为Time类型
+	tm := time.Unix(timestamp, 0)
+	fmt.Println(tm.Format("2006-01-02 03:04:05"))
+	//Time
+	//时间解析
+	time, terr := time.Parse("2006-01-02 15:04:05", "2017-01-10 20:12:00")
+	if terr != nil {
+		log.Println(terr)
+	}
+	//装配struct
+	note := &modle.Note{Name: title, Content: htmlStr,Title: title,Date: tm.Format("2006-01-02 03:04:05"),Time:time}
+	//获取session
+	var ch chan *mgo.Session= make(chan *mgo.Session,1)
+	go mongo.GetMongoSession(ch)
+	var sess *mgo.Session//must init
+	sess = <- (chan *mgo.Session)(ch)//must do
+	c :=sess.DB("liongo").C("note")//获取数据
+	//存入mongo
+	err := c.Insert(&note)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return
 
 }

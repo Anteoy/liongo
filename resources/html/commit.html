@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<!--suppress ALL -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>pnote commit</title>
+</head>
+<body>
+    <div >
+        <input id="title">
+        <textarea id="content" rows="60" cols="200"></textarea>
+        <button onclick="commitGo()">提交</button>
+    </div>
+    <script type="text/javascript" src="../assets/themes/default/jquery.js"></script>
+    <script>
+        function commitGo() {
+            var title = $("#title").val()
+            var content = $("#content").val()
+            var data = {
+                title:title,
+                content:content
+            }
+            $.ajax({
+                url:"/PNCommit",
+                data:data,
+                success:function () {
+                    console.info("connect success!")
+                },
+                error: function () {
+                    console.info("connect error!")
+                }
+
+            })
+        }
+    </script>
+</body>
+</html>

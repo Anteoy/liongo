@@ -336,7 +336,7 @@ func (p *PNoteService) GetNoteByName(yamls map[string]interface{},w http.Respons
 
 
 		//从模板文件解析
-		t, errp := t.ParseFiles("/root/IdeaProjects/trunk/liongo/src/github.com/Anteoy/liongo/resources/templates/default/pSpecificNote.tpl")
+		t, errp := t.ParseFiles("/root/IdeaProjects/liongo/src/github.com/Anteoy/liongo/resources/templates/default/pSpecificNote.tpl")//TODO
 		if errp != nil {
 			log.Error(errp)
 			panic(err)

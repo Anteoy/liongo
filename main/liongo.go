@@ -61,6 +61,8 @@ func main() {
 			pNoteController:=new(controller.PNoteController)
 			http.HandleFunc("/login", pNoteController.Login)
 			http.HandleFunc("/notes",pNoteController.GetNote)
+			//路由上传接口
+			http.HandleFunc("/PNCommit",pNoteController.PNCommit)
 			pNoteService := new(Build.PNoteService)
 			//pNoteService.DealNoteUpload(ss)
 			yp := new(utils.YamlParser)
