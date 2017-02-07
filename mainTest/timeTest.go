@@ -6,7 +6,7 @@ import (
 "fmt"
 )
 
-func main() {
+func mainTMP() {
 
 	//获取时间戳
 
