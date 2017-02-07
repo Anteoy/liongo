@@ -15,6 +15,7 @@
 <div style="clear:both;" id="interval"></div>
 <div class="main">
 	<div class="main-inner">
+	    <button onclick="commitPnote()">newPNote</button>
         <div id="tag-index">
         {{range .archives}}
         	<h1>{{.Year}}</h1>
@@ -31,6 +32,9 @@
 <script>
 	function goNote(link){
 		window.open("/notes?link="+link)
+	}
+	function commitPnote(){
+	    window.open("/html/commit.html")
 	}
 </script>
 {{template "footer"}}
