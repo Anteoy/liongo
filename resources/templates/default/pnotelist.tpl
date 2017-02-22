@@ -34,7 +34,7 @@
 		window.open("/notes?link="+link)
 	}
 	function commitPnote(){
-	    window.open("/html/commit.html")
+	    window.open("/protohtml/commit.html")
 	}
 </script>
 {{template "footer"}}
