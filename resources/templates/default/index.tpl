@@ -42,9 +42,29 @@
     	<p>it’s powered by <a href="www.github.com">anteoy·liongo</a>, you can click my github to get the source code ,if you
     		find anything or some advise,please contact me,the email address is anteoy@gmail.com,you can also find me at there
     	</p>
-
+        <p style="
+               padding-top: 110px;
+               margin-bottom: -40px;
+           ">contact me at :</p>
     	<p>
-    		<a href="https://github.com/Anteoy"><img
+
+    	    <a href="https://github.com/Anteoy"><img
+                				src="https://coding.net/u/zhoudafu/p/pic/git/raw/master/images/github.png"
+                				alt="github" style="height:80px"/>
+            </a>
+            <a href="https://coding.net/u/zhoudafu"><img
+                src="https://coding.net/u/zhoudafu/p/pic/git/raw/master/images/coding1.png"
+                alt="github" style="height:80px"/>
+            </a>
+            <a href="http://blog.csdn.net/yan_chou"><img
+                    src="https://coding.net/u/zhoudafu/p/pic/git/raw/master/images/csdn.png"
+                    alt="github" style="height:80px"/>
+            </a>
+            <a href="https://twitter.com/AnteoyChou"><img
+                src="https://coding.net/u/zhoudafu/p/pic/git/raw/master/images/timg.png"
+                alt="github" style="height:90px"/>
+            </a>
+    		<!-- github<a href="https://github.com/Anteoy"><img
     				src="https://raw.githubusercontent.com/Anteoy/liongo/dev/src/main/go/resources/pictures/github.png"
     				alt="github" style="height:80px"/>
     		</a>
@@ -59,7 +79,7 @@
             <a href="https://twitter.com/AnteoyChou"><img
                 src="https://raw.githubusercontent.com/Anteoy/liongo/dev/src/main/go/resources/pictures/twitter.jpg"
                 alt="github" style="height:80px"/>
-            </a>
+            </a> -->
     	</p>
     </div>
 

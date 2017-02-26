@@ -92,8 +92,6 @@ var (
 	yearArchivemap        map[string]*YearArchive
 	allArchive      YearArchives
 
-	NEWLY_ARTICLES_COUNT = 6
-	INDEX_ARTICLES_SHOW_COUNT = 15
 )
 
 type YearArchive struct {
@@ -195,14 +193,8 @@ func (baseFactory *BaseFactory) GenerateBlogList(root string, yamls map[string]i
 		os.Exit(1)
 	}
 	defer fout.Close()
-	if len(articles)<INDEX_ARTICLES_SHOW_COUNT{
-		INDEX_ARTICLES_SHOW_COUNT = len(articles)
-	}
-	if len(articles)<NEWLY_ARTICLES_COUNT{
-		NEWLY_ARTICLES_COUNT = len(articles)
-	}
 
-	m := map[string]interface{}{"ar": articles[:INDEX_ARTICLES_SHOW_COUNT], "nav": navBarList,"cats": classifies,"newly":articles[:NEWLY_ARTICLES_COUNT]}
+	m := map[string]interface{}{"ar": articles[:], "nav": navBarList,"cats": classifies}
 	exErr := t.Execute(fout, m)
 	return exErr
 }
@@ -325,7 +317,7 @@ func (baseFactory *BaseFactory) GeneratePosts(root string, yamls map[string]inte
 			os.Exit(1)
 		}
 		defer fout.Close()
-		m := map[string]interface{}{"fi": fileInfo,"nav": navBarList, "cats": classifies,"newly":articles[:NEWLY_ARTICLES_COUNT-1]}
+		m := map[string]interface{}{"fi": fileInfo,"nav": navBarList, "cats": classifies}
 		t.Execute(fout, m)
 	}
 
@@ -354,7 +346,7 @@ func (baseFactory *BaseFactory) GenerateArchives(root string, yamls map[string]i
 	//时间归档处理
 	generateArchive()
 	//log.Println(allArchive)
-	m := map[string]interface{}{"archives": allArchive, "nav": navBarList,"cats": classifies,"newly":articles[:NEWLY_ARTICLES_COUNT-1]}
+	m := map[string]interface{}{"archives": allArchive, "nav": navBarList,"cats": classifies}
 	exErr := t.Execute(fout, m)
 	return exErr
 

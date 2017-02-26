@@ -1,11 +1,10 @@
 ---
-date: 2016-11-11 11:19:00
-title: CAfile:/etc/ssl/certs/ca-certificates.crt CRLfile:none
+date: 2016-05-11 9:19:42
+title: CAfileetcsslcertsca-certificates.crt
 categories:
-    - golang
+    - 架构
 tags:
-    - golang
-    - code
+    - problem
 ---
 
 #问题描述

@@ -12,7 +12,7 @@
 				{{end}}
 			</ul>
 </div>
-<div style="clear:both;"></div>
+<div style="clear:both;height:50px" id="interval"></div><!-- 中间间隔 -->
 <div class="main">
 	<div class="main-inner">
 		 <div id="article-title">
