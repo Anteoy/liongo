@@ -1,12 +1,12 @@
+#html 页面meta标签 用来告诉搜索引擎你的网站主要内容 分类关键字 作者等信息
 meta:
-  description: meta's description
-  keywords: keyword,more keyword
-  author: meta's author or article's author
+  description: anteoy's blog site powered by liongo
+  keywords: anteoy,blog,site,liongo
+  author: anteoy@gmail.com
 copyright:
   owner: owner of copyright
   beginYear: 2016
   endYear: 2017
-  ICP: icp(for china)
 theme: default
 codetheme: night
 
@@ -20,7 +20,6 @@ codetheme: night
 #		"owner": "owner of copyright",
 #		"beginYear": 2016,
 #		"endYear": 2017,
-#		"ICP": "icp(for china)"
 #	},
 #	"theme": "default",
 #	"codetheme": "night"
