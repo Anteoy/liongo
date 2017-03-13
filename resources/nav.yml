@@ -10,3 +10,10 @@
 - label: github
   href: https://github.com/Anteoy/liongo
   target: _blank
+#[
+#	{
+#		"label": "github",
+#		"href": "https://github.com/Anteoy/liongo",
+#		"target": "_blank"
+#	}
+#]

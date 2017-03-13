@@ -14,7 +14,7 @@ import (
 	"github.com/Anteoy/liongo/utils"
 )
 
-const VERSION = "0.0.1"
+const VERSION = "0.1.0"
 
 const (
 	USAGE = `
@@ -27,6 +27,9 @@ Usage:
 The commands are:
 
 	build	        			build and generate site.
+	run					run the site of blog
+		--note				run with the own note
+	new	[]				new blog ,generate the new site
 	version         			print liongo version
 
 `
@@ -39,7 +42,7 @@ func main() {
 	flag.Parse()
 	args := flag.Args()
 	argsLength := len(args)
-	fmt.Println(argsLength)
+	//fmt.Println(argsLength)
 	//判断输入命令长度
 	if argsLength == 0 || argsLength > 3 {
 		UseInfo()

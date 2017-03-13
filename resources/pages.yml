@@ -3,3 +3,14 @@
   title: About
 - id: welcome
   title: Welcome
+
+#[
+#	{
+#		"id": "about",
+#		"title": "About"
+#	},
+#	{
+#		"id": "welcome",
+#		"title": "Welcome"
+#	}
+#]

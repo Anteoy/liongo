@@ -30,7 +30,6 @@ var globalSessions *session.Manager
 func init() {
 	globalSessions, _ = session.NewSessionManager("memory", "goSessionid", 3600)
 	go globalSessions.GC()
-	fmt.Println("fd")
 }
 
 

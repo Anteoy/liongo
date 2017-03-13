@@ -4,7 +4,6 @@ import (
 	"container/list"
 	"time"
 	"sync"
-	"fmt"
 	"github.com/Anteoy/liongo/utils/session"
 )
 
@@ -106,5 +105,4 @@ var pder = &Provider{list: list.New()}
 func init() {
 	pder.sessions = make(map[string]*list.Element, 0)
 	session.Register("memory", pder)
-	fmt.Println("wzz")
 }

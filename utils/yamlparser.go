@@ -15,14 +15,14 @@ var YAML_FILES = [3]string{"config.yml", "pages.yml", "nav.yml"}
 //返回所有配置文件的key value map
 func (yp *YamlParser) Parse(root string) map[string]interface{} {
 
-	//配置文件
+	//配置文件map
 	var yamlFilesConfig = make(map[string]interface{})
 
 	//如果没有后缀/则添加
 	if !strings.HasSuffix(root, "/") {
 		root += "/"
 	}
-
+	//循环获取每个配置文件信息
 	for _, yamlFile := range YAML_FILES {
 		path := root + yamlFile
 		if !IsExists(path) {
