@@ -9,7 +9,7 @@ import (
 	//"github.com/Anteoy/liongo/service"
 	"fmt"
 	//"os"
-	"github.com/Anteoy/liongo/service"
+	. "github.com/Anteoy/liongo/constant"
 	"regexp"
 	"log"
 	"github.com/Anteoy/blackfriday"
@@ -89,7 +89,7 @@ func (p *PNoteController) GetNote(w http.ResponseWriter,r  *http.Request)  {
 	}
 	fmt.Println(links[0])
 	//创建html文件路径
-	targetFile := service.PUBLISH + "/notes/" + links[0] +".html"
+	targetFile := PUBLISH_DIR + "/notes/" + links[0] +".html"
 	fmt.Println(targetFile)
 	http.ServeFile(w, r, targetFile)
 }

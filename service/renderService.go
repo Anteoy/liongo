@@ -2,110 +2,91 @@ package service
 
 import (
 	"bufio"
+	"fmt"
 	"github.com/Anteoy/blackfriday"
 	"github.com/Anteoy/go-gypsy/yaml"
+	"github.com/Anteoy/liongo/utils"
+	. "github.com/Anteoy/liongo/constant"
+	. "github.com/Anteoy/liongo/service/impl"
 	"html"
 	"html/template"
 	"io"
 	"io/ioutil"
 	"log"
 	"os"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
 	"time"
-    	"regexp"
-	"github.com/Anteoy/liongo/utils"
-	"fmt"
 )
 
 type BaseFactory struct{}
-
-type Artic []*ArticleConfig
-
-const (
-	INDEX_TPL = "index"
-	BLOG_LIST_TPL = "blog"
-	POSTS_TPL    = "posts"
-	PAGES_TPL    = "pages"
-	ARCHIVE_TPL  = "archive"
-	CLASSIFY_TPL = "classify"
-	PNOTELOGIN_TPL = "pnotelogin"
-	PNOTELIST_TPL  = "pnotelist"
-)
-
-type GobuildItf interface {
-	testItf1()
-	testItf2()
-}
-
-
-const (
-	POST_DIR     = "posts"
-	PUBLISH = "../views/serve"
-)
-
-type MonthArchives []*MonthArchive
-//用于sort
-func (m MonthArchives) Len() int {
-	return len(m)
-}
-
-func (m MonthArchives) Swap(i, j int) {
-	m[i], m[j] = m[j], m[i]
-}
-
-func (m MonthArchives) Less(i, j int) bool {
-	return m[i].month > m[j].month
-}
-
-const (
-	COMMON_HEADER_FILE = "header.tpl"
-	COMMON_FOOTER_FILE = "footer.tpl"
-	
-)
-
-//定制page 非导航 存储定制page的页面信息 用md转换为页面
-type CustomPage struct {
-	Id      string
-	Title   string
-	Content string
-}
-type YearArchives []*YearArchive
-//用于sort
-func (y YearArchives) Len() int {
-	return len(y)
-}
-
-func (y YearArchives) Swap(i, j int) {
-	y[i], y[j] = y[j], y[i]
-}
-
-func (y YearArchives) Less(i, j int) bool {
-	return y[i].Year > y[j].Year
-}
-var (
-	articles        Artic //完整信息
-	articleListSize int = 5000 //博文不能超过5000
-	navBarList      []NavConfig //导航条数组
-	classifies      map[string]Category //分类map
-	pages           []*CustomPage
-	yearArchivemap        map[string]*YearArchive
-	allArchive      YearArchives
-
-)
-
-type YearArchive struct {
-	Year   string
-	Months []*MonthArchive
-	months map[string]*MonthArchive
-}
-
-type MonthArchive struct {
-	Month    string
-	month    time.Month
-	Articles []*ArticleBase
-}
+//
+//type Artic []*ArticleConfig
+//
+//type MonthArchives []*MonthArchive
+//
+////用于sort
+//func (m MonthArchives) Len() int {
+//	return len(m)
+//}
+//
+//func (m MonthArchives) Swap(i, j int) {
+//	m[i], m[j] = m[j], m[i]
+//}
+//
+//func (m MonthArchives) Less(i, j int) bool {
+//	return m[i].month > m[j].month
+//}
+//
+//
+////定制新增页面page内容 存储定制page的页面信息 用md转换为页面
+//type CustomPage struct {
+//	Id      string //md id
+//	Title   string //md article title
+//	Content string //md content
+//}
+//
+//type YearArchives []*YearArchive
+//
+////用于sort
+//func (y YearArchives) Len() int {
+//	return len(y)
+//}
+//
+//func (y YearArchives) Swap(i, j int) {
+//	y[i], y[j] = y[j], y[i]
+//}
+//
+//func (y YearArchives) Less(i, j int) bool {
+//	return y[i].Year > y[j].Year
+//}
+//
+//var (
+//	articles        Artic                          //完整信息
+//	articleListSize int                     = 5000 //博文不能超过5000
+//	navBarList      []NavConfig                    //导航条数组
+//	classifies      map[string]Category            //分类map
+//	pages           []*CustomPage                  //新增定制页面数组 包含页面id.md md title 和md content
+//	yearArchivemap  map[string]*YearArchive        //key year value *YearArchive
+//	allArchive      YearArchives                   //[]*YearArchive
+//
+//)
+//
+//// Year 年 Months []*MonthArchive
+//type YearArchive struct {
+//	Year   string
+//	Months []*MonthArchive
+//	months map[string]*MonthArchive
+//}
+//
+//// MonthArchive
+//type MonthArchive struct {
+//	Month    string
+//	month    time.Month
+//	Articles []*ArticleBase
+//}
 
 //传入路径和配置信息 返回一个template config.yml tpl 主题所使用的或自定义tmp名 融合footer header body为一个tpl
 func parseTemplate(root, tpl string, cfg *yaml.File) *template.Template {
@@ -149,22 +130,22 @@ func parseTemplate(root, tpl string, cfg *yaml.File) *template.Template {
 	return t
 }
 
-func (baseFactory *BaseFactory) GenerateIndex(root string,yamls map[string]interface{}) error {
-	if !strings.HasSuffix(root,"/"){
+func (baseFactory *BaseFactory) GenerateIndex(root string, yamls map[string]interface{}) error {
+	if !strings.HasSuffix(root, "/") {
 		root += "/"
 	}
 	pEiz := yamls["config.yml"]
 	var cfg = pEiz.(*yaml.File)
-	t := parseTemplate(root,INDEX_TPL,cfg)
+	t := parseTemplate(root, INDEX_TPL, cfg)
 
-	targetFile := PUBLISH + "/index.html"
-	fout,err :=os.Create(targetFile)
+	targetFile := PUBLISH_DIR + "/index.html"
+	fout, err := os.Create(targetFile)
 	if err != nil {
 		log.Println("create file " + targetFile + " error!")
 		os.Exit(1)
 	}
 	defer fout.Close()
-	m := map[string]interface{}{"nav": navBarList,"cats": classifies}
+	m := map[string]interface{}{"nav": NavBarList, "cats": Classifies}
 	exErr := t.Execute(fout, m)
 	return exErr
 }
@@ -185,13 +166,13 @@ func (baseFactory *BaseFactory) GenerateBlogList(root string, yamls map[string]i
 
 	yCfg := yamls["config.yml"]
 	var cfg *yaml.File
-	if value, ok := yCfg.(*yaml.File);ok {
+	if value, ok := yCfg.(*yaml.File); ok {
 		cfg = value
 	}
 	//var cfg = yCfg.(*yaml.File)
 	t := parseTemplate(root, BLOG_LIST_TPL, cfg)
 
-	targetFile := PUBLISH + "/blog.html"
+	targetFile := PUBLISH_DIR + "/blog.html"
 	fout, err := os.Create(targetFile)
 	if err != nil {
 		log.Println("create file " + targetFile + " error!")
@@ -199,7 +180,7 @@ func (baseFactory *BaseFactory) GenerateBlogList(root string, yamls map[string]i
 	}
 	defer fout.Close()
 
-	m := map[string]interface{}{"ar": articles[:], "nav": navBarList,"cats": classifies}
+	m := map[string]interface{}{"ar": Articles[:], "nav": NavBarList, "cats": Classifies}
 	exErr := t.Execute(fout, m)
 	return exErr
 }
@@ -214,12 +195,12 @@ func (baseFactory *BaseFactory) PreProcessPosts(root string, yamls map[string]in
 
 	//Comma-ok断言 不推荐下面第二种方式 下面第二种如果转换失败会直接panic
 	var cfg *yaml.File
-	if value, ok := yCfg.(*yaml.File);ok {
+	if value, ok := yCfg.(*yaml.File); ok {
 		cfg = value
 	}
 	//cfg = yCfg.((*yaml.File))
 	//存放article的常量数组 固定size 5000
-	articles = make([]*ArticleConfig, 0, articleListSize)
+	Articles = make([]*ArticleConfig, 0, ArticleListSize)
 	//读取posts下article开始
 	// returns
 	// a list of directory entries sorted by filename.
@@ -242,14 +223,14 @@ func (baseFactory *BaseFactory) PreProcessPosts(root string, yamls map[string]in
 			//去掉文件.md后缀
 			trName := strings.TrimSuffix(fileName, ".md")
 			//根据.md中配置生成年月日文件路径字符串 返回html前一级路径
-          		p := processArticleUrl(fi)
+			p := processArticleUrl(fi)
 			log.Println(p)
 			//markdown字符串转为ASCII html代码 []byte(mardownStr) string强转为[]byte
 			htmlByte := blackfriday.MarkdownCommon([]byte(mardownStr))
 			//反转义实体如“& lt;”成为“<” 把byte转位strings
 			htmlStr := html.UnescapeString(string(htmlByte))
-		        re := regexp.MustCompile(`<pre><code>([\s\S]*?)</code></pre>`)
-		    	htmlStr = re.ReplaceAllString(htmlStr, `<pre class="prettyprint linenums">${1}</pre>`)
+			re := regexp.MustCompile(`<pre><code>([\s\S]*?)</code></pre>`)
+			htmlStr = re.ReplaceAllString(htmlStr, `<pre class="prettyprint linenums">${1}</pre>`)
 			//增加正文和链接 组装ArticleConfig fi
 			fi.Content = htmlStr
 			fi.Link = p + trName + ".html"
@@ -285,18 +266,18 @@ func (baseFactory *BaseFactory) PreProcessPosts(root string, yamls map[string]in
 }
 
 //生成pnote login静态文件
-func (baseFactory *BaseFactory) GeneratePnotelogin(root string,yamls map[string]interface{}) error {
+func (baseFactory *BaseFactory) GeneratePnotelogin(root string, yamls map[string]interface{}) error {
 	if !strings.HasSuffix(root, "/") {
 		root += "/"
 	}
 	yCfg := yamls["config.yml"]
 	var cfg *yaml.File
-	if value, ok := yCfg.(*yaml.File);ok {
+	if value, ok := yCfg.(*yaml.File); ok {
 		cfg = value
 	}
 	//var cfg = yCfg.(*yaml.File)
 	t := parseTemplate(root, PNOTELOGIN_TPL, cfg)
-	targetFile := PUBLISH + "/pnotelogin.html"
+	targetFile := PUBLISH_DIR + "/pnotelogin.html"
 	//创建targetFile
 	fout, err := os.Create(targetFile)
 	if err != nil {
@@ -304,7 +285,7 @@ func (baseFactory *BaseFactory) GeneratePnotelogin(root string,yamls map[string]
 		os.Exit(1)
 	}
 	defer fout.Close()
-	exErr := t.Execute(fout,nil)
+	exErr := t.Execute(fout, nil)
 	return exErr
 }
 
@@ -316,29 +297,28 @@ func (baseFactory *BaseFactory) GeneratePosts(root string, yamls map[string]inte
 
 	yCfg := yamls["config.yml"]
 	var cfg *yaml.File
-	if value, ok := yCfg.(*yaml.File);ok {
+	if value, ok := yCfg.(*yaml.File); ok {
 		cfg = value
 	}
 	//var cfg = yCfg.(*yaml.File)
 	log.Println(cfg.Get("title"))
 	t := parseTemplate(root, POSTS_TPL, cfg)
-	for _,fileInfo := range articles {
+	for _, fileInfo := range Articles {
 		//根据时间生成日期类目录 /yyyy/MM/dd
 		p := processArticleUrl(*fileInfo)
-		if !isExists(PUBLISH + "/articles/" + p) {
-			os.MkdirAll(PUBLISH +"/articles/"+p, 0777)
+		if !isExists(PUBLISH_DIR + "/articles/" + p) {
+			os.MkdirAll(PUBLISH_DIR +"/articles/"+p, 0777)
 		}
-		targetFile := PUBLISH + "/articles/" + fileInfo.Link
+		targetFile := PUBLISH_DIR + "/articles/" + fileInfo.Link
 		fout, err := os.Create(targetFile)
 		if err != nil {
 			log.Println("create file " + targetFile + " error!")
 			os.Exit(1)
 		}
 		defer fout.Close()
-		m := map[string]interface{}{"fi": fileInfo,"nav": navBarList, "cats": classifies}
+		m := map[string]interface{}{"fi": fileInfo, "nav": NavBarList, "cats": Classifies}
 		t.Execute(fout, m)
 	}
-
 
 	return nil
 }
@@ -350,13 +330,13 @@ func (baseFactory *BaseFactory) GenerateArchives(root string, yamls map[string]i
 	}
 	yCfg := yamls["config.yml"]
 	var cfg *yaml.File
-	if value, ok := yCfg.(*yaml.File);ok {
+	if value, ok := yCfg.(*yaml.File); ok {
 		cfg = value
 	}
 	//var cfg = yCfg.(*yaml.File)
 
 	t := parseTemplate(root, ARCHIVE_TPL, cfg)
-	targetFile := PUBLISH + "/archive.html"
+	targetFile := PUBLISH_DIR + "/archive.html"
 	//创建targetFile
 	fout, err := os.Create(targetFile)
 	if err != nil {
@@ -368,7 +348,7 @@ func (baseFactory *BaseFactory) GenerateArchives(root string, yamls map[string]i
 	//时间归档处理
 	generateArchive()
 	//log.Println(allArchive)
-	m := map[string]interface{}{"archives": allArchive, "nav": navBarList,"cats": classifies}
+	m := map[string]interface{}{"archives": AllArchive, "nav": NavBarList, "cats": Classifies}
 	exErr := t.Execute(fout, m)
 	return exErr
 
@@ -376,19 +356,19 @@ func (baseFactory *BaseFactory) GenerateArchives(root string, yamls map[string]i
 
 //分类预处理方法
 func generateClassifies() {
-	classifies = make(map[string]Category)//key为类别，value为Category包含名字，article数组和长度的Category结构体
+	Classifies = make(map[string]Category) //key为类别，value为Category包含名字，article数组和长度的Category结构体
 	//对获取到的所有articles进行处理
-	for _, ar := range articles {
-		c, ok := classifies[ar.Category]
+	for _, ar := range Articles {
+		c, ok := Classifies[ar.Category]
 		if ok {
 			c.Articles = append(c.Articles, ArticleBase{ar.Link, ar.Title})
 			c.Length = len(c.Articles)
-			classifies[ar.Category] = c
-		} else {//当此分类为新分类时
+			Classifies[ar.Category] = c
+		} else { //当此分类为新分类时
 			art := ArticleBase{ar.Link, ar.Title}
 			arts := make([]ArticleBase, 0)
 			arts = append(arts, art)
-			classifies[ar.Category] = Category{ar.Category, arts, 1}//则新建一个并注入
+			Classifies[ar.Category] = Category{ar.Category, arts, 1} //则新建一个并注入
 		}
 	}
 }
@@ -401,13 +381,13 @@ func (baseFactory *BaseFactory) GenerateClassify(root string, yamls map[string]i
 
 	yCfg := yamls["config.yml"]
 	var cfg *yaml.File
-	if value, ok := yCfg.(*yaml.File);ok {
+	if value, ok := yCfg.(*yaml.File); ok {
 		cfg = value
 	}
 	//var cfg = yCfg.(*yaml.File)
 
 	t := parseTemplate(root, CLASSIFY_TPL, cfg)
-	targetFile := PUBLISH + "/classify.html"
+	targetFile := PUBLISH_DIR + "/classify.html"
 	fout, err := os.Create(targetFile)
 	if err != nil {
 		log.Println("create file " + targetFile + " error!")
@@ -415,8 +395,7 @@ func (baseFactory *BaseFactory) GenerateClassify(root string, yamls map[string]i
 	}
 	defer fout.Close()
 
-
-	m := map[string]interface{}{"cats": classifies, "nav": navBarList}
+	m := map[string]interface{}{"cats": Classifies, "nav": NavBarList}
 	exErr := t.Execute(fout, m)
 	return exErr
 }
@@ -429,7 +408,7 @@ func (baseFactory *BaseFactory) GeneratePages(root string, yamls map[string]inte
 	}
 	yCfg := yamls["config.yml"]
 	var cfg *yaml.File
-	if value, ok := yCfg.(*yaml.File);ok {
+	if value, ok := yCfg.(*yaml.File); ok {
 		cfg = value
 	}
 	//获取配置文件页面信息
@@ -438,7 +417,7 @@ func (baseFactory *BaseFactory) GeneratePages(root string, yamls map[string]inte
 	t := parseTemplate(root, PAGES_TPL, cfg)
 
 	//pages为前面解析好的CustomPage数组
-	for _, p := range pages {
+	for _, p := range Pages {
 		p.Id = strings.TrimSuffix(p.Id, " ")
 		filePath := root + "pages/" + p.Id + ".md"
 		if !isExists(filePath) {
@@ -474,12 +453,12 @@ func (baseFactory *BaseFactory) GeneratePages(root string, yamls map[string]inte
 		htmlStr = strings.Replace(htmlStr, "<pre><code", `<pre class="prettyprint linenums"`, -1)
 		htmlStr = strings.Replace(htmlStr, `</code>`, "", -1)
 
-		p.Content = htmlStr//设置markdown文章内容
+		p.Content = htmlStr //设置markdown文章内容
 		//log.Println(p.Content)
-		if !isExists(PUBLISH + "/pages/") {
-			os.MkdirAll(PUBLISH +"/pages/", 0777)
+		if !isExists(PUBLISH_DIR + "/pages/") {
+			os.MkdirAll(PUBLISH_DIR +"/pages/", 0777)
 		}
-		targetFile := PUBLISH + "/pages/" + p.Id + ".html"
+		targetFile := PUBLISH_DIR + "/pages/" + p.Id + ".html"
 		//创建target html
 		fout, err := os.Create(targetFile)
 		if err != nil {
@@ -488,18 +467,18 @@ func (baseFactory *BaseFactory) GeneratePages(root string, yamls map[string]inte
 		}
 		defer fout.Close()
 		//p .md article信息 nav 自定义的额外导航条信息 暂移除 "cats": categories "newly":articles[:NEWLY_ARTICLES_COUNT-1]
-		m := map[string]interface{}{"p": p, "nav": navBarList}
+		m := map[string]interface{}{"p": p, "nav": NavBarList}
 		t.Execute(fout, m)
 	}
 
 	return nil
 }
 
-//获取配置文件页面信息 最后存入pages中
+//获取配置文件页面信息 最后植入指定pages中
 func getPagesInfo(yamls map[string]interface{}) {
 	yCfg := yamls["pages.yml"]
 	var cfg *yaml.File
-	if value, ok := yCfg.(*yaml.File);ok {
+	if value, ok := yCfg.(*yaml.File); ok {
 		cfg = value
 	}
 	//统计配置pages.yml中配置个数
@@ -509,66 +488,66 @@ func getPagesInfo(yamls map[string]interface{}) {
 	}
 	for i := 0; i < ct; i++ {
 		//strconv.Itoa转换int i为string
-		//获取配置的id和title yaml配置使用数组-
+		//获取配置的id和title yaml配置使用数组- /pages/id.md
 		id, erri := cfg.Get("[" + strconv.Itoa(i) + "].id")
 		log.Println("[" + strconv.Itoa(i) + "].id")
-		log.Println(id)
 		if nil != erri {
 			log.Println(erri)
 		}
-
+		//指定页面的内容title
 		title, errt := cfg.Get("[" + strconv.Itoa(i) + "].title")
 		if nil != errt {
 			log.Println(errt)
 		}
 		log.Println("[" + strconv.Itoa(i) + "].title")
-		log.Println(title)
 		page := CustomPage{id, title, ""}
 		//追加到pages
-		pages = append(pages, &page)
+		Pages = append(Pages, &page)
 	}
 
 }
+
 //按照日期生成分类
 func generateArchive() {
-	yearArchivemap = make(map[string]*YearArchive)
-	for _, ar := range articles {//排序好的ArticleConfig指针数组
-		y, m, _ := ar.Time.Date()//获取当前的ArticleConfig year和month
+	YearArchivemap = make(map[string]*YearArchive)
+	for _, ar := range Articles { //排序好的ArticleConfig指针数组
+		y, m, _ := ar.Time.Date() //获取当前的ArticleConfig year和month
 		year := fmt.Sprintf("%v", y)
 		month := m.String() // annotation // String returns the English name of the month ("January", "February", ...).
-		yArchive := yearArchivemap[year]
-		if yArchive == nil {//判断是否有此yearArchive日期分类
+		yArchive := YearArchivemap[year]
+		if yArchive == nil { //判断是否有此yearArchive日期分类
 			yArchive = &YearArchive{year, make([]*MonthArchive, 0), make(map[string]*MonthArchive)}
-			yearArchivemap[year] = yArchive//放入新的以年分类的Key
+			YearArchivemap[year] = yArchive //放入新的以年分类的Key
 		}
-		mArchive := yArchive.months[month]
-		if mArchive == nil {//是否存在月份小分类
+		mArchive := yArchive.Monthstodo[month]
+		if mArchive == nil { //是否存在月份小分类
 			mArchive = &MonthArchive{month, m, make([]*ArticleBase, 0)}
-			yArchive.months[month] = mArchive//新建并赋值于yArchive，内层嵌套
+			yArchive.Monthstodo[month] = mArchive //新建并赋值于yArchive，内层嵌套
 		}
-		mArchive.Articles = append(mArchive.Articles, &ArticleBase{ar.Link, ar.Title})//年月下嵌入此article
+		mArchive.Articles = append(mArchive.Articles, &ArticleBase{ar.Link, ar.Title}) //年月下嵌入此article
 
 	}
-	allArchive = make(YearArchives, 0)
-	test := yearArchivemap
+	AllArchive = make(YearArchives, 0)
+	test := YearArchivemap
 	if test == nil {
 		log.Println("test archives!")
 	}
-	//对archives内部使用yArchive.months进行排序
-	for _, yArchive := range yearArchivemap {
+	//对archives内部使用yArchive.Monthstodo进行排序
+	for _, yArchive := range YearArchivemap {
 		monthCollect := make(MonthArchives, 0)
 		//Months []*MonthArchive
-		//months map[string]*MonthArchive
-		for _, mArchive := range yArchive.months {//获取内部months
+		//Monthstodo map[string]*MonthArchive
+		for _, mArchive := range yArchive.Monthstodo { //获取内部months
 			monthCollect = append(monthCollect, mArchive)
 		}
-		sort.Sort(monthCollect)//月份排序
-		yArchive.months = nil //months map[string]*MonthArchive TODO
-		yArchive.Months = monthCollect //放入archives struct中Months节点 Months []*MonthArchive
-		allArchive = append(allArchive, yArchive)//放入此年的yArchive到allArchive
+		sort.Sort(monthCollect)                   //月份排序
+		yArchive.Monthstodo = nil                     //months map[string]*MonthArchive TODO
+		yArchive.Months = monthCollect            //放入archives struct中Months节点 Months []*MonthArchive
+		AllArchive = append(AllArchive, yArchive) //放入此年的yArchive到allArchive
 	}
-	sort.Sort(allArchive)//对year进行排序
+	sort.Sort(AllArchive) //对year进行排序
 }
+
 //ArticleConfig 解析获取的.md --- --- 中配置文件struct
 //string 根据年月日生成article路径
 func processArticleUrl(ar ArticleConfig) string {
@@ -578,28 +557,29 @@ func processArticleUrl(ar ArticleConfig) string {
 	return y + "/" + m + "/" + d + "/"
 }
 
-//基础标签结构体
-//结构体标识名 []ArticleBase数组 []ArticleBase长度
-type Tag struct {
-	Name     string
-	Articles []ArticleBase
-	Length   int
-}
+////基础标签结构体
+////结构体标识名 []ArticleBase数组 []ArticleBase长度
+//type Tag struct {
+//	Name     string
+//	Articles []ArticleBase
+//	Length   int
+//}
+//
+////基础博客结构体 用于分类和标签结构体组装
+////链接地址 标题
+//type ArticleBase struct {
+//	Link  string
+//	Title string
+//}
+//
+////分类结构体
+////分类名 ArticleBase数组 数组length
+//type Category struct {
+//	Name     string
+//	Articles []ArticleBase
+//	Length   int
+//}
 
-//基础博客结构体 用于分类和标签结构体组装
-//链接地址 标题
-type ArticleBase struct {
-	Link  string
-	Title string
-}
-
-//分类结构体
-//分类名 ArticleBase数组 数组length
-type Category struct {
-	Name     string
-	Articles []ArticleBase
-	Length   int
-}
 //获取posts文件夹下md文件信息 原始markdownstring config
 //filePath posts下文件全路径 fileName 文件名
 //process posts,get article title,post date 返回md正文，读取md配置组合，error
@@ -672,84 +652,89 @@ func processArticleFile(filePath, fileName string) (string, ArticleConfig, error
 
 	shortDate := t.UTC().Format("Jan 2, 2006")
 
-	arInfo := ArticleConfig{title, date,shortDate, cat, tags, abstract, author, t, "", "", navBarList}
+	arInfo := ArticleConfig{title, date, shortDate, cat, tags, abstract, author, t, "", "", NavBarList}
 
 	//log.Println(markdownStr)
 	return markdownStr, arInfo, nil
 
 }
 
-//预处理完整article结构体
-type ArticleConfig struct {
-	Title    string //标题
-	Date     string //时间
-	ShortDate string //简短时间 不用精确比较
-	Category string //所属分类
-	Tags     []TagConfig //所属标签
-	Abstract string //摘要
-	Author   string //作者
-	Time     time.Time //精确时间
-	Link     string //博客链接
-	Content  string //完整内容
-	Nav      []NavConfig
-}
+////预处理完整article结构体
+//type ArticleConfig struct {
+//	Title     string      //标题
+//	Date      string      //时间
+//	ShortDate string      //简短时间 不用精确比较
+//	Category  string      //所属分类
+//	Tags      []TagConfig //所属标签
+//	Abstract  string      //摘要
+//	Author    string      //作者
+//	Time      time.Time   //精确时间
+//	Link      string      //博客链接
+//	Content   string      //完整内容
+//	Nav       []NavConfig
+//}
+//
+//type TagConfig struct {
+//	Name         string
+//	ArticleTitle string
+//	ArticleLink  string
+//}
+//
+////导航 struct
+////导航标识名 链接 a标签target属性
+//type NavConfig struct {
+//	Name   string
+//	Href   string
+//	Target string
+//}
+//
+//type ByDate struct {
+//	Artic
+//}
+//
+////sort.Sort() 入参需覆写提供如下方法
+//func (a Artic) Len() int      { return len(a) }
+//func (a Artic) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
+//
+//// the time instant t is after u 意思为 i的时间是否在j的后面
+//func (a ByDate) Less(i, j int) bool { return a.Artic[i].Time.After(a.Artic[j].Time) }
 
-type TagConfig struct {
-	Name         string
-	ArticleTitle string
-	ArticleLink  string
-}
-
-//导航 struct
-//导航标识名 链接 目标
-type NavConfig struct {
-	Name   string
-	Href   string
-	Target string
-}
-
-type ByDate struct{
-	Artic
-}
-//sort.Sort() 入参需覆写提供如下方法
-func (a Artic) Len() int            { return len(a) }
-func (a Artic) Swap(i, j int)       { a[i], a[j] = a[j], a[i] }
-// the time instant t is after u 意思为 i的时间是否在j的后面
-func (a ByDate) Less(i, j int) bool { return a.Artic[i].Time.After(a.Artic[j].Time) }
 //添加article到articles 并对此进行排序
 func addAndSortArticles(arInfo ArticleConfig) {
 	//log.Println(len(articles))
-	artLen := len(articles)
+	artLen := len(Articles)
 	//articleListSize 初始长度
-	if artLen < articleListSize {
-		articles = append(articles, &arInfo)
+	if artLen < ArticleListSize {
+		Articles = append(Articles, &arInfo)
 	}
-	log.Println(len(articles))
-	sort.Sort(ByDate{articles})
+	log.Println(len(Articles))
+	sort.Sort(ByDate{Articles})
 }
+
 //
 
 //转义
 func unescaped(str string) interface{} {
 	re := regexp.MustCompile(`<pre class="prettyprint linenums">([\s\S]*?)</pre>`)
-	str = re.ReplaceAllStringFunc(str,xmlEscapString)
+	str = re.ReplaceAllStringFunc(str, xmlEscapString)
 	return template.HTML(str)
 
 }
 
-func xmlEscapString(str string) string{
-	str = strings.Replace(str,`<pre class="prettyprint linenums">`,"@@PRE_BEGIN",-1)
-	str = strings.Replace(str,`</pre>`,"@@PRE_END",-1)
+func xmlEscapString(str string) string {
+	str = strings.Replace(str, `<pre class="prettyprint linenums">`, "@@PRE_BEGIN", -1)
+	str = strings.Replace(str, `</pre>`, "@@PRE_END", -1)
 	str = template.HTMLEscapeString(str)
-	str = strings.Replace(str,"@@PRE_BEGIN",`<pre class="prettyprint linenums">`,-1)
-	str = strings.Replace(str,"@@PRE_END",`</pre>`,-1)
+	str = strings.Replace(str, "@@PRE_BEGIN", `<pre class="prettyprint linenums">`, -1)
+	str = strings.Replace(str, "@@PRE_END", `</pre>`, -1)
 	return str
 }
-//生成自定义多余页面导航条 存入navBarList 数组
+
+//生成自定义新增页面导航条 存入navBarList 数组
 func generateNavBar(yamls map[string]interface{}) {
 	yCfg := yamls["nav.yml"]
 	var cfg *yaml.File
-	if value, ok := yCfg.(*yaml.File);ok {
+	if value, ok := yCfg.(*yaml.File); ok {
 		cfg = value
 	}
 	ct, err := cfg.Count("")
@@ -757,24 +742,27 @@ func generateNavBar(yamls map[string]interface{}) {
 		log.Println(err)
 	}
 	for i := 0; i < ct; i++ {
+		//导航标签名
 		name, errn := cfg.Get("[" + strconv.Itoa(i) + "].label")
 		if nil != errn {
 			log.Println(errn)
 		}
+		//导航标签链接 支持相对路径
 		href, errh := cfg.Get("[" + strconv.Itoa(i) + "].href")
 		if nil != errh {
 			log.Println(errh)
 		}
+		//a标签target属性 默认为在当前页面打开
 		target, errt := cfg.Get("[" + strconv.Itoa(i) + "].target")
 		if nil != errt {
 			log.Println(errt)
 		}
 
 		nav := NavConfig{name, href, target}
-		navBarList = append(navBarList, nav)
+		NavBarList = append(NavBarList, nav)
 
 	}
-	log.Println(navBarList)
+	log.Println(NavBarList)
 }
 
 //root 资源文件的相对路径resources yamlData 读取配置文件的键值对
@@ -782,17 +770,22 @@ func (baseFactory *BaseFactory) Generate(root string) {
 	//博客初始化处理
 	yp := new(utils.YamlParser)
 	yamlData := yp.Parse(root)
-	baseFactory.PreProcessPosts(root,yamlData)
-	baseFactory.GenerateIndex(root,yamlData)//生成index.html
-	baseFactory.GenerateBlogList(root, yamlData)//生成博客列表页面
-	baseFactory.GeneratePosts(root, yamlData)//生成博客文章页面
-	baseFactory.GenerateArchives(root, yamlData)//生成按日期归档页面
-	baseFactory.GeneratePages(root, yamlData)//pages/about.md about.html
-	baseFactory.GenerateClassify(root, yamlData)//pages/about.md
-	baseFactory.GeneratePnotelogin(root,yamlData)//生成pnote admin or guest login
+
+	//===============
+	var rf = new(ProcessPosts)
+	rf.Dispose(root)
+
+	baseFactory.PreProcessPosts(root, yamlData)
+	baseFactory.GenerateIndex(root, yamlData)      //生成index.html
+	baseFactory.GenerateBlogList(root, yamlData)   //生成博客列表页面
+	baseFactory.GeneratePosts(root, yamlData)      //生成博客文章页面
+	baseFactory.GenerateArchives(root, yamlData)   //生成按日期归档页面
+	baseFactory.GeneratePages(root, yamlData)      //pages/about.md about.html
+	baseFactory.GenerateClassify(root, yamlData)   //pages/about.md
+	baseFactory.GeneratePnotelogin(root, yamlData) //生成pnote admin or guest login
 
 	//pNote初始化处理
 	var pNoteService = new(PNoteService)
 	pNoteService.PreProcessNotes()
-	pNoteService.GeneratorPnotelist(root,yamlData)
+	pNoteService.GeneratorPnotelist(root, yamlData)
 }

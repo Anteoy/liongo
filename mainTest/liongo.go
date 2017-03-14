@@ -4,25 +4,10 @@ import (
 	"fmt"
 	"github.com/Anteoy/liongo/service"
 	"github.com/Anteoy/liongo/utils"
+	. "github.com/Anteoy/liongo/constant"
 )
 
-const VERSION = "0.0.1"
 
-const (
-	USAGE = `
-liongo is a static site generator in Go
-
-Usage:
-
-        liongo command [args...]
-
-The commands are:
-
-	build	        			build and generate site.
-	version         			print liongo version
-
-`
-)
 
 var httpAddr = ":8080"
 

@@ -3,40 +3,20 @@ package main
 import (
 	"flag"
 	"fmt"
-	"os"
 	Build "github.com/Anteoy/liongo/service"
-	"net/http"
+	. "github.com/Anteoy/liongo/constant"
 	"log"
+	"net/http"
+	"os"
 
-	"github.com/Anteoy/liongo/newPosts"
-	"strings"
 	"github.com/Anteoy/liongo/controller"
+	"github.com/Anteoy/liongo/newPosts"
 	"github.com/Anteoy/liongo/utils"
+	"strings"
 )
 
-const VERSION = "0.1.0"
 
-const (
-	USAGE = `
-liongo is a static site generator in Go
-
-Usage:
-
-        liongo command [args...]
-
-The commands are:
-
-	build	        			build and generate site.
-	run					run the site of blog
-		--note				run with the own note
-	new	[]				new blog ,generate the new site
-	version         			print liongo version
-
-`
-)
-
-var httpAddr = ":8080"
-
+var httpPort = ":8080"
 
 func main() {
 	flag.Parse()
@@ -55,38 +35,38 @@ func main() {
 	case "run":
 		Build.Build()
 		if argsLength == 2 {
-			httpAddr = args[1]
+			httpPort = args[1]
 		}
 		if argsLength == 3 && strings.EqualFold(args[1], "-p") {
-			httpAddr = ":"+args[2]
+			httpPort = ":" + args[2]
 		}
-		if argsLength == 2 && strings.EqualFold(args[1],"--note"){
+		if argsLength == 2 && strings.EqualFold(args[1], "--note") {
 			fmt.Println("starting run with note !!!")
 
-			pNoteController:=new(controller.PNoteController)
+			pNoteController := new(controller.PNoteController)
 			http.HandleFunc("/login", pNoteController.Login)
-			http.HandleFunc("/notes",pNoteController.GetNote)
+			http.HandleFunc("/notes", pNoteController.GetNote)
 			//路由上传接口
-			http.HandleFunc("/PNCommit",pNoteController.PNCommit)
+			http.HandleFunc("/PNCommit", pNoteController.PNCommit)
 			pNoteService := new(Build.PNoteService)
 			//pNoteService.DealNoteUpload(ss)
 			yp := new(utils.YamlParser)
 			yamlData := yp.Parse("../resources")
-			pNoteService.GetNoteByName(yamlData,nil,nil)//从mgo中搜集并生成所有notes
+			pNoteService.GetNoteByName(yamlData, nil, nil) //从mgo中搜集并生成所有notes
 			//http.HandleFunc("/lionnote", func() {//TODO
 			//
 			//})
 		}
-		fmt.Println("Listen at ", httpAddr)
+		fmt.Println("Listen at ", httpPort)
 		http.Handle("/", http.FileServer(http.Dir("../views/serve")))
-		err := http.ListenAndServe(":8080",nil)// TODO httpAddr
-		if err!=nil{
-			log.Fatal("Start error",err)
+		err := http.ListenAndServe(":8080", nil) // TODO httpAddr
+		if err != nil {
+			log.Fatal("Start error", err)
 		}
 	case "new":
 		args2 := args[1]
 		//如果第二个参数为空 则直接返回并输出提示信息
-		if args2 == "" && len(args2)==0 {
+		if args2 == "" && len(args2) == 0 {
 			UseInfo()
 			os.Exit(1)
 		}

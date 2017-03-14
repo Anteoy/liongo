@@ -3,16 +3,15 @@ package service
 import (
 	"log"
 	"github.com/Anteoy/liongo/utils"
+	. "github.com/Anteoy/liongo/constant"
 	"os"
 )
-const (
-	RENDER_DIR = "../resources"
-)
+
 func Build() {
 	//publish
-	if !utils.IsExists(PUBLISH) {
+	if !utils.IsExists(PUBLISH_DIR) {
 		//创建777权限目录
-		err := os.Mkdir(PUBLISH, 0777)
+		err := os.Mkdir(PUBLISH_DIR, 0777)
 		if err != nil {
 			log.Panic("create publish dir error -- " + err.Error())
 		}
@@ -21,17 +20,17 @@ func Build() {
 	var rf = new(BaseFactory)
 	rf.Generate(RENDER_DIR)
 	//复制assets
-	err := utils.CopyDir(RENDER_DIR+"/assets", PUBLISH +"/assets")
+	err := utils.CopyDir(RENDER_DIR+"/assets", PUBLISH_DIR +"/assets")
 	if err != nil {
 		log.Println(err)
 	}
 	//复制网站图标自定义文件
-	err = utils.CopyDir(RENDER_DIR+"/images/icon", PUBLISH)
+	err = utils.CopyDir(RENDER_DIR+"/images/icon", PUBLISH_DIR)
 	//复制网站images
-	err = utils.CopyDir(RENDER_DIR+"/images", PUBLISH+"/images")
-	err = utils.CopyDir(RENDER_DIR+"/css", PUBLISH+"/css")
+	err = utils.CopyDir(RENDER_DIR+"/images", PUBLISH_DIR +"/images")
+	err = utils.CopyDir(RENDER_DIR+"/css", PUBLISH_DIR +"/css")
 	//复制pnote upload commit.html
-	err = utils.CopyDir(RENDER_DIR+"/html", PUBLISH+"/protohtml")
+	err = utils.CopyDir(RENDER_DIR+"/html", PUBLISH_DIR +"/protohtml")
 	log.Println("blog process ok！")
 
 
