@@ -7,6 +7,7 @@ import (
 	"github.com/Anteoy/liongo/dao/mongo"
 	"github.com/Anteoy/liongo/modle"
 	. "github.com/Anteoy/liongo/constant"
+	. "github.com/Anteoy/liongo/utils"
 	m "github.com/Anteoy/liongo/modle"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -175,7 +176,7 @@ func (p *PNoteService) GeneratorPnotelist(root string, yamls map[string]interfac
 		fmt.Println(value.months)
 		fmt.Println(value.Year) //.Year
 	}
-	m := map[string]interface{}{"archives": allNotes, "nav": navBarList, "cats": classifies} ////注意 这里如果传入参数有误 将会影响到tmp生成的完整性 如footer等 并且此时程序不会报错 但会产生意想不到的结果
+	m := map[string]interface{}{"archives": allNotes, "nav": NavBarList, "cats": Classifies} ////注意 这里如果传入参数有误 将会影响到tmp生成的完整性 如footer等 并且此时程序不会报错 但会产生意想不到的结果
 	exErr := t.Execute(fout, m)
 	return exErr
 }
@@ -190,24 +191,24 @@ func testparseTemplate(root, tpl string, cfg *yaml.File) *template.Template {
 	}
 
 	file := root + "templates/" + themeFolder + "/" + tpl + ".tpl"
-	if !isExists(file) {
+	if !IsExists(file) {
 		log.Println(file + " can not be found!")
 		os.Exit(1)
 	}
 	log.Println(cfg.Get)
 	t := template.New(tpl + ".tpl")
 	t.Funcs(template.FuncMap{"get": cfg.Get})
-	t.Funcs(template.FuncMap{"unescaped": unescaped})
+	t.Funcs(template.FuncMap{"unescaped": Unescaped})
 
 	headerTpl := root + "templates/" + themeFolder + "/common/" + COMMON_HEADER_FILE
 	footerTpl := root + "templates/" + themeFolder + "/common/" + COMMON_FOOTER_FILE
 
-	if !isExists(headerTpl) {
+	if !IsExists(headerTpl) {
 		log.Println(headerTpl + " can not be found!")
 		os.Exit(1)
 	}
 
-	if !isExists(footerTpl) {
+	if !IsExists(footerTpl) {
 		log.Println(footerTpl + " can not be found!")
 		os.Exit(1)
 	}
@@ -330,7 +331,7 @@ func (p *PNoteService) GetNoteByName(yamls map[string]interface{}, w http.Respon
 		yCfg := yamls["config.yml"]
 		var cfg = yCfg.(*yaml.File)
 		//向模板中注入函数
-		t.Funcs(template.FuncMap{"unescaped": unescaped})
+		t.Funcs(template.FuncMap{"unescaped": Unescaped})
 		t.Funcs(template.FuncMap{"get": cfg.Get})
 
 		//openfile := "../resources/templates/default/pSpecificNote.tpl"
@@ -353,7 +354,7 @@ func (p *PNoteService) GetNoteByName(yamls map[string]interface{}, w http.Respon
 			log.Error(errp)
 			panic(err)
 		}
-		m := map[string]interface{}{"fi": value, "nav": navBarList, "cats": classifies}
+		m := map[string]interface{}{"fi": value, "nav": NavBarList, "cats": Classifies}
 		//执行模板的merge操作，输出到fout
 		t.Execute(fout, m)
 	}

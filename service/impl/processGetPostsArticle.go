@@ -7,7 +7,6 @@ import (
 	"regexp"
 	"github.com/Anteoy/liongo/utils"
 	. "github.com/Anteoy/liongo/constant"
-	. "github.com/Anteoy/liongo/service"
 	"github.com/Anteoy/go-gypsy/yaml"
 	"time"
 	"log"
@@ -19,88 +18,18 @@ import (
 	"sort"
 )
 
-type ProcessPosts struct {}
-
-////导航 struct
-////导航标识名 链接 a标签target属性
-//type NavConfig struct {
-//	Name   string
-//	Href   string
-//	Target string
-//}
-//
-//
-//type TagConfig struct {
-//	Name         string
-//	ArticleTitle string
-//	ArticleLink  string
-//}
-//
-////预处理完整article结构体
-//type ArticleConfig struct {
-//	Title     string      //标题
-//	Date      string      //时间
-//	ShortDate string      //简短时间 不用精确比较
-//	Category  string      //所属分类
-//	Tags      []TagConfig //所属标签
-//	Abstract  string      //摘要
-//	Author    string      //作者
-//	Time      time.Time   //精确时间
-//	Link      string      //博客链接
-//	Content   string      //完整内容
-//	Nav       []NavConfig
-//}
-//
-////基础博客结构体 用于分类和标签结构体组装
-////链接地址 标题
-//type ArticleBase struct {
-//	Link  string
-//	Title string
-//}
-//
-////分类结构体
-////分类名 ArticleBase数组 数组length
-//type Category struct {
-//	Name     string
-//	Articles []ArticleBase
-//	Length   int
-//}
-//
-//type ByDate struct {
-//	Artic
-//}
-//
-////sort.Sort() 入参需覆写提供如下方法
-//func (a Artic) Len() int      { return len(a) }
-//func (a Artic) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
-//
-//// the time instant t is after u 意思为 i的时间是否在j的后面
-//func (a ByDate) Less(i, j int) bool { return a.Artic[i].Time.After(a.Artic[j].Time) }
-//
-//
-//type Artic []*ArticleConfig
-//
-//
-//
-//var(
-//	articles        Artic                          //完整信息
-//	articleListSize int                     = 5000 //博文不能超过5000
-//	navBarList      []NavConfig                    //导航条数组
-//
-//)
+type ProcessGetPostsArticle struct {}
 
 
 //加载posts文件夹下的md博文信息
-func (processPosts *ProcessPosts)Dispose(dir string)  {
+func (processPosts *ProcessGetPostsArticle)Dispose(dir string)  {
 
-	yp := new(utils.YamlParser)
-	yamls := yp.Parse(dir)
 
 	if !strings.HasSuffix(dir, "/") {
 		dir += "/"
 	}
 	//获取config.yml键值对节点信息
-	yCfg := yamls["config.yml"]
+	yCfg := YamlData["config.yml"]
 
 	//Comma-ok断言 不推荐下面第二种方式 下面第二种如果转换失败会直接panic
 	var cfg *yaml.File
@@ -109,7 +38,7 @@ func (processPosts *ProcessPosts)Dispose(dir string)  {
 	}
 	//cfg = yCfg.((*yaml.File))
 	//存放article的常量数组 固定size 5000
-	articles = make([]*ArticleConfig, 0, articleListSize)
+	Articles = make([]*ArticleConfig, 0, ArticleListSize)
 	//读取posts下article开始
 	// returns
 	// a list of directory entries sorted by filename.
@@ -245,7 +174,7 @@ func processArticleFile(filePath, fileName string) (string, ArticleConfig, error
 
 	shortDate := t.UTC().Format("Jan 2, 2006")
 
-	arInfo := ArticleConfig{title, date, shortDate, cat, tags, abstract, author, t, "", "", navBarList}
+	arInfo := ArticleConfig{title, date, shortDate, cat, tags, abstract, author, t, "", "", NavBarList}
 
 	//log.Println(markdownStr)
 	return markdownStr, arInfo, nil
@@ -264,13 +193,13 @@ func processArticleUrl(ar ArticleConfig) string {
 //添加article到articles 并对此进行排序
 func addAndSortArticles(arInfo ArticleConfig) {
 	//log.Println(len(articles))
-	artLen := len(articles)
+	artLen := len(Articles)
 	//articleListSize 初始长度
-	if artLen < articleListSize {
-		articles = append(articles, &arInfo)
+	if artLen < ArticleListSize {
+		Articles = append(Articles, &arInfo)
 	}
-	log.Println(len(articles))
-	sort.Sort(ByDate{articles})
+	log.Println(len(Articles))
+	sort.Sort(ByDate{Articles})
 }
 
 

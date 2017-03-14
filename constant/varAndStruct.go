@@ -16,7 +16,7 @@ func (m MonthArchives) Swap(i, j int) {
 }
 
 func (m MonthArchives) Less(i, j int) bool {
-	return m[i].month > m[j].month
+	return m[i].MonthEn > m[j].MonthEn
 }
 
 
@@ -50,20 +50,21 @@ var (
 	Pages           []*CustomPage                  //新增定制页面数组 包含页面id.md md title 和md content
 	YearArchivemap  map[string]*YearArchive        //key year value *YearArchive
 	AllArchive      YearArchives                   //[]*YearArchive
+	YamlData map[string]interface{}		       //Yaml 数据map
 
 )
 
 // Year 年 Months []*MonthArchive
 type YearArchive struct {
-	Year   string
-	Months []*MonthArchive
-	Monthstodo map[string]*MonthArchive //months
+	Year             string
+	Months           []*MonthArchive
+	MonthsArchiveMap map[string]*MonthArchive //months
 }
 
 // MonthArchive
 type MonthArchive struct {
 	Month    string
-	month    time.Month
+	MonthEn  time.Month
 	Articles []*ArticleBase
 }
 
