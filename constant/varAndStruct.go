@@ -106,6 +106,7 @@ type ArticleConfig struct {
 	Nav       []NavConfig
 }
 
+//标签结构体 标签名，对应文章标题和链接
 type TagConfig struct {
 	Name         string
 	ArticleTitle string
