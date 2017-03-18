@@ -2,7 +2,6 @@
 //务必记得 make 仅适用于 map，slice 和 channel，并且返回的不是指针。应当用 new获得特定的指针。
 package main
 
-import "fmt"
 
 type Vertex struct {
 	X, Y float64
