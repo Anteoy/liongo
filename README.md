@@ -23,9 +23,11 @@ It's contains the "liongo build",it will use the build file to run a serve at de
 liongo run --note
 ```
 It's can open you online note,you must install the mongodb and mysql in your server,before this,you should see the config of the code.
+```
 liongo run :[your port]
 ```
 set the run port
+```
 ##new
 ```
 liongo new [yourblogtitle]
