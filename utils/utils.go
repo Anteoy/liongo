@@ -114,45 +114,46 @@ func Unescaped(str string) interface{} {
 
 }
 
-//传入路径和配置信息 返回一个template config.yml tpl 主题所使用的或自定义tmp名 融合footer header body为一个tpl
-func ParseTemplate(root, tpl string, cfg *yaml.File) *template.Template {
+//传入路径和配置信息 返回一个template 主题所使用的或自定义tpl名 融合footer header body为一个tpl
+func ParseTemplate(root, tplName string, cfg *yaml.File) *template.Template {
 	//默认default
 	themeFolder, errt := cfg.Get("theme")
 	if errt != nil {
 		log.Println("get theme error!check config.yml at the theme value!")
 		os.Exit(1)
 	}
-
-	file := root + "templates/" + themeFolder + "/" + tpl + ".tpl"
-	if !IsExists(file) {
-		log.Println(file + " can not be found!")
+	//需组装模板tpl文件路径
+	filePath := root + "templates/" + themeFolder + "/" + tplName + ".tpl"
+	if !IsExists(filePath) {
+		log.Println(filePath + " can not be found!")
 		os.Exit(1)
 	}
-	log.Println(cfg.Get)
-	t := template.New(tpl + ".tpl")
+	//使用传入名字新建一个
+	t := template.New(tplName + ".tpl")
+	//装载执行函数
 	t.Funcs(template.FuncMap{"get": cfg.Get})
 	t.Funcs(template.FuncMap{"unescaped": Unescaped})
 
-	headerTpl := root + "templates/" + themeFolder + "/common/" + COMMON_HEADER_FILE
-	footerTpl := root + "templates/" + themeFolder + "/common/" + COMMON_FOOTER_FILE
+	headerTplPath := root + "templates/" + themeFolder + "/common/" + COMMON_HEADER_FILE
+	footerTplPath := root + "templates/" + themeFolder + "/common/" + COMMON_FOOTER_FILE
 
-	if !IsExists(headerTpl) {
-		log.Println(headerTpl + " can not be found!")
+	if !IsExists(headerTplPath) {
+		log.Println(headerTplPath + " can not be found!")
 		os.Exit(1)
 	}
 
-	if !IsExists(footerTpl) {
-		log.Println(footerTpl + " can not be found!")
+	if !IsExists(footerTplPath) {
+		log.Println(footerTplPath + " can not be found!")
 		os.Exit(1)
 	}
-
-	t, err := t.ParseFiles(file, headerTpl, footerTpl)
+	//合并
+	t, err := t.ParseFiles(filePath, headerTplPath, footerTplPath)
 	if err != nil {
-		log.Println("parse " + tpl + " Template error!" + err.Error())
+		log.Println("parse " + tplName + " Template error!" + err.Error())
 		os.Exit(1)
 	}
 
-	log.Println("parse " + tpl + " Template complete!")
+	log.Println("parse " + tplName + " Template complete!")
 	return t
 }
 

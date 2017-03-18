@@ -24,7 +24,7 @@ type ProcessGetPostsArticle struct {}
 //加载posts文件夹下的md博文信息
 func (processPosts *ProcessGetPostsArticle)Dispose(dir string)  {
 
-
+	//添加后缀
 	if !strings.HasSuffix(dir, "/") {
 		dir += "/"
 	}
@@ -37,8 +37,8 @@ func (processPosts *ProcessGetPostsArticle)Dispose(dir string)  {
 		cfg = value
 	}
 	//cfg = yCfg.((*yaml.File))
-	//存放article的常量数组 固定size 5000
-	Articles = make([]*ArticleConfig, 0, ArticleListSize)
+	//存放article的常量数组 数组的长度并且也是切片的初始长度为0 capacity（容量） 5000
+	Articlesl = make([]*ArticleConfig, 0, ArticleListSize)
 	//读取posts下article开始
 	// returns
 	// a list of directory entries sorted by filename.
@@ -50,18 +50,19 @@ func (processPosts *ProcessGetPostsArticle)Dispose(dir string)  {
 	//对所有md文件进行遍历处理
 	for _, fileInfo := range fileInfos {
 		if !fileInfo.IsDir() {
-			log.Println("begin process article -- " + fileInfo.Name())
+			log.Println("begin process article ： " + fileInfo.Name())
 			fileName := fileInfo.Name()
-			//获取posts文件夹下md文件信息 原始markdownstring config fi = ArticleConfig
-			mardownStr, fi, err := processArticleFile(dir +POST_DIR+"/"+fileName, fileName)
+			//获取posts文件夹下md文件信息 原始markdownstring config ArticleConfig
+			//返回md正文，读取md配置组合，error
+			mardownStr, articleConfig, err := processArticleFile(dir +POST_DIR+"/"+fileName, fileName)
 			if err != nil {
-				log.Println("preprocess article file error!")
+				log.Println("preprocess article file error!"+ fileName)
 				os.Exit(1)
 			}
 			//去掉文件.md后缀
-			trName := strings.TrimSuffix(fileName, ".md")
-			//根据.md中配置生成年月日文件路径字符串 返回html前一级路径
-			p := processArticleUrl(fi)
+			htmlName := strings.TrimSuffix(fileName, ".md")
+			//根据.md中配置生成年月日文件路径字符串 返回html前一级路径(年月日路径字符串)
+			p := processArticleUrl(articleConfig)
 			log.Println(p)
 			//markdown字符串转为ASCII html代码 []byte(mardownStr) string强转为[]byte
 			htmlByte := blackfriday.MarkdownCommon([]byte(mardownStr))
@@ -69,37 +70,34 @@ func (processPosts *ProcessGetPostsArticle)Dispose(dir string)  {
 			htmlStr := html.UnescapeString(string(htmlByte))
 			re := regexp.MustCompile(`<pre><code>([\s\S]*?)</code></pre>`)
 			htmlStr = re.ReplaceAllString(htmlStr, `<pre class="prettyprint linenums">${1}</pre>`)
-			//增加正文和链接 组装ArticleConfig fi
-			fi.Content = htmlStr
-			fi.Link = p + trName + ".html"
-			//if abstract is empty,auto gen it
-			if fi.Abstract == "" {
+			//增加正文和链接 组装ArticleConfig
+			articleConfig.Content = htmlStr
+			articleConfig.Link = p + htmlName + ".html"
+			//装配摘要Abstract
+			if articleConfig.Abstract == "" {
 				var limit int = 1000
-				rs := []rune(htmlStr)
+				rs := []rune(htmlStr)//int32
 				if len(rs) < 1000 {
 					limit = len(rs)
 				}
 				//组装ArticleConfig摘要
 				abstract := utils.SubStr(htmlStr, 0, limit)
-				fi.Abstract = utils.TrimHTML(abstract)
+				articleConfig.Abstract = utils.TrimHTML(abstract)
 			}
-			if fi.Author == "" {
+			//装配作者
+			if articleConfig.Author == "" {
 				//从配置文件获取author
 				author, cerr := cfg.Get("meta.author")
 				if cerr != nil {
 					log.Println(cerr)
 				}
-				fi.Author = author
+				articleConfig.Author = author
 			}
-			//添加article到articles 并对此进行排序 传入前面获取的fi(ArticleConfig) TODO 提高效率
-			addAndSortArticles(fi)
+			//添加article到articles 并对此进行排序 传入前面获取的ArticleConfig TODO 提高效率
+			addAndSortArticles(articleConfig)
 		}
 	}
-	////分类预处理
-	//generateClassifies()
-	//生成自定义多余页面导航条 存入navBarList 数组
-	////这里配置的示例github导航
-	//generateNavBar(yamls)
+
 }
 
 //获取posts文件夹下md文件信息 原始markdownstring config
@@ -183,6 +181,7 @@ func processArticleFile(filePath, fileName string) (string, ArticleConfig, error
 
 //ArticleConfig 解析获取的.md --- --- 中配置文件struct
 //string 根据年月日生成article路径
+//int 转为 string strconv.Itoa.
 func processArticleUrl(ar ArticleConfig) string {
 	y := strconv.Itoa(ar.Time.Year())
 	m := strconv.Itoa(int(ar.Time.Month()))
@@ -193,13 +192,14 @@ func processArticleUrl(ar ArticleConfig) string {
 //添加article到articles 并对此进行排序
 func addAndSortArticles(arInfo ArticleConfig) {
 	//log.Println(len(articles))
-	artLen := len(Articles)
-	//articleListSize 初始长度
+	artLen := len(Articlesl)
+	//slice最大长度
 	if artLen < ArticleListSize {
-		Articles = append(Articles, &arInfo)
+		//必须使用引用
+		Articlesl = append(Articlesl, &arInfo)
 	}
-	log.Println(len(Articles))
-	sort.Sort(ByDate{Articles})
+	log.Println(len(Articlesl))
+	sort.Sort(ByDate{Articlesl})
 }
 
 

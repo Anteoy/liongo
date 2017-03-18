@@ -27,7 +27,7 @@ func (processUserDefinedPages *ProcessUserDefinedPages)Dispose(dir string)  {
 	if value, ok := yCfg.(*yaml.File); ok {
 		cfg = value
 	}
-	//获取配置文件页面信息
+	//获取配置文件页面信息 得到Pages
 	getPagesInfo(YamlData)
 
 	t := ParseTemplate(dir, PAGES_TPL, cfg)

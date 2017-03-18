@@ -31,7 +31,8 @@ func (processPnoteloginPage *ProcessPnoteloginPage)Dispose(root string)  {
 		os.Exit(1)
 	}
 	defer fout.Close()
-	exErr := t.Execute(fout, nil)
+	m := map[string]interface{}{"nav": NavBarList}
+	exErr := t.Execute(fout, m)
 	if exErr != nil {
 		log.Fatal(exErr) //TODO
 	}

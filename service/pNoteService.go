@@ -26,72 +26,50 @@ import (
 type PNoteService struct{}
 
 type MonthNotes []*MonthNote
-
 //用于sort
 func (m MonthNotes) Len() int {
 	return len(m)
 }
-
 func (m MonthNotes) Swap(i, j int) {
 	m[i], m[j] = m[j], m[i]
 }
-
 func (m MonthNotes) Less(i, j int) bool {
 	return m[i].month > m[j].month
 }
 
 //缓存mongo note数据信息
-
 //某年的note
 type YearNote struct {
 	Year   string                //如2017
 	Months []*MonthNote          // 如1,2,3月
 	months map[string]*MonthNote //如 1月的MonthNote
 }
-
 //某月的note
 type MonthNote struct {
 	Month     string     //几月
 	month     time.Month //// A Month specifies a month of the year (January = 1, ...).
 	NotesBase []*m.NoteBase
 }
-
 //所有的note储存
 type YearNotes []*YearNote
-
 //用于sort
 func (y YearNotes) Len() int {
 	return len(y)
 }
-
 func (y YearNotes) Swap(i, j int) {
 	y[i], y[j] = y[j], y[i]
 }
-
 func (y YearNotes) Less(i, j int) bool {
 	return y[i].Year > y[j].Year
 }
-
 type Notes []*m.Note
-
 type NotesByDate struct {
 	Notes
 }
-
 //sort.Sort() 入参需覆写提供如下方法
 func (a Notes) Len() int                 { return len(a) }
 func (a Notes) Swap(i, j int)            { a[i], a[j] = a[j], a[i] }
 func (a NotesByDate) Less(i, j int) bool { return a.Notes[i].Time.After(a.Notes[j].Time) }
-
-//添加article到articles 并对此进行排序 每次传入一个Note
-func AddAndSortNotes(noteInfo m.Note) {
-	artLen := len(notes)
-	if artLen < notesListSize {
-		notes = append(notes, &noteInfo)
-	}
-	log.Println(len(notes))
-	sort.Sort(NotesByDate{notes})
-}
 
 //初始化待用变量
 var (
@@ -131,7 +109,7 @@ func (p *PNoteService) PreProcessNotes() error {
 	return nil
 }
 
-//string 根据年月日生成note link TODO
+//string 根据年月日生成note link
 func processNoteUrl(ar m.Note) string {
 	y := strconv.Itoa(ar.Time.Year())
 	m := strconv.Itoa(int(ar.Time.Month()))
@@ -176,7 +154,7 @@ func (p *PNoteService) GeneratorPnotelist(root string, yamls map[string]interfac
 		fmt.Println(value.months)
 		fmt.Println(value.Year) //.Year
 	}
-	m := map[string]interface{}{"archives": allNotes, "nav": NavBarList, "cats": Classifies} ////注意 这里如果传入参数有误 将会影响到tmp生成的完整性 如footer等 并且此时程序不会报错 但会产生意想不到的结果
+	m := map[string]interface{}{"archives": allNotes, "nav": NavBarList, "cats": Classifiesm} ////注意 这里如果传入参数有误 将会影响到tmp生成的完整性 如footer等 并且此时程序不会报错 但会产生意想不到的结果
 	exErr := t.Execute(fout, m)
 	return exErr
 }
@@ -223,7 +201,7 @@ func testparseTemplate(root, tpl string, cfg *yaml.File) *template.Template {
 	return t
 }
 
-//根据事件生成有序的notes list
+//根据时间生成有序的notes list
 func generatePnotelist() error {
 	yearNotesmap = make(map[string]*YearNote) //初始化存储某年notes的map
 	for _, iter := range notes {              //排序好的Note指针数组
@@ -347,6 +325,14 @@ func (p *PNoteService) GetNoteByName(yamls map[string]interface{}, w http.Respon
 			log.Error(errp)
 			panic(err)
 		}
+		//创建前检查notes文件夹是否存在
+		if !IsExists(PUBLISH_DIR+"/notes") {
+			//创建777权限目录
+			err := os.Mkdir(PUBLISH_DIR+"/notes", 0777)
+			if err != nil {
+				log.Panic("create publish dir error -- " + err.Error())
+			}
+		}
 		//创建html文件
 		targetFile := PUBLISH_DIR + "/notes/" + value.Title + ".html"
 		fout, err := os.Create(targetFile)
@@ -354,7 +340,7 @@ func (p *PNoteService) GetNoteByName(yamls map[string]interface{}, w http.Respon
 			log.Error(errp)
 			panic(err)
 		}
-		m := map[string]interface{}{"fi": value, "nav": NavBarList, "cats": Classifies}
+		m := map[string]interface{}{"fi": value, "nav": NavBarList, "cats": Classifiesm}
 		//执行模板的merge操作，输出到fout
 		t.Execute(fout, m)
 	}

@@ -29,7 +29,7 @@ func (processIndex *ProcessIndexPage)Dispose(dir string) {
 		os.Exit(1)
 	}
 	defer fout.Close()
-	m := map[string]interface{}{"nav": NavBarList, "cats": Classifies}
+	m := map[string]interface{}{"nav": NavBarList, "cats": Classifiesm}
 	exErr := t.Execute(fout, m)
 	if exErr != nil {
 		log.Fatal(exErr) //TODO

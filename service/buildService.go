@@ -8,10 +8,10 @@ import (
 )
 
 func Build() {
-	//publish
+	//../views/serve
 	if !utils.IsExists(PUBLISH_DIR) {
 		//创建777权限目录
-		err := os.Mkdir(PUBLISH_DIR, 0777)
+		err := os.MkdirAll(PUBLISH_DIR, 0777)
 		if err != nil {
 			log.Panic("create publish dir error -- " + err.Error())
 		}

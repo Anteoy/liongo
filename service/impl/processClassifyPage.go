@@ -33,7 +33,7 @@ func  (processClassifyPage *ProcessClassifyPage)Dispose(dir string) {
 	}
 	defer fout.Close()
 
-	m := map[string]interface{}{"cats": Classifies, "nav": NavBarList}
+	m := map[string]interface{}{"cats": Classifiesm, "nav": NavBarList}
 	exErr := t.Execute(fout, m)
 	if exErr != nil {
 		log.Fatal(exErr)
