@@ -7,17 +7,17 @@ import "fmt"
 type Vertex struct {
 	X, Y float64
 }
-func main() {
-	rect1 := new(Vertex)
-	rect2 := &Vertex{1, 2}
-	//分别打印 值，类型，*rect1解除引用的值
-	fmt.Printf("%v  %T  %v \n",  rect1,  rect1,  *rect1)
-	fmt.Printf("%v  %T  %v \n",  rect2,  rect2,  *rect2)
-
-	rect3 := Vertex{X: 5, Y: 6}
-	fmt.Printf("%v  %T\n",  rect3,  rect3)
-
-}
+//func main() {
+//	rect1 := new(Vertex)
+//	rect2 := &Vertex{1, 2}
+//	//分别打印 值，类型，*rect1解除引用的值
+//	fmt.Printf("%v  %T  %v \n",  rect1,  rect1,  *rect1)
+//	fmt.Printf("%v  %T  %v \n",  rect2,  rect2,  *rect2)
+//
+//	rect3 := Vertex{X: 5, Y: 6}
+//	fmt.Printf("%v  %T\n",  rect3,  rect3)
+//
+//}
 // 输出：
 /*
 &{0 0}  *main.Vertex  {0 0}
