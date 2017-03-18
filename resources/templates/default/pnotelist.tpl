@@ -8,7 +8,7 @@
                 <li><a href="/pages/about.html" >About</a></li>
                 <li><a href="/pnotelogin.html" class="on-sel">Pnote</a></li>
                 {{range .nav}}
-                <li><a href="{{.Href}}" target="{{.Target}}">{{.Name}}</a></li>
+                    <li><a href="{{.Href}}" target="{{.Target}}">{{.Name}}</a></li>
                 {{end}}
             </ul>
 </div>

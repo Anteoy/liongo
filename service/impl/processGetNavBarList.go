@@ -45,8 +45,8 @@ func (processAddNav *ProcessGetNavBarList)Dispose(dir string)  {
 		}
 
 		nav := NavConfig{name, href, target}
-		NavBarList = append(NavBarList, nav)
+		NavBarsl = append(NavBarsl, nav)
 
 	}
-	log.Println(NavBarList)
+	log.Println(NavBarsl)
 }

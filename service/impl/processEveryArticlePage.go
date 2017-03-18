@@ -38,7 +38,7 @@ func (processEveryArticlePage *ProcessEveryArticlePage)Dispose(root string)  {
 			os.Exit(1)
 		}
 		defer fout.Close()
-		m := map[string]interface{}{"fi": articleConfig, "nav": NavBarList, "cats": Classifiesm}
+		m := map[string]interface{}{"fi": articleConfig, "nav": NavBarsl, "cats": Classifiesm}
 		t.Execute(fout, m)
 	}
 }

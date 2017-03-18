@@ -29,14 +29,22 @@ func (a ByDate) Less(i, j int) bool { return a.ArticleConfigsl[i].Time.After(a.A
 
 
 var (
-	ArticleListSize int                     = 5000 //博文不能超过5000
-	Articlesl ArticleConfigsl                      //完整信息
-	Classifiesm      map[string]Category           //分类map
-	NavBarList      []NavConfig                    //导航条数组
-	Pages           []*CustomPage                  //新增定制页面数组 包含页面id.md md title 和md content
-	YearArchivemap  map[string]*YearArchive        //key year value *YearArchive
-	AllArchive YearArchivesl                   //[]*YearArchive
-	YamlData map[string]interface{}		       //Yaml 数据map
+	//博文不能超过5000
+	ArticleListSize int                     = 5000
+	//完整信息
+	Articlesl ArticleConfigsl
+	//分类map
+	Classifiesm      map[string]Category
+	//导航条数组.
+	NavBarsl      []NavConfig
+	//新增定制页面数组 包含页面id.md md title 和md content
+	Pages           []*CustomPage
+	//key year value *YearArchive
+	YearArchivemap  map[string]*YearArchive
+	//[]*YearArchive YearArchivesl slice
+	AllArchive YearArchivesl
+	//Yaml 数据map
+	YamlData map[string]interface{}
 
 )
 //基础博客结构体 用于分类和标签结构体组装

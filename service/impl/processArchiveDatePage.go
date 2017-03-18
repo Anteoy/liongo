@@ -36,7 +36,7 @@ func (processArchiveDatePage *ProcessArchiveDatePage)Dispose(dir string)  {
 	//时间归档处理
 	generateArchive()
 	//log.Println(allArchive)
-	m := map[string]interface{}{"archives": AllArchive, "nav": NavBarList,"cats": Classifiesm}
+	m := map[string]interface{}{"archives": AllArchive, "nav": NavBarsl,"cats": Classifiesm}
 	t.Execute(fout, m)
 }
 

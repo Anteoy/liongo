@@ -154,7 +154,7 @@ func (p *PNoteService) GeneratorPnotelist(root string, yamls map[string]interfac
 		fmt.Println(value.months)
 		fmt.Println(value.Year) //.Year
 	}
-	m := map[string]interface{}{"archives": allNotes, "nav": NavBarList, "cats": Classifiesm} ////注意 这里如果传入参数有误 将会影响到tmp生成的完整性 如footer等 并且此时程序不会报错 但会产生意想不到的结果
+	m := map[string]interface{}{"archives": allNotes, "nav": NavBarsl, "cats": Classifiesm} ////注意 这里如果传入参数有误 将会影响到tmp生成的完整性 如footer等 并且此时程序不会报错 但会产生意想不到的结果
 	exErr := t.Execute(fout, m)
 	return exErr
 }
@@ -340,7 +340,7 @@ func (p *PNoteService) GetNoteByName(yamls map[string]interface{}, w http.Respon
 			log.Error(errp)
 			panic(err)
 		}
-		m := map[string]interface{}{"fi": value, "nav": NavBarList, "cats": Classifiesm}
+		m := map[string]interface{}{"fi": value, "nav": NavBarsl, "cats": Classifiesm}
 		//执行模板的merge操作，输出到fout
 		t.Execute(fout, m)
 	}

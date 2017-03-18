@@ -83,7 +83,7 @@ func (processUserDefinedPages *ProcessUserDefinedPages)Dispose(dir string)  {
 		}
 		defer fout.Close()
 		//p .md article信息 nav 自定义的额外导航条信息 暂移除 "cats": categories "newly":articles[:NEWLY_ARTICLES_COUNT-1]
-		m := map[string]interface{}{"p": p, "nav": NavBarList}
+		m := map[string]interface{}{"p": p, "nav": NavBarsl}
 		t.Execute(fout, m)
 	}
 }

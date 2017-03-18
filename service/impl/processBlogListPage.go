@@ -33,7 +33,7 @@ func (processBlogList *ProcessBlogListPage)Dispose(dir string)  {
 	}
 	defer fout.Close()
 
-	m := map[string]interface{}{"ar": Articlesl[:], "nav": NavBarList, "cats": Classifiesm}
+	m := map[string]interface{}{"ar": Articlesl[:], "nav": NavBarsl, "cats": Classifiesm}
 	exErr := t.Execute(fout, m)
 	if exErr != nil {
 		log.Fatal(exErr)

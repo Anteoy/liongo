@@ -22,13 +22,13 @@
 		 	<div style="clear:both;"></div>
 		 </div>
         <div id="tag-index">
-        {{range $k,$v := .cats}}
-        	<h1><a name="{{$k}}">{{$k}}</a></h1>
-			{{range $v.Articles}}
-            <p><a href="/articles/{{.Link}}">{{.Title}}</a></p>
+            {{range $k,$v := .cats}}
+                <h1><a name="{{$k}}">{{$k}}</a></h1>
+                {{range $v.Articles}}
+                <p><a href="/articles/{{.Link}}">{{.Title}}</a></p>
+                {{end}}
             {{end}}
-       	{{end}}
         </div>
-		</div>
+    </div>
 </div>
 {{template "footer"}}
