@@ -11,7 +11,7 @@ type ArticleConfig struct {
 	Tags      []TagConfig //所属标签
 	Abstract  string      //摘要
 	Author    string      //作者
-	Time      time.Time   //精确时间
+	Time      time.Time   //精确时间 排序
 	Link      string      //博客链接
 	Content   string      //完整内容
 	Nav       []NavConfig

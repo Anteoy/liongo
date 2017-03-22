@@ -8,7 +8,7 @@ import (
 	"github.com/Anteoy/liongo/modle"
 	. "github.com/Anteoy/liongo/constant"
 	. "github.com/Anteoy/liongo/utils"
-	m "github.com/Anteoy/liongo/modle"
+	. "github.com/Anteoy/liongo/modle"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"html"
@@ -25,56 +25,10 @@ import (
 
 type PNoteService struct{}
 
-type MonthNotes []*MonthNote
-//用于sort
-func (m MonthNotes) Len() int {
-	return len(m)
-}
-func (m MonthNotes) Swap(i, j int) {
-	m[i], m[j] = m[j], m[i]
-}
-func (m MonthNotes) Less(i, j int) bool {
-	return m[i].month > m[j].month
-}
-
-//缓存mongo note数据信息
-//某年的note
-type YearNote struct {
-	Year   string                //如2017
-	Months []*MonthNote          // 如1,2,3月
-	months map[string]*MonthNote //如 1月的MonthNote
-}
-//某月的note
-type MonthNote struct {
-	Month     string     //几月
-	month     time.Month //// A Month specifies a month of the year (January = 1, ...).
-	NotesBase []*m.NoteBase
-}
-//所有的note储存
-type YearNotes []*YearNote
-//用于sort
-func (y YearNotes) Len() int {
-	return len(y)
-}
-func (y YearNotes) Swap(i, j int) {
-	y[i], y[j] = y[j], y[i]
-}
-func (y YearNotes) Less(i, j int) bool {
-	return y[i].Year > y[j].Year
-}
-type Notes []*m.Note
-type NotesByDate struct {
-	Notes
-}
-//sort.Sort() 入参需覆写提供如下方法
-func (a Notes) Len() int                 { return len(a) }
-func (a Notes) Swap(i, j int)            { a[i], a[j] = a[j], a[i] }
-func (a NotesByDate) Less(i, j int) bool { return a.Notes[i].Time.After(a.Notes[j].Time) }
-
 //初始化待用变量
 var (
-	notes         Notes
-	allNotes      YearNotes                   //所有使用年分类的Notes
+	notesl Notesl
+	allNotesl YearNotesl                   //所有使用年分类的Notes
 	yearNotesmap  map[string]*YearNote        //某年所有Note map
 	notesListSize int                  = 5000 //最大slice
 )
@@ -83,7 +37,7 @@ var (
 func (p *PNoteService) PreProcessNotes() error {
 
 	//存放article的常量数组 固定最大size 1000
-	notes = make([]*m.Note, 0, notesListSize) //make 初始化notes
+	notesl = make([]*Note, 0, notesListSize) //make 初始化notes
 	//从mongo中获取noteinfo
 	//获取连接
 	// c := mongo.Session.DB("liongo").C("note")
@@ -93,13 +47,13 @@ func (p *PNoteService) PreProcessNotes() error {
 	sess = <-(chan *mgo.Session)(ch) //must do
 	c := sess.DB("liongo").C("note")
 	//获取全部数据
-	err := c.Find(bson.M{}).All(&notes)
+	err := c.Find(bson.M{}).All(&notesl)
 	if err != nil {
 		log.Error(err)
 		panic(err)
 	}
-	sort.Sort(NotesByDate{notes})
-	for index, value := range notes {
+	sort.Sort(NotesByDate{notesl})
+	for index, value := range notesl {
 		fmt.Printf("notes[%d]=%d \n", index, value)
 		//TODO 处理 url
 		processNoteUrl(*value)
@@ -110,7 +64,7 @@ func (p *PNoteService) PreProcessNotes() error {
 }
 
 //string 根据年月日生成note link
-func processNoteUrl(ar m.Note) string {
+func processNoteUrl(ar Note) string {
 	y := strconv.Itoa(ar.Time.Year())
 	m := strconv.Itoa(int(ar.Time.Month()))
 	d := strconv.Itoa(ar.Time.Day())
@@ -142,7 +96,7 @@ func (p *PNoteService) GeneratorPnotelist(root string, yamls map[string]interfac
 	//时间归档处理
 	generatePnotelist()
 	//debug pipei tmp
-	for index, value := range allNotes {
+	for index, value := range allNotesl {
 		fmt.Printf("notes[%d]=%d \n", index, value)
 		//fmt.Println(value.Months)
 		for _, value1 := range value.Months {
@@ -151,10 +105,10 @@ func (p *PNoteService) GeneratorPnotelist(root string, yamls map[string]interfac
 				fmt.Println(value2.Link + " " + value2.Title)
 			}
 		}
-		fmt.Println(value.months)
+		fmt.Println(value.Monthsmap)
 		fmt.Println(value.Year) //.Year
 	}
-	m := map[string]interface{}{"archives": allNotes, "nav": NavBarsl, "cats": Classifiesm} ////注意 这里如果传入参数有误 将会影响到tmp生成的完整性 如footer等 并且此时程序不会报错 但会产生意想不到的结果
+	m := map[string]interface{}{"archives": allNotesl, "nav": NavBarsl, "cats": Classifiesm} ////注意 这里如果传入参数有误 将会影响到tmp生成的完整性 如footer等 并且此时程序不会报错 但会产生意想不到的结果
 	exErr := t.Execute(fout, m)
 	return exErr
 }
@@ -204,7 +158,7 @@ func testparseTemplate(root, tpl string, cfg *yaml.File) *template.Template {
 //根据时间生成有序的notes list
 func generatePnotelist() error {
 	yearNotesmap = make(map[string]*YearNote) //初始化存储某年notes的map
-	for _, iter := range notes {              //排序好的Note指针数组
+	for _, iter := range notesl {              //排序好的Note指针数组
 		y, m, _ := iter.Time.Date() //获取当前的note year和month
 		year := fmt.Sprintf("%v", y)
 		month := m.String()         // annotation // String returns the English name of the month ("January", "February", ...).
@@ -221,30 +175,30 @@ func generatePnotelist() error {
 			yearNotesmap[year] = yNote //放入新的以年分类的Key
 		}
 		//确认当前note的月份是否在yNote的months节点中存在
-		mNote := yNote.months[month]
+		mNote := yNote.Monthsmap[month]
 		if mNote == nil { //是否存在月份小分类
 			//不存在则新建立一个并放如其中
 			oo := &modle.NoteBase{"test.do", "test"}
 			fmt.Println(oo.Link)
 			mNote = &MonthNote{month, m, make([]*modle.NoteBase, 0)} //这里开始用m 一直报错undefined,,,m是最近定义了 不会编译为model
-			yNote.months[month] = mNote                              //新建并赋值于yNote，内层嵌套
+			yNote.Monthsmap[month] = mNote                              //新建并赋值于yNote，内层嵌套
 		}
 		mNote.NotesBase = append(mNote.NotesBase, &modle.NoteBase{iter.Title, iter.Title}) //年月下嵌入此article TODO 暂时使用title作为Link标识
 
 	}
-	allNotes = make(YearNotes, 0)
+	allNotesl = make(YearNotesl, 0)
 	//对notes内部使用yNote.months进行排序
 	for _, yNote := range yearNotesmap {
 		//实例化MonthNotes
-		monthCollect := make(MonthNotes, 0)
+		monthCollect := make(MonthNotesl, 0)
 		//把某年的month全部放入这个数组中
-		for _, mNote := range yNote.months { //获取内部months
+		for _, mNote := range yNote.Monthsmap { //获取内部months
 			monthCollect = append(monthCollect, mNote)
 		}
 		sort.Sort(monthCollect)            //月份排序
-		yNote.months = nil                 //months map[string]*MonthArchive TODO
+		yNote.Monthsmap = nil                 //months map[string]*MonthArchive TODO
 		yNote.Months = monthCollect        //放入archives struct中Months节点 Months []*MonthArchive 再植入yNote的Months
-		allNotes = append(allNotes, yNote) //放入此年的yArchive到allArchive
+		allNotesl = append(allNotesl, yNote) //放入此年的yArchive到allArchive
 	}
 	return nil
 }

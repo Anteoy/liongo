@@ -53,7 +53,7 @@ func (processPosts *ProcessGetPostsArticle)Dispose(dir string)  {
 			log.Println("begin process article ： " + fileInfo.Name())
 			fileName := fileInfo.Name()
 			//获取posts文件夹下md文件信息 原始markdownstring config ArticleConfig
-			//返回md正文，读取md配置组合，error
+			//返回md正文，读取md配置组合，error，组装配置到articleConfig
 			mardownStr, articleConfig, err := processArticleFile(dir +POST_DIR+"/"+fileName, fileName)
 			if err != nil {
 				log.Println("preprocess article file error!"+ fileName)
@@ -143,7 +143,9 @@ func processArticleFile(filePath, fileName string) (string, ArticleConfig, error
 	config := yaml.Config(strings.Replace(yamlStr, "---\n", "", -1))
 	//获取md中配置说明信息
 	title, err := config.Get("title")
+	//获取时间
 	date, err := config.Get("date")
+	//获取标签
 	tagCount, err := config.Count("tags")
 	if err != nil {
 		log.Println(err)
