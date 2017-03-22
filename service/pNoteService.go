@@ -108,7 +108,7 @@ func (p *PNoteService) GeneratorPnotelist(root string, yamls map[string]interfac
 		fmt.Println(value.Monthsmap)
 		fmt.Println(value.Year) //.Year
 	}
-	m := map[string]interface{}{"archives": allNotesl, "nav": NavBarsl, "cats": Classifiesm} ////注意 这里如果传入参数有误 将会影响到tmp生成的完整性 如footer等 并且此时程序不会报错 但会产生意想不到的结果
+	m := map[string]interface{}{"archives": allNotesl, "nav": NavBarsl} ////注意 这里如果传入参数有误 将会影响到tmp生成的完整性 如footer等 并且此时程序不会报错 但会产生意想不到的结果
 	exErr := t.Execute(fout, m)
 	return exErr
 }
@@ -177,9 +177,10 @@ func generatePnotelist() error {
 		//确认当前note的月份是否在yNote的months节点中存在
 		mNote := yNote.Monthsmap[month]
 		if mNote == nil { //是否存在月份小分类
-			//不存在则新建立一个并放如其中
+			//test
 			oo := &modle.NoteBase{"test.do", "test"}
 			fmt.Println(oo.Link)
+			//不存在则新建立一个并放如其中
 			mNote = &MonthNote{month, m, make([]*modle.NoteBase, 0)} //这里开始用m 一直报错undefined,,,m是最近定义了 不会编译为model
 			yNote.Monthsmap[month] = mNote                              //新建并赋值于yNote，内层嵌套
 		}
@@ -203,7 +204,7 @@ func generatePnotelist() error {
 	return nil
 }
 
-//处理Note上传
+//处理Note上传 test use
 func (p *PNoteService) DealNoteUpload(md string) error {
 	// 判断是否为空
 	if len(md) == 0 {

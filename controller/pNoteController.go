@@ -167,8 +167,10 @@ func (pNoteController *PNoteController) PNCommit(w http.ResponseWriter, r *http.
 	tm := time.Unix(timestamp, 0)
 	fmt.Println(tm.Format("2006-01-02 03:04:05"))
 	//Time
+	//时间解析 strconv.FormatInt(time.Now().Unix(),10) base：进位制（2 进制到 36 进制 这种格式不行
+	//time, terr := time.Parse("2006-01-02 15:04:05", strconv.FormatInt(time.Now().Unix(),10))
 	//时间解析
-	time, terr := time.Parse("2006-01-02 15:04:05", "2017-01-10 20:12:00")
+	time, terr := time.Parse("2006-01-02 15:04:05", tm.Format("2006-01-02 03:04:05"))
 	if terr != nil {
 		log.Println(terr)
 	}
