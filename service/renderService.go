@@ -3,8 +3,10 @@ package service
 import (
 	"github.com/Anteoy/liongo/utils"
 	. "github.com/Anteoy/liongo/constant"
-	. "github.com/Anteoy/liongo/service/impl"
-	. "github.com/Anteoy/liongo/service/interface"
+	. "github.com/Anteoy/liongo/service/impl/base"
+	. "github.com/Anteoy/liongo/service/impl/pnote"
+	. "github.com/Anteoy/liongo/service/interface/pnote"
+	. "github.com/Anteoy/liongo/service/interface/base"
 )
 
 type BaseFactory struct{}
@@ -17,38 +19,40 @@ func (baseFactory *BaseFactory) Generate(rootDir string) {
 	YamlData = yp.Parse(rootDir)
 
 	//加载posts文件下md文件到slice
-	var rf Dispose= &ProcessGetPostsArticle{}
-	rf.Dispose(rootDir)
+	var dispose Dispose= &ProcessGetPostsArticle{}
+	dispose.Dispose(rootDir)
 	//处理分类
-	rf = &ProcessGetClassifies{}
-	rf.Dispose(rootDir)
+	dispose = &ProcessGetClassifies{}
+	dispose.Dispose(rootDir)
 	//处理导航 这里示例github
-	rf = new(ProcessGetNavBarList)
-	rf.Dispose(rootDir)
+	dispose = new(ProcessGetNavBarList)
+	dispose.Dispose(rootDir)
 	//处理index.html
-	rf = new(ProcessIndexPage)
-	rf.Dispose(rootDir)
+	dispose = new(ProcessIndexPage)
+	dispose.Dispose(rootDir)
 	//处理blog.html
-	rf = new(ProcessBlogListPage)
-	rf.Dispose(rootDir)
+	dispose = new(ProcessBlogListPage)
+	dispose.Dispose(rootDir)
 	//ProcessEveryArticlePage 按日期生成每一个文章html
-	rf = new(ProcessEveryArticlePage)
-	rf.Dispose(rootDir)
+	dispose = new(ProcessEveryArticlePage)
+	dispose.Dispose(rootDir)
 	//ProcessEveryArticlePage 生成按日期归档页面 /archive.html(Tag Date)
-	rf = new(ProcessArchiveDatePage)
-	rf.Dispose(rootDir)
+	dispose = new(ProcessArchiveDatePage)
+	dispose.Dispose(rootDir)
 	//ProcessUserDefinedPages 根据pages.yml生成用户自定义的html 需要用户在resources/pages下提供和pages.yaml配置文件id相同的页面内容.md文件
-	rf = new(ProcessUserDefinedPages)
-	rf.Dispose(rootDir)
+	dispose = new(ProcessUserDefinedPages)
+	dispose.Dispose(rootDir)
 	//生成分类的html /classify.html
-	rf = new(ProcessClassifyPage)
-	rf.Dispose(rootDir)
-	//生成ProcessPnoteloginPage.html
-	rf = new(ProcessPnoteloginPage)
-	rf.Dispose(rootDir)
+	dispose = new(ProcessClassifyPage)
+	dispose.Dispose(rootDir)
 
 	//pNote初始化处理
-	var pNoteService = new(PNoteService)
-	pNoteService.PreProcessNotes()
-	pNoteService.GeneratorPnotelist(rootDir, YamlData)
+	//生成ProcessPnoteloginPage.html
+	dispose = new(ProcessPnoteloginPage)
+	dispose.Dispose(rootDir)
+	var disposePnote DisposePnote = &PreProcessNotes{}
+	disposePnote.DisposePnote("str")
+	//根据pre获取的notes进行生成pnotelist.html操作
+	disposePnote = new(GeneratorPnotelist)
+	disposePnote.DisposePnote(rootDir)
 }
