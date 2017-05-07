@@ -3,18 +3,19 @@ package main
 import (
 	"flag"
 	"fmt"
-	Build "github.com/Anteoy/liongo/service"
-	. "github.com/Anteoy/liongo/constant"
 	"log"
 	"net/http"
 	"os"
 
+	. "github.com/Anteoy/liongo/constant"
+	Build "github.com/Anteoy/liongo/service"
+
+	"strings"
+
 	"github.com/Anteoy/liongo/controller"
 	"github.com/Anteoy/liongo/newPosts"
 	"github.com/Anteoy/liongo/utils"
-	"strings"
 )
-
 
 var httpPort = ":8080"
 
@@ -41,7 +42,7 @@ func main() {
 			httpPort = ":" + args[2]
 		}
 		if argsLength == 2 && strings.EqualFold(args[1], "--note") {
-			fmt.Println("starting run with note !!!")
+			log.Println("starting run with note !!!")
 
 			pNoteController := new(controller.PNoteController)
 			http.HandleFunc("/login", pNoteController.Login)
@@ -57,7 +58,7 @@ func main() {
 			//
 			//})
 		}
-		fmt.Println("Listen at ", httpPort)
+		log.Println("Listen at ", httpPort)
 		http.Handle("/", http.FileServer(http.Dir("../views/serve")))
 		err := http.ListenAndServe(":8080", nil) // TODO httpAddr
 		if err != nil {
