@@ -2,24 +2,27 @@ package controller
 
 import (
 	"io"
+	"log"
 	"net/http"
+
 	"github.com/Anteoy/liongo/dao/mysql"
 	"github.com/Anteoy/liongo/modle"
 	//"github.com/Anteoy/liongo/utils" TODO mgo session 共用问题
 	//"github.com/Anteoy/liongo/service"
 	"fmt"
 	//"os"
-	. "github.com/Anteoy/liongo/constant"
-	"regexp"
-	"log"
-	"github.com/Anteoy/blackfriday"
-	"html"
-	"time"
-	"gopkg.in/mgo.v2"
-	_ "github.com/Anteoy/liongo/utils/memory" //must this is the first init ,it cost any time
-	"github.com/Anteoy/liongo/dao/mongo"
-	"github.com/Anteoy/liongo/utils/session"
 	"encoding/json"
+	"html"
+	"regexp"
+	"time"
+
+	"github.com/Anteoy/blackfriday"
+	. "github.com/Anteoy/liongo/constant"
+	"github.com/Anteoy/liongo/dao/mongo"
+	logrus "github.com/Anteoy/liongo/utils/logrus"
+	_ "github.com/Anteoy/liongo/utils/memory" //must this is the first init ,it cost any time
+	"github.com/Anteoy/liongo/utils/session"
+	"gopkg.in/mgo.v2"
 )
 
 type PNoteController struct{}
@@ -32,13 +35,12 @@ func init() {
 	go globalSessions.GC()
 }
 
-
-func (pNoteController *PNoteController)Login(w http.ResponseWriter, r *http.Request) {
+func (pNoteController *PNoteController) Login(w http.ResponseWriter, r *http.Request) {
 
 	//start session
 	sess := globalSessions.SessionStart(w, r)
-	fmt.Println(sess.SessionID())
-	fmt.Println(sess.Get(sess.SessionID()))
+	logrus.Debugf("Login() sessionID 为： %s", sess.SessionID())
+	logrus.Debugf("Login() sess.Get(sess.SessionID()) 为： %v", sess.Get(sess.SessionID()))
 	//test
 	//if sess.Get(sess.SessionID()) == nil {
 	//	io.WriteString(w, "no sesssion")
@@ -46,7 +48,7 @@ func (pNoteController *PNoteController)Login(w http.ResponseWriter, r *http.Requ
 	//}
 	//value设值为sessionid
 	if sess.Get(sess.SessionID()) == nil {
-		sess.Set(sess.SessionID(),sess.SessionID())
+		sess.Set(sess.SessionID(), sess.SessionID())
 	}
 	r.ParseForm()
 	ids := r.Form["id"]
@@ -63,10 +65,9 @@ func (pNoteController *PNoteController)Login(w http.ResponseWriter, r *http.Requ
 	passwd := passwds[0]
 	user := mysql.GetUserForEmail(id)
 	if user != nil && user.Password == passwd {
-		//fmt.Fprint(w,"<h1>login success!!!</h1>")
 		http.ServeFile(w, r, "../views/serve/pnotelist.html") //ok
 	} else {
-		fmt.Fprint(w,"<h1>login faild!!!用户名或密码不正确！！！</h1>")
+		fmt.Fprint(w, "<h1>login faild!!!用户名或密码不正确！！！</h1>")
 		http.ServeFile(w, r, "./static/html/login.html")
 	}
 	//var ss string = "#For my memory scan ##1. 右上角资源监测 避免公司低配资源占用问题" TODO mongo session 共用问题
@@ -76,42 +77,37 @@ func (pNoteController *PNoteController)Login(w http.ResponseWriter, r *http.Requ
 	//yamlData := yp.Parse("../resources")
 	//pNoteService.GetNoteByName(ss,yamlData,w,r)
 
-
 }
 
 //通过参数在List页面向详情页面跳转
-func (p *PNoteController) GetNote(w http.ResponseWriter,r  *http.Request)  {
+func (p *PNoteController) GetNote(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	links := r.Form["link"]
 	if links == nil {
 		io.WriteString(w, "无法路由，参数link为空！！！")
 		return
 	}
-	fmt.Println(links[0])
 	//创建html文件路径
-	targetFile := PUBLISH_DIR + "/notes/" + links[0] +".html"
-	fmt.Println(targetFile)
+	targetFile := PUBLISH_DIR + "/notes/" + links[0] + ".html"
 	http.ServeFile(w, r, targetFile)
 }
 
 //获取笔记md文件并存入mongo
 
-func (pNoteController *PNoteController) DataTomongo(notemd *modle.Note){
+func (pNoteController *PNoteController) DataTomongo(notemd *modle.Note) {
 
 }
 
-type CommonReturnModel struct{
-	Code string `json:"Code"`
+type CommonReturnModel struct {
+	Code    string `json:"Code"`
 	Message string `json:"message"`
 }
 
 //处理pnote上传
-func (pNoteController *PNoteController) PNCommit(w http.ResponseWriter, r *http.Request){
+func (pNoteController *PNoteController) PNCommit(w http.ResponseWriter, r *http.Request) {
 
 	//start session
 	sessA := globalSessions.SessionStart(w, r)
-	fmt.Println(sessA.SessionID())
-	fmt.Println(sessA.Get(sessA.SessionID()))
 	//test
 	//if sess.Get(sess.SessionID()) == nil {
 	//	io.WriteString(w, "no sesssion")
@@ -119,9 +115,9 @@ func (pNoteController *PNoteController) PNCommit(w http.ResponseWriter, r *http.
 	//}
 	//value设值为sessionid
 	if sessA.Get(sessA.SessionID()) == nil {
-		s := CommonReturnModel {
-			Code:         "502",
-			Message:  `session 失效，請重新登录！`,
+		s := CommonReturnModel{
+			Code:    "502",
+			Message: `session 失效，請重新登录！`,
 		}
 		b, _ := json.Marshal(s)
 		w.Write(b)
@@ -132,17 +128,15 @@ func (pNoteController *PNoteController) PNCommit(w http.ResponseWriter, r *http.
 	titles := r.Form["title"]
 	title := titles[0]
 	if len(title) == 0 {
-		io.WriteString(w, "请输入标题")//TODO
+		io.WriteString(w, "请输入标题") //TODO
 		return
 	}
-	fmt.Println(title)
 	contents := r.Form["content"]
 	content := contents[0]
 	if len(content) == 0 {
-		io.WriteString(w, "请输入正文")//TODO
+		io.WriteString(w, "请输入正文") //TODO
 		return
 	}
-	fmt.Println(content)
 
 	//md处理
 	// 判断是否为空
@@ -158,30 +152,28 @@ func (pNoteController *PNoteController) PNCommit(w http.ResponseWriter, r *http.
 	//正则匹配并替换
 	re := regexp.MustCompile(`<pre><code>([\s\S]*?)</code></pre>`)
 	htmlStr = re.ReplaceAllString(htmlStr, `<pre class="prettyprint linenums">${1}</pre>`)
-	fmt.Println(htmlStr)
 
 	//构造struct
 	//timestamp
 	timestamp := time.Now().Unix()
 	//格式化为字符串,tm为Time类型
 	tm := time.Unix(timestamp, 0)
-	fmt.Println(tm.Format("2006-01-02 03:04:05"))
 	//Time
 	//时间解析 strconv.FormatInt(time.Now().Unix(),10) base：进位制（2 进制到 36 进制 这种格式不行
 	//time, terr := time.Parse("2006-01-02 15:04:05", strconv.FormatInt(time.Now().Unix(),10))
 	//时间解析
 	time, terr := time.Parse("2006-01-02 15:04:05", tm.Format("2006-01-02 03:04:05"))
 	if terr != nil {
-		log.Println(terr)
+		logrus.Error(terr)
 	}
 	//装配struct
-	note := &modle.Note{Name: title, Content: htmlStr,Title: title,Date: tm.Format("2006-01-02 03:04:05"),Time:time}
+	note := &modle.Note{Name: title, Content: htmlStr, Title: title, Date: tm.Format("2006-01-02 03:04:05"), Time: time}
 	//获取session
-	var ch chan *mgo.Session= make(chan *mgo.Session,1)
+	var ch chan *mgo.Session = make(chan *mgo.Session, 1)
 	go mongo.GetMongoSession(ch)
-	var sess *mgo.Session//must init
-	sess = <- (chan *mgo.Session)(ch)//must do
-	c :=sess.DB("liongo").C("note")//获取数据
+	var sess *mgo.Session            //must init
+	sess = <-(chan *mgo.Session)(ch) //must do
+	c := sess.DB("liongo").C("note") //获取数据
 	//存入mongo
 	err := c.Insert(&note)
 	if err != nil {

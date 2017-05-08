@@ -11,8 +11,6 @@ func mainTMP() {
 
 	timestamp := time.Now().Unix()
 
-	fmt.Println(timestamp)
-
 	//格式化为字符串,tm为Time类型
 
 	tm := time.Unix(timestamp, 0)

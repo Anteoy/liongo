@@ -23,7 +23,6 @@ func (processEveryArticlePage *ProcessEveryArticlePage)Dispose(root string)  {
 		cfg = value
 	}
 	//var cfg = yCfg.(*yaml.File)
-	log.Println(cfg.Get("title"))
 	t := ParseTemplate(root, POSTS_TPL, cfg)
 	for _, articleConfig := range Articlesl {
 		//根据时间生成日期类目录 /yyyy/MM/dd

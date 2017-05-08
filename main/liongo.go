@@ -3,9 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
+
+	log "github.com/Anteoy/liongo/utils/logrus"
 
 	. "github.com/Anteoy/liongo/constant"
 	Build "github.com/Anteoy/liongo/service"
@@ -20,10 +21,11 @@ import (
 var httpPort = ":8080"
 
 func main() {
+	year := fmt.Sprintf("%v", "827827")
+	fmt.Println(year)
 	flag.Parse()
 	args := flag.Args()
 	argsLength := len(args)
-	//fmt.Println(argsLength)
 	//判断输入命令长度
 	if argsLength == 0 || argsLength > 3 {
 		UseInfo()
@@ -34,7 +36,6 @@ func main() {
 	case "build":
 		Build.Build()
 	case "run":
-		Build.Build()
 		if argsLength == 2 {
 			httpPort = args[1]
 		}
@@ -42,23 +43,24 @@ func main() {
 			httpPort = ":" + args[2]
 		}
 		if argsLength == 2 && strings.EqualFold(args[1], "--note") {
-			log.Println("starting run with note !!!")
-
+			log.Debug("starting run with note !!!")
+			pNoteService := new(Build.PNoteService)
+			//pNoteService.DealNoteUpload(ss)
+			yp := new(utils.YamlParser)
+			yamlData := yp.Parse("../resources")
+			//从mgo中搜集并生成所有notes 单独html文件
+			pNoteService.GetNotesFromMongo(yamlData, nil, nil)
 			pNoteController := new(controller.PNoteController)
 			http.HandleFunc("/login", pNoteController.Login)
 			http.HandleFunc("/notes", pNoteController.GetNote)
 			//路由上传接口
 			http.HandleFunc("/PNCommit", pNoteController.PNCommit)
-			pNoteService := new(Build.PNoteService)
-			//pNoteService.DealNoteUpload(ss)
-			yp := new(utils.YamlParser)
-			yamlData := yp.Parse("../resources")
-			pNoteService.GetNoteByName(yamlData, nil, nil) //从mgo中搜集并生成所有notes
 			//http.HandleFunc("/lionnote", func() {//TODO
 			//
 			//})
 		}
-		log.Println("Listen at ", httpPort)
+		Build.Build()
+		log.Debug("Listen at ", httpPort)
 		http.Handle("/", http.FileServer(http.Dir("../views/serve")))
 		err := http.ListenAndServe(":8080", nil) // TODO httpAddr
 		if err != nil {

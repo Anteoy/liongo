@@ -1,10 +1,11 @@
 package mongo
 
 import (
-	"testing"
-	"gopkg.in/mgo.v2/bson"
-	"fmt"
 	"log"
+	"testing"
+
+	"github.com/Anteoy/liongo/utils/logrus"
+	"gopkg.in/mgo.v2/bson"
 )
 
 func TestMongo(t *testing.T) {
@@ -21,7 +22,7 @@ func TestMongo(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	fmt.Println("Phone:", result.Phone)
+	logrus.Debugf("Phone:", result.Phone)
 	//defer Session.Close()
 	cc := Session.DB("test2").C("people")
 	err = cc.Insert(&Person{"Ale", "+55 53 8116 9639"},

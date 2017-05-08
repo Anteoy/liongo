@@ -3,7 +3,9 @@ package mysql
 import (
 	"database/sql"
 	"log"
+
 	m "github.com/Anteoy/liongo/modle"
+	"github.com/Anteoy/liongo/utils/logrus"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -44,35 +46,35 @@ func GetUserForEmail(email string) *m.User {
 			rows.Columns()
 			err = rows.Scan(&id, &name, &password, &email)
 			checkErr(err)
-			user := &m.User{Id: id, Name: name, Password: password,Email: email}
+			user := &m.User{Id: id, Name: name, Password: password, Email: email}
 			return user
 		}
 	}
 	return nil
 }
 
-func InsertUser(appKey string,passwd string,name string,friends string,other string) bool{
+func InsertUser(appKey string, passwd string, name string, friends string, other string) bool {
 	stmt, err := db.Prepare(`insert chargeManager.user (appkey,passwd,name,friends,other) values (?,?,?,?,?)`)
 	checkErr(err)
-	_, err = stmt.Exec(appKey, passwd,name,friends,other)
+	_, err = stmt.Exec(appKey, passwd, name, friends, other)
 	if checkErr(err) {
 		return false
 	}
 	return true
 }
-func UpdateUser(appKey string,passwd string,name string,friends string,other string,id int) bool{
-	stmt,err := db.Prepare(`update chargeManager.user set appKey = ?,passwd = ?,name=?,friends=?,other=? where id = ?`)
+func UpdateUser(appKey string, passwd string, name string, friends string, other string, id int) bool {
+	stmt, err := db.Prepare(`update chargeManager.user set appKey = ?,passwd = ?,name=?,friends=?,other=? where id = ?`)
 	checkErr(err)
-	_,err = stmt.Exec(appKey,passwd,name,friends,other,id)
+	_, err = stmt.Exec(appKey, passwd, name, friends, other, id)
 	if checkErr(err) {
 		return false
 	}
 	return true
 }
 func DeleteUser(id int) bool {
-	stmt,err := db.Prepare(`delete from chargeManager.user where id = ?`)
+	stmt, err := db.Prepare(`delete from chargeManager.user where id = ?`)
 	checkErr(err)
-	_,err = stmt.Exec(id)
+	_, err = stmt.Exec(id)
 	if checkErr(err) {
 		return false
 	}
@@ -90,7 +92,7 @@ func GetUserForAppKey(appKey string) *m.User {
 			var other string
 			var appKey string
 			rows.Columns()
-			err = rows.Scan(&id, &name, &passwd, &friends, &other,&appKey)
+			err = rows.Scan(&id, &name, &passwd, &friends, &other, &appKey)
 			checkErr(err)
 			user := &m.User{Id: id, Name: name, Password: passwd, Email: ""}
 			return user
@@ -101,7 +103,7 @@ func GetUserForAppKey(appKey string) *m.User {
 
 func checkErr(err error) bool {
 	if err != nil {
-		log.Println("数据库操作出错")
+		logrus.Error("数据库操作出错")
 		log.Panic(err)
 		return true
 	}

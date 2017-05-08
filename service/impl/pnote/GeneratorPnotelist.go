@@ -1,22 +1,23 @@
 package pnote
 
 import (
-	"strings"
-	"os"
 	"fmt"
+	"log"
+	"os"
+	"sort"
+	"strings"
+
 	"github.com/Anteoy/go-gypsy/yaml"
 	. "github.com/Anteoy/liongo/constant"
-	. "github.com/Anteoy/liongo/utils"
 	. "github.com/Anteoy/liongo/modle"
-	"log"
-	"sort"
+	. "github.com/Anteoy/liongo/utils"
+	"github.com/Anteoy/liongo/utils/logrus"
 )
 
 type GeneratorPnotelist struct{}
 
-
 //根据pre获取的notes进行生成pnotelist.html操作
-func (generatorPnotelist *GeneratorPnotelist)DisposePnote(root string)  {
+func (generatorPnotelist *GeneratorPnotelist) DisposePnote(root string) {
 	if !strings.HasSuffix(root, "/") {
 		root += "/"
 	}
@@ -35,26 +36,25 @@ func (generatorPnotelist *GeneratorPnotelist)DisposePnote(root string)  {
 	generatePnotelist()
 	//debug pipei tmp
 	for index, value := range allNotesl {
-		fmt.Printf("notes[%d]=%d \n", index, value)
+		logrus.Debug("notes[%d]=%d \n", index, value)
 		//fmt.Println(value.Months)
 		for _, value1 := range value.Months {
-			fmt.Println(value1.Month)
+			logrus.Debug(value1.Month)
 			for _, value2 := range value1.NotesBase {
-				fmt.Println(value2.Link + " " + value2.Title)
+				logrus.Debug(value2.Link + " " + value2.Title)
 			}
 		}
-		fmt.Println(value.Monthsmap)
-		fmt.Println(value.Year) //.Year
+		logrus.Debug(value.Monthsmap)
+		logrus.Debug(value.Year) //.Year
 	}
 	m := map[string]interface{}{"archives": allNotesl, "nav": NavBarsl} ////注意 这里如果传入参数有误 将会影响到tmp生成的完整性 如footer等 并且此时程序不会报错 但会产生意想不到的结果
 	t.Execute(fout, m)
 }
 
-
 //根据时间生成有序的notes list
 func generatePnotelist() error {
 	yearNotesmap = make(map[string]*YearNote) //初始化存储某年notes的map
-	for _, iter := range notesl {              //排序好的Note指针数组
+	for _, iter := range notesl {             //排序好的Note指针数组
 		y, m, _ := iter.Time.Date() //获取当前的note year和month
 		year := fmt.Sprintf("%v", y)
 		month := m.String()         // annotation // String returns the English name of the month ("January", "February", ...).
@@ -75,10 +75,10 @@ func generatePnotelist() error {
 		if mNote == nil { //是否存在月份小分类
 			//test
 			oo := &NoteBase{"test.do", "test"}
-			fmt.Println(oo.Link)
+			logrus.Debug(oo.Link)
 			//不存在则新建立一个并放如其中
 			mNote = &MonthNote{month, m, make([]*NoteBase, 0)} //这里开始用m 一直报错undefined,,,m是最近定义了 不会编译为model
-			yNote.Monthsmap[month] = mNote                              //新建并赋值于yNote，内层嵌套
+			yNote.Monthsmap[month] = mNote                     //新建并赋值于yNote，内层嵌套
 		}
 		mNote.NotesBase = append(mNote.NotesBase, &NoteBase{iter.Title, iter.Title}) //年月下嵌入此article TODO 暂时使用title作为Link标识
 
@@ -92,9 +92,9 @@ func generatePnotelist() error {
 		for _, mNote := range yNote.Monthsmap { //获取内部months
 			monthCollect = append(monthCollect, mNote)
 		}
-		sort.Sort(monthCollect)            //月份排序
-		yNote.Monthsmap = nil                 //months map[string]*MonthArchive TODO
-		yNote.Months = monthCollect        //放入archives struct中Months节点 Months []*MonthArchive 再植入yNote的Months
+		sort.Sort(monthCollect)              //月份排序
+		yNote.Monthsmap = nil                //months map[string]*MonthArchive TODO
+		yNote.Months = monthCollect          //放入archives struct中Months节点 Months []*MonthArchive 再植入yNote的Months
 		allNotesl = append(allNotesl, yNote) //放入此年的yArchive到allArchive
 	}
 	return nil

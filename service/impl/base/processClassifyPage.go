@@ -1,18 +1,20 @@
 package impl
 
 import (
-	"strings"
+	"log"
 	"os"
+	"strings"
+
+	"github.com/Anteoy/go-gypsy/yaml"
 	. "github.com/Anteoy/liongo/constant"
 	. "github.com/Anteoy/liongo/utils"
-	"github.com/Anteoy/go-gypsy/yaml"
-	"log"
+	"github.com/Anteoy/liongo/utils/logrus"
 )
 
-type ProcessClassifyPage struct {}
+type ProcessClassifyPage struct{}
 
 //生成classify.html
-func  (processClassifyPage *ProcessClassifyPage)Dispose(dir string) {
+func (processClassifyPage *ProcessClassifyPage) Dispose(dir string) {
 	if !strings.HasSuffix(dir, "/") {
 		dir += "/"
 	}
@@ -28,7 +30,7 @@ func  (processClassifyPage *ProcessClassifyPage)Dispose(dir string) {
 	targetFile := PUBLISH_DIR + "/classify.html"
 	fout, err := os.Create(targetFile)
 	if err != nil {
-		log.Println("create file " + targetFile + " error!")
+		logrus.Error("create file " + targetFile + " error!")
 		os.Exit(1)
 	}
 	defer fout.Close()

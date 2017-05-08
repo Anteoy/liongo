@@ -3,7 +3,7 @@ package service
 import (
 	cst "github.com/Anteoy/liongo/constant"
 	base "github.com/Anteoy/liongo/service/impl/base"
-	pnote "github.com/Anteoy/liongo/service/impl/pnote"
+	"github.com/Anteoy/liongo/service/impl/pnote"
 	ifbase "github.com/Anteoy/liongo/service/interface/base"
 	ifpnote "github.com/Anteoy/liongo/service/interface/pnote"
 	"github.com/Anteoy/liongo/utils"
@@ -49,6 +49,7 @@ func (baseFactory *BaseFactory) Generate(rootDir string) {
 	//生成ProcessPnoteloginPage.html
 	dispose = new(base.ProcessPnoteloginPage)
 	dispose.Dispose(rootDir)
+
 	var disposePnote ifpnote.DisposePnote = &pnote.PreProcessNotes{}
 	disposePnote.DisposePnote("str")
 	//根据pre获取的notes进行生成pnotelist.html操作

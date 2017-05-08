@@ -2,9 +2,11 @@ package service
 
 import (
 	"log"
-	"github.com/Anteoy/liongo/utils"
-	. "github.com/Anteoy/liongo/constant"
 	"os"
+
+	. "github.com/Anteoy/liongo/constant"
+	"github.com/Anteoy/liongo/utils"
+	"github.com/Anteoy/liongo/utils/logrus"
 )
 
 func Build() {
@@ -20,18 +22,17 @@ func Build() {
 	var rf = new(BaseFactory)
 	rf.Generate(RENDER_DIR)
 	//复制assets
-	err := utils.CopyDir(RENDER_DIR+"/assets", PUBLISH_DIR +"/assets")
+	err := utils.CopyDir(RENDER_DIR+"/assets", PUBLISH_DIR+"/assets")
 	if err != nil {
-		log.Println(err)
+		logrus.Error(err)
 	}
 	//复制网站图标自定义文件
 	err = utils.CopyDir(RENDER_DIR+"/images/icon", PUBLISH_DIR)
 	//复制网站images
-	err = utils.CopyDir(RENDER_DIR+"/images", PUBLISH_DIR +"/images")
-	err = utils.CopyDir(RENDER_DIR+"/css", PUBLISH_DIR +"/css")
+	err = utils.CopyDir(RENDER_DIR+"/images", PUBLISH_DIR+"/images")
+	err = utils.CopyDir(RENDER_DIR+"/css", PUBLISH_DIR+"/css")
 	//复制pnote upload commit.html
-	err = utils.CopyDir(RENDER_DIR+"/html", PUBLISH_DIR +"/protohtml")
-	log.Println("blog process ok！")
-
+	err = utils.CopyDir(RENDER_DIR+"/html", PUBLISH_DIR+"/protohtml")
+	logrus.Debug("blog process ok！")
 
 }

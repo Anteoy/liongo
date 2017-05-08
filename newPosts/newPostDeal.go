@@ -1,10 +1,11 @@
 package newPosts
 
 import (
-	"log"
 	"os"
+
+	"github.com/Anteoy/liongo/utils/logrus"
 	//"io"
-	"fmt"
+
 	"time"
 	//"io/ioutil"
 	"io"
@@ -20,7 +21,7 @@ type SampleMD struct {
 
 func check(e error) {
 	if e != nil {
-		log.Println(e)
+		logrus.Error(e)
 		panic(e)
 	}
 }
@@ -44,10 +45,10 @@ func (addFactory *AddFactory) New(title string) {
 	if checkFileIsExist(fileName) { //如果文件存在
 		f, err = os.OpenFile(fileName, os.O_RDWR|os.O_APPEND|os.O_CREATE, 0666) //打开文件 并可追加文件内容
 		f.Name()
-		fmt.Println("文件存在" + f.Name())
+		logrus.Debugf("文件存在 name = %s", f.Name())
 	} else {
 		f, err = os.Create(fileName) //创建文件
-		fmt.Println("文件不存在")
+		logrus.Debug("文件不存在")
 	}
 	check(err)
 	line0 := "---" + "\n"
@@ -60,7 +61,6 @@ func (addFactory *AddFactory) New(title string) {
 	line7 := "---" + "\n"
 	//var d1 = []byte(line1);
 
-	//log.Println(line1)
 	_, err1 := io.WriteString(f, line0) //写入文件(字符串)
 	_, err1 = io.WriteString(f, line1)  //写入文件(字符串)
 	_, err1 = io.WriteString(f, line2)  //写入文件(字符串)
@@ -73,8 +73,6 @@ func (addFactory *AddFactory) New(title string) {
 
 	defer f.Close()
 	check(err1)
-	//fmt.Printf("写入 %d 个字节n", n);
-	//log.Println(fileName)
 }
 
 //处理sample.md文件 提供于new指令

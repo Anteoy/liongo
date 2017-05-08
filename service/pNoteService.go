@@ -2,33 +2,34 @@ package service
 
 import (
 	"fmt"
-	"github.com/Anteoy/blackfriday"
-	"github.com/Anteoy/go-gypsy/yaml"
-	"github.com/Anteoy/liongo/dao/mongo"
-	"github.com/Anteoy/liongo/modle"
-	. "github.com/Anteoy/liongo/constant"
-	. "github.com/Anteoy/liongo/utils"
-	. "github.com/Anteoy/liongo/modle"
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
 	"html"
 	"html/template"
 	"net/http"
 	"os"
-	"qiniupkg.com/x/log.v7"
 	"regexp"
 	"sort"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/Anteoy/blackfriday"
+	"github.com/Anteoy/go-gypsy/yaml"
+	. "github.com/Anteoy/liongo/constant"
+	"github.com/Anteoy/liongo/dao/mongo"
+	"github.com/Anteoy/liongo/modle"
+	. "github.com/Anteoy/liongo/modle"
+	. "github.com/Anteoy/liongo/utils"
+	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
+	"qiniupkg.com/x/log.v7"
 )
 
 type PNoteService struct{}
 
 //初始化待用变量
 var (
-	notesl Notesl
-	allNotesl YearNotesl                   //所有使用年分类的Notes
+	notesl        Notesl
+	allNotesl     YearNotesl                  //所有使用年分类的Notes
 	yearNotesmap  map[string]*YearNote        //某年所有Note map
 	notesListSize int                  = 5000 //最大slice
 )
@@ -54,7 +55,7 @@ func (p *PNoteService) PreProcessNotes() error {
 	}
 	sort.Sort(NotesByDate{notesl})
 	for index, value := range notesl {
-		fmt.Printf("notes[%d]=%d \n", index, value)
+		log.Printf("notes[%d]=%d \n", index, value)
 		//TODO 处理 url
 		processNoteUrl(*value)
 	}
@@ -96,18 +97,17 @@ func (p *PNoteService) GeneratorPnotelist(root string, yamls map[string]interfac
 	//时间归档处理
 	generatePnotelist()
 	//debug pipei tmp
-	for index, value := range allNotesl {
-		fmt.Printf("notes[%d]=%d \n", index, value)
-		//fmt.Println(value.Months)
-		for _, value1 := range value.Months {
-			fmt.Println(value1.Month)
-			for _, value2 := range value1.NotesBase {
-				fmt.Println(value2.Link + " " + value2.Title)
-			}
-		}
-		fmt.Println(value.Monthsmap)
-		fmt.Println(value.Year) //.Year
-	}
+	// for index, value := range allNotesl {
+	// 	log.Printf("notes[%d]=%d \n", index, value)
+	// 	//log.Println(value.Months)
+	// 	for _, value1 := range value.Months {
+	// 		for _, value2 := range value1.NotesBase {
+	// 			log.Println(value2.Link + " " + value2.Title)
+	// 		}
+	// 	}
+	// 	log.Println(value.Monthsmap)
+	// 	log.Println(value.Year) //.Year
+	// }
 	m := map[string]interface{}{"archives": allNotesl, "nav": NavBarsl} ////注意 这里如果传入参数有误 将会影响到tmp生成的完整性 如footer等 并且此时程序不会报错 但会产生意想不到的结果
 	exErr := t.Execute(fout, m)
 	return exErr
@@ -127,7 +127,6 @@ func testparseTemplate(root, tpl string, cfg *yaml.File) *template.Template {
 		log.Println(file + " can not be found!")
 		os.Exit(1)
 	}
-	log.Println(cfg.Get)
 	t := template.New(tpl + ".tpl")
 	t.Funcs(template.FuncMap{"get": cfg.Get})
 	t.Funcs(template.FuncMap{"unescaped": Unescaped})
@@ -158,7 +157,7 @@ func testparseTemplate(root, tpl string, cfg *yaml.File) *template.Template {
 //根据时间生成有序的notes list
 func generatePnotelist() error {
 	yearNotesmap = make(map[string]*YearNote) //初始化存储某年notes的map
-	for _, iter := range notesl {              //排序好的Note指针数组
+	for _, iter := range notesl {             //排序好的Note指针数组
 		y, m, _ := iter.Time.Date() //获取当前的note year和month
 		year := fmt.Sprintf("%v", y)
 		month := m.String()         // annotation // String returns the English name of the month ("January", "February", ...).
@@ -178,11 +177,11 @@ func generatePnotelist() error {
 		mNote := yNote.Monthsmap[month]
 		if mNote == nil { //是否存在月份小分类
 			//test
-			oo := &modle.NoteBase{"test.do", "test"}
-			fmt.Println(oo.Link)
+			// oo := &modle.NoteBase{"test.do", "test"}
+			// log.Println(oo.Link)
 			//不存在则新建立一个并放如其中
 			mNote = &MonthNote{month, m, make([]*modle.NoteBase, 0)} //这里开始用m 一直报错undefined,,,m是最近定义了 不会编译为model
-			yNote.Monthsmap[month] = mNote                              //新建并赋值于yNote，内层嵌套
+			yNote.Monthsmap[month] = mNote                           //新建并赋值于yNote，内层嵌套
 		}
 		mNote.NotesBase = append(mNote.NotesBase, &modle.NoteBase{iter.Title, iter.Title}) //年月下嵌入此article TODO 暂时使用title作为Link标识
 
@@ -196,9 +195,9 @@ func generatePnotelist() error {
 		for _, mNote := range yNote.Monthsmap { //获取内部months
 			monthCollect = append(monthCollect, mNote)
 		}
-		sort.Sort(monthCollect)            //月份排序
-		yNote.Monthsmap = nil                 //months map[string]*MonthArchive TODO
-		yNote.Months = monthCollect        //放入archives struct中Months节点 Months []*MonthArchive 再植入yNote的Months
+		sort.Sort(monthCollect)              //月份排序
+		yNote.Monthsmap = nil                //months map[string]*MonthArchive TODO
+		yNote.Months = monthCollect          //放入archives struct中Months节点 Months []*MonthArchive 再植入yNote的Months
 		allNotesl = append(allNotesl, yNote) //放入此年的yArchive到allArchive
 	}
 	return nil
@@ -224,10 +223,10 @@ func (p *PNoteService) DealNoteUpload(md string) error {
 	if terr != nil {
 		log.Println(terr)
 	}
-	fmt.Println(time)
+	// log.Println(time)
 	//装配struct
 	note := &modle.Note{Name: "test1", Content: htmlStr, Title: "title1", Date: "2017-01-10 20:12:00", Time: time}
-	fmt.Printf(note.Content)
+	// log.Printf(note.Content)
 	c := mongo.Session.DB("liongo").C("note")
 	err := c.Insert(&note)
 	if err != nil {
@@ -237,7 +236,7 @@ func (p *PNoteService) DealNoteUpload(md string) error {
 }
 
 //从Mongo中拉取具体note 拉取并生成所有Notes
-func (p *PNoteService) GetNoteByName(yamls map[string]interface{}, w http.ResponseWriter, r *http.Request) error {
+func (p *PNoteService) GetNotesFromMongo(yamls map[string]interface{}, w http.ResponseWriter, r *http.Request) error {
 	//从mongo中获取noteinfo
 	//获取连接
 	//c := mongo.Session.DB("liongo").C("note")
@@ -253,12 +252,10 @@ func (p *PNoteService) GetNoteByName(yamls map[string]interface{}, w http.Respon
 		log.Error(err)
 		panic(err)
 	}
-	fmt.Println(note.Content)
-	fmt.Println(note.Name)
 	pnoteservice := new(PNoteService)
 	notes := pnoteservice.QueryAllFromMgo()
 	for index, value := range *notes { //* 遍历所有的mgo notes
-		fmt.Printf("notes[%d]=%d \n", index, value)
+		log.Printf("notes[%d]=%d \n", index, value)
 		//new 模板对象
 		t := template.New("pSpecificNote.tpl")
 		yCfg := yamls["config.yml"]
@@ -280,12 +277,19 @@ func (p *PNoteService) GetNoteByName(yamls map[string]interface{}, w http.Respon
 			log.Error(errp)
 			panic(err)
 		}
+		//检查PUBLISH_DIR是否存在
+		if !IsExists(PUBLISH_DIR) {
+			err := os.MkdirAll(PUBLISH_DIR, 0777)
+			if err != nil {
+				log.Panic("create publish dir error -- " + err.Error())
+			}
+		}
 		//创建前检查notes文件夹是否存在
-		if !IsExists(PUBLISH_DIR+"/notes") {
+		if !IsExists(PUBLISH_DIR + "/notes") {
 			//创建777权限目录
 			err := os.Mkdir(PUBLISH_DIR+"/notes", 0777)
 			if err != nil {
-				log.Panic("create publish dir error -- " + err.Error())
+				log.Panic("create publish dir + /notes error -- " + err.Error())
 			}
 		}
 		//创建html文件
@@ -353,7 +357,7 @@ func (p *PNoteService) QueryAllFromMgo() *[]modle.Note {
 		panic(err)
 	}
 	for index, value := range notes {
-		fmt.Printf("notes[%d]=%d \n", index, value)
+		log.Printf("notes[%d]=%d \n", index, value)
 	}
 	//defer mongo.Session.Close() TODO
 	defer sess.Close()
