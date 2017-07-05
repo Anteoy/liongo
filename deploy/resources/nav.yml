@@ -1,0 +1,21 @@
+#配置动态nav 建议在tpl中添加 target为<a>跳转标签的属性值 label为标签名
+#example one  _blank 在新窗口中打开
+#- label: About
+#  href: /pages/about.html
+#  target:  _blank
+#example two _self当前页面打开 默认值
+#- label: Welcome
+#  href: /welcome.html
+#  target: _self
+
+- label: github
+  href: https://github.com/Anteoy/liongo
+  target: _blank
+
+#[
+#	{
+#		"label": "github",
+#		"href": "https://github.com/Anteoy/liongo",
+#		"target": "_blank"
+#	}
+#]
