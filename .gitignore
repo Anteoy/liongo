@@ -31,3 +31,4 @@ _testmain.go
 *.test
 *.prof
 /main/debug
+main/debug
