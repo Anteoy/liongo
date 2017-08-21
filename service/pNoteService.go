@@ -299,7 +299,7 @@ func (p *PNoteService) GetNotesFromMongo(yamls map[string]interface{}, w http.Re
 			log.Error(errp)
 			panic(err)
 		}
-		m := map[string]interface{}{"fi": value, "nav": NavBarsl, "cats": Classifiesm}
+		m := map[string]interface{}{"fi": value, "nav": NavBarsl}
 		//执行模板的merge操作，输出到fout
 		t.Execute(fout, m)
 	}

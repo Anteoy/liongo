@@ -11,7 +11,7 @@ import (
 
 type BaseFactory struct{}
 
-//root 资源文件的相对路径resources yamlData 读取配置文件的键值对
+//Generate 资源文件的相对路径resources yamlData 读取配置文件的键值对
 func (baseFactory *BaseFactory) Generate(rootDir string) {
 	//博客初始化处理 获得yamlmapdata
 	yp := utils.YamlParser{}
@@ -55,4 +55,5 @@ func (baseFactory *BaseFactory) Generate(rootDir string) {
 	//根据pre获取的notes进行生成pnotelist.html操作
 	disposePnote = new(pnote.GeneratorPnotelist)
 	disposePnote.DisposePnote(rootDir)
+
 }

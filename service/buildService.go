@@ -34,5 +34,4 @@ func Build() {
 	//复制pnote upload commit.html
 	err = utils.CopyDir(RENDER_DIR+"/html", PUBLISH_DIR+"/protohtml")
 	logrus.Debug("blog process ok！")
-
 }
