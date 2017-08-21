@@ -243,8 +243,8 @@ func (p *PNoteService) GetNotesFromMongo(yamls map[string]interface{}, w http.Re
 
 	var ch chan *mgo.Session = make(chan *mgo.Session, 1)
 	go mongo.GetMongoSession(ch)
-	var sess *mgo.Session            //must init
-	sess = <-(chan *mgo.Session)(ch) //must do
+	//var sess *mgo.Session
+	sess := <-(ch)                   //must do
 	c := sess.DB("liongo").C("note") //获取数据
 	note := modle.Note{}
 	err := c.Find(bson.M{"name": "test1"}).One(&note)

@@ -21,8 +21,6 @@ import (
 var httpPort = ":8080"
 
 func main() {
-	year := fmt.Sprintf("%v", "827827")
-	fmt.Println(year)
 	flag.Parse()
 	args := flag.Args()
 	argsLength := len(args)
@@ -36,9 +34,6 @@ func main() {
 	case "build":
 		Build.Build()
 	case "run":
-		if argsLength == 2 {
-			httpPort = args[1]
-		}
 		if argsLength == 3 && strings.EqualFold(args[1], "-p") {
 			httpPort = ":" + args[2]
 		}
@@ -62,7 +57,7 @@ func main() {
 		Build.Build()
 		log.Debug("Listen at ", httpPort)
 		http.Handle("/", http.FileServer(http.Dir("../views/serve")))
-		err := http.ListenAndServe(":8080", nil) // TODO httpAddr
+		err := http.ListenAndServe(httpPort, nil)
 		if err != nil {
 			log.Fatal("Start error", err)
 		}
