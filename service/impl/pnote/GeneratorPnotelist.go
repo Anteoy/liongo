@@ -51,7 +51,7 @@ func (generatorPnotelist *GeneratorPnotelist) DisposePnote(root string) {
 	t.Execute(fout, m)
 }
 
-//根据时间生成有序的notes list
+//根据有序notesl生成的yearNotesmap allNotesl
 func generatePnotelist() error {
 	yearNotesmap = make(map[string]*YearNote) //初始化存储某年notes的map
 	for _, iter := range notesl {             //排序好的Note指针数组

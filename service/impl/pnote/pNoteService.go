@@ -1,14 +1,12 @@
 package pnote
 
 import (
-	//"fmt"
 	"html"
 	"html/template"
 	"net/http"
 	"os"
 	"regexp"
 	"sort"
-	//"strconv"
 	"strings"
 	"time"
 
@@ -164,20 +162,20 @@ func (p *PNoteService) GetNotesFromMongo(yamls map[string]interface{}, w http.Re
 	//获取连接
 	//c := mongo.Session.DB("liongo").C("note")
 
-	var ch chan *mgo.Session = make(chan *mgo.Session, 1)
-	go mongo.GetMongoSession(ch)
-	//var sess *mgo.Session
-	sess := <-(ch)                   //must do
-	c := sess.DB("liongo").C("note") //获取数据
-	note := modle.Note{}
-	err := c.Find(bson.M{"name": "test1"}).One(&note)
-	if err != nil {
-		log.Error(err)
-		panic(err)
-	}
-	pnoteservice := new(PNoteService)
-	notes := pnoteservice.QueryAllFromMgo()
-	for index, value := range *notes { //* 遍历所有的mgo notes
+	//var ch chan *mgo.Session = make(chan *mgo.Session, 1)
+	//go mongo.GetMongoSession(ch)
+	////var sess *mgo.Session
+	//sess := <-(ch)                   //must do
+	//c := sess.DB("liongo").C("note") //获取数据
+	//note := modle.Note{}
+	//err := c.Find(bson.M{"name": "test1"}).One(&note)
+	//if err != nil {
+	//	log.Error(err)
+	//	panic(err)
+	//}
+	//pnoteservice := new(PNoteService)
+	//notes := pnoteservice.QueryAllFromMgo()
+	for index, value := range notesl { //* 遍历所有的mgo notes
 		log.Printf("notes[%d]=%d \n", index, value)
 		//new 模板对象
 		t := template.New("pSpecificNote.tpl")
@@ -198,7 +196,7 @@ func (p *PNoteService) GetNotesFromMongo(yamls map[string]interface{}, w http.Re
 		t, errp := t.ParseFiles("../resources/templates/default/pSpecificNote.tpl")
 		if errp != nil {
 			log.Error(errp)
-			panic(err)
+			panic(errp)
 		}
 		//检查PUBLISH_DIR是否存在
 		if !IsExists(PUBLISH_DIR) {
@@ -226,7 +224,7 @@ func (p *PNoteService) GetNotesFromMongo(yamls map[string]interface{}, w http.Re
 		//执行模板的merge操作，输出到fout
 		t.Execute(fout, m)
 	}
-	defer sess.Close()
+	//defer sess.Close()
 	return nil
 
 }

@@ -49,7 +49,6 @@ func (baseFactory *BaseFactory) Generate(rootDir string) {
 	//生成ProcessPnoteloginPage.html
 	dispose = new(base.ProcessPnoteloginPage)
 	dispose.Dispose(rootDir)
-
 	var disposePnote ifpnote.DisposePnote = &pnote.PreProcessNotes{}
 	disposePnote.DisposePnote("str")
 	//根据pre获取的notes进行生成pnotelist.html操作
