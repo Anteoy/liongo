@@ -26,14 +26,6 @@ import (
 
 type PNoteService struct{}
 
-//初始化待用变量
-//var (
-//	notesl        Notesl
-//	allNotesl     YearNotesl                  //所有使用年分类的Notes
-//	yearNotesmap  map[string]*YearNote        //某年所有Note map
-//	notesListSize int                  = 5000 //最大slice
-//)
-
 //处理数据库中note 对struct进行装配排序生成到struct
 func (p *PNoteService) PreProcessNotes() error {
 
@@ -64,14 +56,6 @@ func (p *PNoteService) PreProcessNotes() error {
 	return nil
 }
 
-////string 根据年月日生成note link
-//func processNoteUrl(ar Note) string {
-//	y := strconv.Itoa(ar.Time.Year())
-//	m := strconv.Itoa(int(ar.Time.Month()))
-//	d := strconv.Itoa(ar.Time.Day())
-//	return y + "/" + m + "/" + d + "/"
-//}
-
 //根据pre获取的notes 进行生成.html操作
 func (p *PNoteService) GeneratorNotes() error {
 	//根据不同日期生成不同
@@ -96,18 +80,6 @@ func (p *PNoteService) GeneratorPnotelist(root string, yamls map[string]interfac
 	defer fout.Close()
 	//时间归档处理
 	generatePnotelist()
-	//debug pipei tmp
-	// for index, value := range allNotesl {
-	// 	log.Printf("notes[%d]=%d \n", index, value)
-	// 	//log.Println(value.Months)
-	// 	for _, value1 := range value.Months {
-	// 		for _, value2 := range value1.NotesBase {
-	// 			log.Println(value2.Link + " " + value2.Title)
-	// 		}
-	// 	}
-	// 	log.Println(value.Monthsmap)
-	// 	log.Println(value.Year) //.Year
-	// }
 	m := map[string]interface{}{"archives": allNotesl, "nav": NavBarsl} ////注意 这里如果传入参数有误 将会影响到tmp生成的完整性 如footer等 并且此时程序不会报错 但会产生意想不到的结果
 	exErr := t.Execute(fout, m)
 	return exErr
@@ -153,55 +125,6 @@ func testparseTemplate(root, tpl string, cfg *yaml.File) *template.Template {
 	log.Println("parse " + tpl + " Template complete!")
 	return t
 }
-//
-////根据时间生成有序的notes list
-//func generatePnotelist() error {
-//	yearNotesmap = make(map[string]*YearNote) //初始化存储某年notes的map
-//	for _, iter := range notesl {             //排序好的Note指针数组
-//		y, m, _ := iter.Time.Date() //获取当前的note year和month
-//		year := fmt.Sprintf("%v", y)
-//		month := m.String()         // annotation // String returns the English name of the month ("January", "February", ...).
-//		yNote := yearNotesmap[year] //作为Key储存在yearNotesmap中
-//		if yNote == nil {           //判断是否有此yearNote日期分类 如果没有则
-//			//新建一个存入
-//			//某年的note
-//			//type YearNote struct {
-//			//	Year   string //如2017
-//			//	Months []*MonthNote // 如1,2,3月
-//			//	months map[string]*MonthNote //如 1月的MonthNote
-//			//}
-//			yNote = &YearNote{year, make([]*MonthNote, 0), make(map[string]*MonthNote)}
-//			yearNotesmap[year] = yNote //放入新的以年分类的Key
-//		}
-//		//确认当前note的月份是否在yNote的months节点中存在
-//		mNote := yNote.Monthsmap[month]
-//		if mNote == nil { //是否存在月份小分类
-//			//test
-//			// oo := &modle.NoteBase{"test.do", "test"}
-//			// log.Println(oo.Link)
-//			//不存在则新建立一个并放如其中
-//			mNote = &MonthNote{month, m, make([]*modle.NoteBase, 0)} //这里开始用m 一直报错undefined,,,m是最近定义了 不会编译为model
-//			yNote.Monthsmap[month] = mNote                           //新建并赋值于yNote，内层嵌套
-//		}
-//		mNote.NotesBase = append(mNote.NotesBase, &modle.NoteBase{iter.Title, iter.Title}) //年月下嵌入此article TODO 暂时使用title作为Link标识
-//
-//	}
-//	allNotesl = make(YearNotesl, 0)
-//	//对notes内部使用yNote.months进行排序
-//	for _, yNote := range yearNotesmap {
-//		//实例化MonthNotes
-//		monthCollect := make(MonthNotesl, 0)
-//		//把某年的month全部放入这个数组中
-//		for _, mNote := range yNote.Monthsmap { //获取内部months
-//			monthCollect = append(monthCollect, mNote)
-//		}
-//		sort.Sort(monthCollect)              //月份排序
-//		yNote.Monthsmap = nil                //months map[string]*MonthArchive TODO
-//		yNote.Months = monthCollect          //放入archives struct中Months节点 Months []*MonthArchive 再植入yNote的Months
-//		allNotesl = append(allNotesl, yNote) //放入此年的yArchive到allArchive
-//	}
-//	return nil
-//}
 
 //处理Note上传 test use
 func (p *PNoteService) DealNoteUpload(md string) error {
@@ -303,37 +226,6 @@ func (p *PNoteService) GetNotesFromMongo(yamls map[string]interface{}, w http.Re
 		//执行模板的merge操作，输出到fout
 		t.Execute(fout, m)
 	}
-	////new 模板对象 TODO 取消测试版本
-	//t := template.New("pSpecificNote.tpl")
-	//yCfg := yamls["config.yml"]
-	//var cfg = yCfg.(*yaml.File)
-	////向模板中注入函数
-	//t.Funcs(template.FuncMap{"unescaped": unescaped})
-	//t.Funcs(template.FuncMap{"get": cfg.Get})
-	//
-	////openfile := "../resources/templates/default/pSpecificNote.tpl"
-	////
-	////if !isExists(openfile) {
-	////	log.Println(openfile + " can not be found!")
-	////	os.Exit(1)
-	////}
-	//
-	//
-	////从模板文件解析
-	//t, errp := t.ParseFiles("/root/IdeaProjects/liongo/src/github.com/Anteoy/liongo/resources/templates/default/pSpecificNote.tpl")
-	//if errp != nil {
-	//	log.Error(errp)
-	//	panic(err)
-	//}
-	////创建html文件
-	//targetFile := PUBLISH + "/notes/" + note.Name+".html"
-	//fout, err := os.Create(targetFile)
-	//m := map[string]interface{}{"fi": note,"nav": navBarList, "cats": classifies}
-	////执行模板的merge操作，输出到fout
-	//t.Execute(fout, m)
-	//http.ServeFile(w, r, targetFile)
-	//defer mongo.Session.Close()
-	//defer fout.Close()
 	defer sess.Close()
 	return nil
 
