@@ -55,5 +55,9 @@ func (baseFactory *BaseFactory) Generate(rootDir string) {
 	//根据pre获取的notes进行生成pnotelist.html操作
 	disposePnote = new(pnote.GeneratorPnotelist)
 	disposePnote.DisposePnote(rootDir)
+	pNoteService := new(pnote.PNoteService)
+	//pNoteService.DealNoteUpload(ss)
+	//从mgo中搜集并生成所有notes 单独html文件
+	pNoteService.GetNotesFromMongo(cst.YamlData, nil, nil)
 
 }

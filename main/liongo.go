@@ -3,19 +3,14 @@ package main
 import (
 	"flag"
 	"fmt"
-	"net/http"
-	"os"
-
-	log "github.com/Anteoy/liongo/utils/logrus"
-
-	. "github.com/Anteoy/liongo/constant"
-	Build "github.com/Anteoy/liongo/service"
-
-	"strings"
-
+	cst "github.com/Anteoy/liongo/constant"
 	"github.com/Anteoy/liongo/controller"
 	"github.com/Anteoy/liongo/newPosts"
-	"github.com/Anteoy/liongo/utils"
+	Build "github.com/Anteoy/liongo/service"
+	log "github.com/Anteoy/liongo/utils/logrus"
+	"net/http"
+	"os"
+	"strings"
 )
 
 var httpPort = ":8080"
@@ -39,12 +34,6 @@ func main() {
 		}
 		if argsLength == 2 && strings.EqualFold(args[1], "--note") {
 			log.Debug("starting run with note !!!")
-			pNoteService := new(Build.PNoteService)
-			//pNoteService.DealNoteUpload(ss)
-			yp := new(utils.YamlParser)
-			yamlData := yp.Parse("../resources")
-			//从mgo中搜集并生成所有notes 单独html文件
-			pNoteService.GetNotesFromMongo(yamlData, nil, nil)
 			pNoteController := new(controller.PNoteController)
 			http.HandleFunc("/login", pNoteController.Login)
 			http.HandleFunc("/notes", pNoteController.GetNote)
@@ -71,7 +60,7 @@ func main() {
 		addFactory := new(newPosts.AddFactory)
 		addFactory.New(args2)
 	case "version":
-		fmt.Print("liongo version " + VERSION)
+		fmt.Print("liongo version " + cst.VERSION)
 	default:
 		UseInfo()
 		os.Exit(1)
@@ -80,5 +69,5 @@ func main() {
 }
 
 func UseInfo() {
-	fmt.Println(USAGE)
+	fmt.Println(cst.USAGE)
 }
