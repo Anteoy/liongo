@@ -15,7 +15,7 @@ type PreProcessNotes struct{}
 //初始化待用变量
 var (
 	notesl        Notesl
-	yearNotesmap  map[string]*YearNote        //某年所有Note map
+	yearNotesmap  map[string]*YearNote        //key年所有Note map
 	allNotesl     YearNotesl                  //所有使用年分类的Notes
 	notesListSize int                  = 5000 //最大slice
 )

@@ -51,7 +51,7 @@ func (generatorPnotelist *GeneratorPnotelist) DisposePnote(root string) {
 	t.Execute(fout, m)
 }
 
-//根据有序notesl生成的yearNotesmap allNotesl
+//根据有序notesl生成yearNotesmap allNotesl
 func generatePnotelist() error {
 	yearNotesmap = make(map[string]*YearNote) //初始化存储某年notes的map
 	for _, iter := range notesl {             //排序好的Note指针数组
@@ -62,11 +62,6 @@ func generatePnotelist() error {
 		if yNote == nil {           //判断是否有此yearNote日期分类 如果没有则
 			//新建一个存入
 			//某年的note
-			//type YearNote struct {
-			//	Year   string //如2017
-			//	Months []*MonthNote // 如1,2,3月
-			//	months map[string]*MonthNote //如 1月的MonthNote
-			//}
 			yNote = &YearNote{year, make([]*MonthNote, 0), make(map[string]*MonthNote)}
 			yearNotesmap[year] = yNote //放入新的以年分类的Key
 		}
@@ -81,21 +76,23 @@ func generatePnotelist() error {
 			yNote.Monthsmap[month] = mNote                     //新建并赋值于yNote，内层嵌套
 		}
 		mNote.NotesBase = append(mNote.NotesBase, &NoteBase{iter.Title, iter.Title}) //年月下嵌入此article TODO 暂时使用title作为Link标识
-
 	}
+
 	allNotesl = make(YearNotesl, 0)
 	//对notes内部使用yNote.months进行排序
 	for _, yNote := range yearNotesmap {
 		//实例化MonthNotes
 		monthCollect := make(MonthNotesl, 0)
-		//把某年的month全部放入这个数组中
+		//把某年的month全部放入这个数组中 某年的所有notes
 		for _, mNote := range yNote.Monthsmap { //获取内部months
 			monthCollect = append(monthCollect, mNote)
 		}
-		sort.Sort(monthCollect)              //月份排序
-		yNote.Monthsmap = nil                //months map[string]*MonthArchive TODO
-		yNote.Months = monthCollect          //放入archives struct中Months节点 Months []*MonthArchive 再植入yNote的Months
-		allNotesl = append(allNotesl, yNote) //放入此年的yArchive到allArchive
+		sort.Sort(monthCollect) //月份排序
+		yNote.Monthsmap = nil   //invalid exchange
+		yNote.Months = monthCollect
+		allNotesl = append(allNotesl, yNote) //放入此年的yArchive到allArchive yNote已有序
+		//fix sort
+		sort.Sort(allNotesl)
 	}
 	return nil
 }

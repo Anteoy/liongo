@@ -6,16 +6,17 @@ import (
 
 //mongo note struct.
 type Note struct {
-	Name     string  `json:"name"`
-	Content  string  `json:"content"`
-	Title    string	 `json:"title"`
-	Date     string  `json:"date"`
-	Time     time.Time `json:"time"`
+	Name    string    `json:"name"`
+	Content string    `json:"content"`
+	Title   string    `json:"title"`
+	Date    string    `json:"date"`
+	Time    time.Time `json:"time"`
 }
+
 //提供note list html
 type NoteBase struct {
-	Title    string	 `json:"title"`
-	Link	string `json:"link"`
+	Title string `json:"title"`
+	Link  string `json:"link"`
 }
 
 //缓存mongo note数据信息
@@ -25,6 +26,7 @@ type YearNote struct {
 	Months    []*MonthNote          // 如1,2,3月
 	Monthsmap map[string]*MonthNote //如 1月的MonthNote
 }
+
 //某月的note
 type MonthNote struct {
 	Month     string     //几月
@@ -33,6 +35,7 @@ type MonthNote struct {
 }
 
 type MonthNotesl []*MonthNote
+
 //用于sort
 func (m MonthNotesl) Len() int {
 	return len(m)
@@ -46,6 +49,7 @@ func (m MonthNotesl) Less(i, j int) bool {
 
 //所有的note储存
 type YearNotesl []*YearNote
+
 //用于sort
 func (y YearNotesl) Len() int {
 	return len(y)
@@ -62,8 +66,6 @@ type NotesByDate struct {
 }
 
 //sort.Sort() 入参需覆写提供如下方法
-func (a Notesl) Len() int                 { return len(a) }
-func (a Notesl) Swap(i, j int)            { a[i], a[j] = a[j], a[i] }
+func (a Notesl) Len() int                { return len(a) }
+func (a Notesl) Swap(i, j int)           { a[i], a[j] = a[j], a[i] }
 func (a NotesByDate) Less(i, j int) bool { return a.Notesl[i].Time.After(a.Notesl[j].Time) }
-
-
