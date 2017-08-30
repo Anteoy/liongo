@@ -49,19 +49,19 @@
     	<p>
 
     	    <a href="https://github.com/Anteoy"><img
-                				src="https://coding.net/u/zhoudafu/p/pic/git/raw/master/images/github.png"
+                				src="/images/site/github.png"
                 				alt="github" style="height:80px"/>
             </a>
             <a href="https://coding.net/u/zhoudafu"><img
-                src="https://coding.net/u/zhoudafu/p/pic/git/raw/master/images/coding1.png"
+                src="/resources/images/site/coding.png"
                 alt="github" style="height:80px"/>
             </a>
             <a href="http://blog.csdn.net/yan_chou"><img
-                    src="https://coding.net/u/zhoudafu/p/pic/git/raw/master/images/csdn.png"
+                    src="/resources/images/site/csdn.png"
                     alt="github" style="height:80px"/>
             </a>
             <a href="https://twitter.com/AnteoyChou"><img
-                src="https://coding.net/u/zhoudafu/p/pic/git/raw/master/images/timg.png"
+                src="/resources/images/site/twitter.png"
                 alt="github" style="height:90px"/>
             </a>
     		<!-- github<a href="https://github.com/Anteoy"><img
