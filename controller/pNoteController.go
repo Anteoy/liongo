@@ -185,3 +185,82 @@ func (pNoteController *PNoteController) PNCommit(w http.ResponseWriter, r *http.
 	return
 
 }
+
+func (pNoteController *PNoteController) RPNCommit(w http.ResponseWriter, r *http.Request) {
+
+	//start session
+	sessA := globalSessions.SessionStart(w, r)
+	//test
+	//if sess.Get(sess.SessionID()) == nil {
+	//	io.WriteString(w, "no sesssion")
+	//	return
+	//}
+	//value设值为sessionid
+	if sessA.Get(sessA.SessionID()) == nil {
+		s := CommonReturnModel{
+			Code:    "502",
+			Message: `session 失效，請重新登录！`,
+		}
+		b, _ := json.Marshal(s)
+		w.Write(b)
+		return
+	}
+
+	r.ParseForm()
+	titles := r.Form["title"]
+	title := titles[0]
+	if len(title) == 0 {
+		io.WriteString(w, "请输入标题") //TODO
+		return
+	}
+	contents := r.Form["content"]
+	content := contents[0]
+	if len(content) == 0 {
+		io.WriteString(w, "请输入正文") //TODO
+		return
+	}
+
+	//md处理
+	// 判断是否为空
+	if len(content) == 0 {
+		log.Fatal("md is nil")
+		return
+	}
+	//处理md为html
+	//markdown字符串转为ASCII html代码
+	htmlByte := blackfriday.MarkdownCommon([]byte(content))
+	//反转义实体如“& lt;”成为“<” 把byte转位strings
+	htmlStr := html.UnescapeString(string(htmlByte))
+	//正则匹配并替换
+	re := regexp.MustCompile(`<pre><code>([\s\S]*?)</code></pre>`)
+	htmlStr = re.ReplaceAllString(htmlStr, `<pre class="prettyprint linenums">${1}</pre>`)
+
+	//构造struct
+	//timestamp
+	timestamp := time.Now().Unix()
+	//格式化为字符串,tm为Time类型
+	tm := time.Unix(timestamp, 0)
+	//Time
+	//时间解析 strconv.FormatInt(time.Now().Unix(),10) base：进位制（2 进制到 36 进制 这种格式不行
+	//time, terr := time.Parse("2006-01-02 15:04:05", strconv.FormatInt(time.Now().Unix(),10))
+	//时间解析
+	time, terr := time.Parse("2006-01-02 15:04:05", tm.Format("2006-01-02 03:04:05"))
+	if terr != nil {
+		logrus.Error(terr)
+	}
+	//装配struct
+	note := &modle.Note{Name: title, Content: htmlStr, Title: title, Date: tm.Format("2006-01-02 03:04:05"), Time: time}
+	//获取session
+	var ch chan *mgo.Session = make(chan *mgo.Session, 1)
+	go mongo.GetMongoSession(ch)
+	var sess *mgo.Session            //must init
+	sess = <-(chan *mgo.Session)(ch) //must do
+	c := sess.DB("liongo").C("note") //获取数据
+	//存入mongo
+	err := c.Insert(&note)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return
+
+}
