@@ -11,7 +11,7 @@
     <div style="text-align: center;"><textarea id="content" rows="60" cols="200" placeholder="正文"></textarea></div>
     <div style="text-align: center;"><button onclick="commitGo()">提交</button></div>
 </div>
-<script type="text/javascript" src="../assets/themes/default/jquery.js"></script>
+<script type="text/javascript" src="/js/jquery.js"></script>
 <script>
     function commitGo() {
         var title = $("#title").val()
@@ -29,7 +29,10 @@
                     alert("登录过期，请重新登录！！")
                     window.location.href = "/pnotelogin.html"
                 }
-                console.info("connect success!")
+                if(JSON.parse(data).Code == 200){
+                    alert("上传成功！！！")
+                }
+                console.info("上传成功！！！")
             },
             error: function () {
                 console.info("connect error!")

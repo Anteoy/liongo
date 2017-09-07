@@ -182,6 +182,12 @@ func (pNoteController *PNoteController) PNCommit(w http.ResponseWriter, r *http.
 	if err != nil {
 		log.Fatal(err)
 	}
+	s := CommonReturnModel{
+		Code:    "200",
+		Message: `上传成功`,
+	}
+	b, _ := json.Marshal(s)
+	w.Write(b)
 	return
 
 }
