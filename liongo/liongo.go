@@ -68,7 +68,7 @@ func main() {
 		addFactory := new(newPosts.AddFactory)
 		addFactory.New(args2)
 	case "version":
-		fmt.Print("liongo version " + cst.VERSION)
+		fmt.Printf("liongo version '%s'\n", cst.VERSION)
 	default:
 		UseInfo()
 		os.Exit(1)

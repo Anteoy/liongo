@@ -45,10 +45,10 @@ func (addFactory *AddFactory) New(title string) {
 	if checkFileIsExist(fileName) { //如果文件存在
 		f, err = os.OpenFile(fileName, os.O_RDWR|os.O_APPEND|os.O_CREATE, 0666) //打开文件 并可追加文件内容
 		f.Name()
-		logrus.Debugf("文件存在 name = %s", f.Name())
+		logrus.Debugf("新建blog name = %s 已存在", f.Name())
 	} else {
 		f, err = os.Create(fileName) //创建文件
-		logrus.Debug("文件不存在")
+		logrus.Debugf("新建blog name = %s 成功", f.Name())
 	}
 	check(err)
 	line0 := "---" + "\n"

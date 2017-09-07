@@ -4,7 +4,6 @@
 *.so
 /.idea/
 /liongo.iml
-liongo
 
 /views/serve/*
 /src/github.com/

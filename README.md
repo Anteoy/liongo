@@ -5,30 +5,37 @@ liongo,a engine that can power for your blog by [Golang](https://golang.org).
 
 **Current: 1.2.0 (Beta) 2017.03.08**
 
-Liongo now supports the following features
+## how to get liongo
 
-##build
+1. setup your gopath and gobin
+2. go get -x github.com/Anteoy/liongo
+3. go install  github.com/Anteoy/liongo/liongo
+4. copy the folder "resources" to the parent directory of folder gobin
+## how to use liongo
+
+Liongo now supports the following features
+### build
 ```
 liongo build
 ```
 that can generate a simple site static file
-##run
+### run
 ```
 liongo run
 ```
 It's contains the "liongo build",it will use the build file to run a serve at default port 8080,you can also use
 ```
-##run --note
+### run --note(need your server's mysql and mongodb supported)
 ```
 liongo run --note
 ```
 It's can open you online note,you must install the mongodb and mysql in your server,before this,you should see the config of the code.
 ```
-liongo run :[your port]
+liongo run -p 8989
 ```
-set the run port
+liongo run at 8989
 ```
-##new
+### new
 ```
 liongo new [yourblogtitle]
 ```
