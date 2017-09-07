@@ -1,14 +1,14 @@
 package utils
 
 import (
+	"github.com/Anteoy/go-gypsy/yaml"
+	. "github.com/Anteoy/liongo/constant"
+	"html/template"
 	"io"
 	"io/ioutil"
 	"log"
 	"os"
 	"regexp"
-	"github.com/Anteoy/go-gypsy/yaml"
-	. "github.com/Anteoy/liongo/constant"
-	"html/template"
 	"strings"
 )
 
@@ -116,14 +116,8 @@ func Unescaped(str string) interface{} {
 
 //传入路径和配置信息 返回一个template 主题所使用的或自定义tpl名 融合footer header body为一个tpl
 func ParseTemplate(root, tplName string, cfg *yaml.File) *template.Template {
-	//默认default
-	themeFolder, errt := cfg.Get("theme")
-	if errt != nil {
-		log.Println("get theme error!check config.yml at the theme value!")
-		os.Exit(1)
-	}
 	//需组装模板tpl文件路径
-	filePath := root + "templates/" + themeFolder + "/" + tplName + ".tpl"
+	filePath := root + "tpl/" + "/" + tplName + ".tpl"
 	if !IsExists(filePath) {
 		log.Println(filePath + " can not be found!")
 		os.Exit(1)
@@ -134,8 +128,8 @@ func ParseTemplate(root, tplName string, cfg *yaml.File) *template.Template {
 	t.Funcs(template.FuncMap{"get": cfg.Get})
 	t.Funcs(template.FuncMap{"unescaped": Unescaped})
 
-	headerTplPath := root + "templates/" + themeFolder + "/common/" + COMMON_HEADER_FILE
-	footerTplPath := root + "templates/" + themeFolder + "/common/" + COMMON_FOOTER_FILE
+	headerTplPath := root + "tpl/" + "/common/" + COMMON_HEADER_FILE
+	footerTplPath := root + "tpl/" + "/common/" + COMMON_FOOTER_FILE
 
 	if !IsExists(headerTplPath) {
 		log.Println(headerTplPath + " can not be found!")

@@ -136,6 +136,6 @@
 	$("#password").val("");
 	}
 </script>
-<script type="text/javascript" src="/assets/themes/{{"theme"|get}}/jquery.js"></script>
-<script type="text/javascript" src="/assets/themes/{{"theme"|get}}/common.js"></script>
+<script type="text/javascript" src="/js/jquery.js"></script>
+<script type="text/javascript" src="/js/common.js"></script>
 {{template "footer"}}

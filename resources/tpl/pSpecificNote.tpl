@@ -7,11 +7,11 @@
 	<meta name="keywords" content="{{"meta.keywords"|get}}"/>
 	<meta name="author" content="{{"meta.author"|get}}"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
-	<link rel="stylesheet" href="/assets/themes/{{"theme"|get}}/plugin/prettify/normalize.css"/>
-	<link rel="stylesheet" href="/assets/themes/{{"theme"|get}}/plugin/prettify/prettify_{{"codetheme"|get}}.css"/>
-	<link rel="stylesheet" href="/assets/themes/{{"theme"|get}}/main.css"/>
+	<link rel="stylesheet" href="/prettify/normalize.css"/>
+	<link rel="stylesheet" href="/prettify/prettify_{{"codetheme"|get}}.css"/>
+	<link rel="stylesheet" href="/css/main.css"/>
 	<link rel="shortcut icon" href="/fav.ico"/>
-	<script type="text/javascript" src="/assets/themes/{{"theme"|get}}/plugin/prettify/prettify.js"></script>
+	<script type="text/javascript" src="/prettify/prettify.js"></script>
 	</head>
 	<body onload="prettyPrint()">
 
@@ -36,7 +36,7 @@
         	</div>
         </div>
         </div>
-        <script type="text/javascript" src="/assets/themes/{{"theme"|get}}/jquery.js"></script>
+        <script type="text/javascript" src="/js/jquery.js"></script>
 
         <div id="footer">
             <div id="footer-inner" style="bottom: 0;position: fixed;right: 0;left: 0;">

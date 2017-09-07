@@ -21,8 +21,10 @@ func Build() {
 	//开始生成渲染文件
 	var rf = new(BaseFactory)
 	rf.Generate(RENDER_DIR)
-	//复制assets
-	err := utils.CopyDir(RENDER_DIR+"/assets", PUBLISH_DIR+"/assets")
+	//cp resources
+	err := utils.CopyDir(RENDER_DIR+"/prettify", PUBLISH_DIR+"/prettify")
+	err = utils.CopyDir(RENDER_DIR+"/js", PUBLISH_DIR+"/js")
+	err = utils.CopyDir(RENDER_DIR+"/css", PUBLISH_DIR+"/css")
 	if err != nil {
 		logrus.Error(err)
 	}

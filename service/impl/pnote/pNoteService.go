@@ -128,7 +128,7 @@ func (p *PNoteService) GetNotesFromMongo(yamls map[string]interface{}, w http.Re
 		//}
 
 		//从模板文件解析
-		t, errp := t.ParseFiles("../resources/templates/default/pSpecificNote.tpl")
+		t, errp := t.ParseFiles("../resources/tpl/pSpecificNote.tpl")
 		if errp != nil {
 			log.Error(errp)
 			panic(errp)
