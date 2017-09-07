@@ -1,3 +1,12 @@
+---
+date: 2017-09-01 10:19:00
+title: archlinux安装教程以及自己踩过的坑
+categories:
+    - 架构,linux,archlinux
+tags:
+    - 架构,linux,archlinux
+---
+
 ### 引言：
 　　linux是一种哲学。最近喜欢上了arch的简洁，可高度定制化，滚动更新和设计哲学，准备日常办公从ubuntu转向arch，目前已完成安装，正在使用arch写这篇博客，而事实证明arch确实没让我失望，它的确是一个非常不错的发行版.
 ### 安装环境：
