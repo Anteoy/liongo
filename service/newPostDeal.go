@@ -1,14 +1,10 @@
-package newPosts
+package service
 
 import (
-	"os"
-
 	"github.com/Anteoy/liongo/utils/logrus"
-	//"io"
-
-	"time"
-	//"io/ioutil"
 	"io"
+	"os"
+	"time"
 )
 
 type AddFactory struct {

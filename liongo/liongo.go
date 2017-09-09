@@ -4,9 +4,8 @@ import (
 	"flag"
 	"fmt"
 	cst "github.com/Anteoy/liongo/constant"
-	"github.com/Anteoy/liongo/newPosts"
 	"github.com/Anteoy/liongo/router"
-	Build "github.com/Anteoy/liongo/service"
+	"github.com/Anteoy/liongo/service"
 	log "github.com/Anteoy/liongo/utils/logrus"
 	"net/http"
 	"os"
@@ -27,7 +26,7 @@ func main() {
 	//通过第一个参数进行识别
 	switch args[0] {
 	case "build":
-		Build.Build()
+		service.Build()
 	case "run":
 		if argsLength == 3 && strings.EqualFold(args[1], "-p") {
 			httpPort = ":" + args[2]
@@ -36,7 +35,7 @@ func main() {
 			log.Debug("starting run with note !!!")
 			router.Router()
 		}
-		Build.Build()
+		service.Build()
 		log.Debug("Listen at ", httpPort)
 		// http://localhost:8080/images/site/coding.png
 		http.Handle("/", http.FileServer(http.Dir("../views/serve")))
@@ -57,7 +56,7 @@ func main() {
 			UseInfo()
 			os.Exit(1)
 		}
-		addFactory := new(newPosts.AddFactory)
+		addFactory := new(service.AddFactory)
 		addFactory.New(args2)
 	case "version":
 		fmt.Printf("liongo version '%s'\n", cst.VERSION)
