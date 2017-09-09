@@ -9,7 +9,7 @@ import (
 
 	"github.com/Anteoy/go-gypsy/yaml"
 	. "github.com/Anteoy/liongo/constant"
-	. "github.com/Anteoy/liongo/modle"
+	. "github.com/Anteoy/liongo/model"
 	. "github.com/Anteoy/liongo/utils"
 	"github.com/Anteoy/liongo/utils/logrus"
 )

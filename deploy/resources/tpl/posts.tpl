@@ -33,6 +33,6 @@
 
 </div>
 
-<script type="text/javascript" src="/assets/themes/{{"theme"|get}}/jquery.js"></script>
+<script type="text/javascript" src="/js/jquery.js"></script>
 
 {{template "footer"}}

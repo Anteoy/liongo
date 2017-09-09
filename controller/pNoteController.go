@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/Anteoy/liongo/dao/mysql"
-	"github.com/Anteoy/liongo/modle"
+	"github.com/Anteoy/liongo/model"
 	//"github.com/Anteoy/liongo/utils" TODO mgo session 共用问题
 	//"github.com/Anteoy/liongo/service"
 	"fmt"
@@ -97,7 +97,7 @@ func (p *PNoteController) GetNote(w http.ResponseWriter, r *http.Request) {
 
 //获取笔记md文件并存入mongo
 
-func (pNoteController *PNoteController) DataTomongo(notemd *modle.Note) {
+func (pNoteController *PNoteController) DataTomongo(notemd *model.Note) {
 
 }
 
@@ -170,7 +170,7 @@ func (pNoteController *PNoteController) PNCommit(w http.ResponseWriter, r *http.
 		logrus.Error(terr)
 	}
 	//装配struct
-	note := &modle.Note{Name: title, Content: htmlStr, Title: title, Date: tm.Format("2006-01-02 03:04:05"), Time: time}
+	note := &model.Note{Name: title, Content: htmlStr, Title: title, Date: tm.Format("2006-01-02 03:04:05"), Time: time}
 	//获取session
 	var ch chan *mgo.Session = make(chan *mgo.Session, 1)
 	go mongo.GetMongoSession(ch)
@@ -255,7 +255,7 @@ func (pNoteController *PNoteController) RPNCommit(w http.ResponseWriter, r *http
 		logrus.Error(terr)
 	}
 	//装配struct
-	note := &modle.Note{Name: title, Content: htmlStr, Title: title, Date: tm.Format("2006-01-02 03:04:05"), Time: time}
+	note := &model.Note{Name: title, Content: htmlStr, Title: title, Date: tm.Format("2006-01-02 03:04:05"), Time: time}
 	//获取session
 	var ch chan *mgo.Session = make(chan *mgo.Session, 1)
 	go mongo.GetMongoSession(ch)

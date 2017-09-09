@@ -223,19 +223,3 @@ p {
 .comments {
     padding: 0 30px;
 }
-
-hr {
-    background: url("ds.png") repeat-x scroll 0 0 rgba(0, 0, 0, 0);
-    border: 0 none;
-    color: #CCCCCC;
-    height: 4px;
-    padding: 0;
-}
-
-.rss{
-    background: url("rss.png");
-    width: 16px;
-    height: 16px;
-    margin-top: 12px;
-
-}

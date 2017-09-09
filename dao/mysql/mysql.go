@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"log"
 
-	m "github.com/Anteoy/liongo/modle"
+	m "github.com/Anteoy/liongo/model"
 	"github.com/Anteoy/liongo/utils/logrus"
 	_ "github.com/go-sql-driver/mysql"
 )

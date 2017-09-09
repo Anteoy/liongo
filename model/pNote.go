@@ -1,4 +1,4 @@
-package modle
+package model
 
 import (
 	"time"

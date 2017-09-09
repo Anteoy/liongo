@@ -2,7 +2,7 @@ package pnote
 
 import (
 	"github.com/Anteoy/liongo/dao/mongo"
-	. "github.com/Anteoy/liongo/modle"
+	. "github.com/Anteoy/liongo/model"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"qiniupkg.com/x/log.v7"

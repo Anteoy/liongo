@@ -4,8 +4,8 @@ import (
 	"flag"
 	"fmt"
 	cst "github.com/Anteoy/liongo/constant"
-	"github.com/Anteoy/liongo/controller"
 	"github.com/Anteoy/liongo/newPosts"
+	"github.com/Anteoy/liongo/router"
 	Build "github.com/Anteoy/liongo/service"
 	log "github.com/Anteoy/liongo/utils/logrus"
 	"net/http"
@@ -34,15 +34,7 @@ func main() {
 		}
 		if argsLength == 2 && strings.EqualFold(args[1], "--note") {
 			log.Debug("starting run with note !!!")
-			pNoteController := new(controller.PNoteController)
-			http.HandleFunc("/login", pNoteController.Login)
-			http.HandleFunc("/notes", pNoteController.GetNote)
-			//路由上传接口
-			http.HandleFunc("/PNCommit", pNoteController.PNCommit)
-			http.HandleFunc("/RPNCommit", pNoteController.RPNCommit)
-			//http.HandleFunc("/lionnote", func() {//TODO
-			//
-			//})
+			router.Router()
 		}
 		Build.Build()
 		log.Debug("Listen at ", httpPort)

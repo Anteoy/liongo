@@ -7,20 +7,4 @@ copyright:
   owner: owner of copyright
   beginYear: 2016
   endYear: 2017
-theme: default
 codetheme: night
-
-#{
-#	"meta": {
-#		"description": "meta's description",
-#		"keywords": "keyword,more keyword",
-#		"author": "meta's author or article's author"
-#	},
-#	"copyright": {
-#		"owner": "owner of copyright",
-#		"beginYear": 2016,
-#		"endYear": 2017,
-#	},
-#	"theme": "default",
-#	"codetheme": "night"
-#}

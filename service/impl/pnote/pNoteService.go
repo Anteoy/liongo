@@ -13,8 +13,8 @@ import (
 	"github.com/Anteoy/go-gypsy/yaml"
 	. "github.com/Anteoy/liongo/constant"
 	"github.com/Anteoy/liongo/dao/mongo"
-	"github.com/Anteoy/liongo/modle"
-	. "github.com/Anteoy/liongo/modle"
+	"github.com/Anteoy/liongo/model"
+	. "github.com/Anteoy/liongo/model"
 	. "github.com/Anteoy/liongo/utils"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -81,7 +81,7 @@ func (p *PNoteService) DealNoteUpload(md string) error {
 	}
 	// log.Println(time)
 	//装配struct
-	note := &modle.Note{Name: "test1", Content: htmlStr, Title: "title1", Date: "2017-01-10 20:12:00", Time: time}
+	note := &model.Note{Name: "test1", Content: htmlStr, Title: "title1", Date: "2017-01-10 20:12:00", Time: time}
 	// log.Printf(note.Content)
 	c := mongo.Session.DB("liongo").C("note")
 	err := c.Insert(&note)
@@ -165,7 +165,7 @@ func (p *PNoteService) GetNotesFromMongo(yamls map[string]interface{}, w http.Re
 }
 
 //查询mongo中所有数据
-func (p *PNoteService) QueryAllFromMgo() *[]modle.Note {
+func (p *PNoteService) QueryAllFromMgo() *[]model.Note {
 	//从mongo中获取noteinfo
 	//获取连接
 	// c := mongo.Session.DB("liongo").C("note")
@@ -175,7 +175,7 @@ func (p *PNoteService) QueryAllFromMgo() *[]modle.Note {
 	sess = <-(chan *mgo.Session)(ch) //must do
 	c := sess.DB("liongo").C("note")
 	//获取数据
-	notes := make([]modle.Note, 100)
+	notes := make([]model.Note, 100)
 	err := c.Find(bson.M{}).All(&notes)
 	if err != nil {
 		log.Error(err)

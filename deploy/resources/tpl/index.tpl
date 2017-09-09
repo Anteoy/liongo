@@ -6,11 +6,11 @@
 	<meta name="keywords" content="{{"meta.keywords"|get}}"/>
 	<meta name="author" content="{{"meta.author"|get}}"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
-	<link rel="stylesheet" href="/assets/themes/{{"theme"|get}}/plugin/prettify/normalize.css"/>
-	<link rel="stylesheet" href="/assets/themes/{{"theme"|get}}/plugin/prettify/prettify_{{"codetheme"|get}}.css"/>
-	<link rel="stylesheet" href="/assets/themes/{{"theme"|get}}/main.css"/>
+	<link rel="stylesheet" href="/prettify/normalize.css"/>
+	<link rel="stylesheet" href="/prettify/prettify_{{"codetheme"|get}}.css"/>
+	<link rel="stylesheet" href="/css/main.css"/>
 	<link rel="shortcut icon" href="/fav.ico"/>
-	<script type="text/javascript" src="/assets/themes/{{"theme"|get}}/plugin/prettify/prettify.js"></script>
+	<script type="text/javascript" src="/prettify/prettify.js"></script>
 	</head>
 	<body onload="prettyPrint()" style="text-align: center">
 <div class="top-nav">
@@ -49,19 +49,19 @@
     	<p>
 
     	    <a href="https://github.com/Anteoy"><img
-                				src="https://coding.net/u/zhoudafu/p/pic/git/raw/master/images/github.png"
+                				src="/images/site/github.png"
                 				alt="github" style="height:80px"/>
             </a>
             <a href="https://coding.net/u/zhoudafu"><img
-                src="https://coding.net/u/zhoudafu/p/pic/git/raw/master/images/coding1.png"
+                src="/resources/images/site/coding.png"
                 alt="github" style="height:80px"/>
             </a>
             <a href="http://blog.csdn.net/yan_chou"><img
-                    src="https://coding.net/u/zhoudafu/p/pic/git/raw/master/images/csdn.png"
+                    src="/resources/images/site/csdn.png"
                     alt="github" style="height:80px"/>
             </a>
             <a href="https://twitter.com/AnteoyChou"><img
-                src="https://coding.net/u/zhoudafu/p/pic/git/raw/master/images/timg.png"
+                src="/resources/images/site/twitter.png"
                 alt="github" style="height:90px"/>
             </a>
     		<!-- github<a href="https://github.com/Anteoy"><img
