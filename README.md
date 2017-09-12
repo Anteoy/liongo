@@ -1,7 +1,7 @@
 # liongo
 ![-_-](https://travis-ci.org/Anteoy/liongo.svg?branch=master)
 
-liongo,a engine that can power for your blog by [Golang](https://golang.org).
+liongo,an engine that can power for your blog by [Golang](https://golang.org).
 
 **Current: 1.2.0 (Beta) 2017.03.08**
 
