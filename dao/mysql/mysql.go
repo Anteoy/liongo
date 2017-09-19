@@ -34,8 +34,8 @@ func querryBlogList() {
 
 }
 
-func GetUserForEmail(email string) *m.User {
-	rows, err := db.Query(`select * from user where name = ?`, email)
+func GetUserForEmail(name string) *m.User {
+	rows, err := db.Query(`select * from user where name = ?`, name)
 	checkErr(err)
 	if !checkErr(err) {
 		for rows.Next() {

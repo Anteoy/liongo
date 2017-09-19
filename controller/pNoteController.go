@@ -23,6 +23,7 @@ import (
 	_ "github.com/Anteoy/liongo/utils/memory" //must this is the first init ,it cost any time
 	"github.com/Anteoy/liongo/utils/session"
 	"gopkg.in/mgo.v2"
+	"io/ioutil"
 )
 
 type PNoteController struct{}
@@ -80,6 +81,54 @@ func (pNoteController *PNoteController) Login(w http.ResponseWriter, r *http.Req
 	//yamlData := yp.Parse("../resources")
 	//pNoteService.GetNoteByName(ss,yamlData,w,r)
 
+}
+
+type LoginRreq struct {
+	UserName string `json:"user_name"`
+	PassWord string `json:"pass_word"`
+}
+
+func (pNoteController *PNoteController) LoginR(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Access-Control-Allow-Origin", "*")             //允许访问所有域
+	w.Header().Add("Access-Control-Allow-Headers", "Content-Type") //header的类型
+	w.Header().Set("content-type", "application/json")             //返回数据格式是json
+	//start session
+	sess := globalSessions.SessionStart(w, r)
+	logrus.Debugf("Login() sessionID 为： %s", sess.SessionID())
+	logrus.Debugf("Login() sess.Get(sess.SessionID()) 为： %v", sess.Get(sess.SessionID()))
+	if r.Method == "OPTIONS" {
+		return
+	}
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		panic(err)
+	}
+	log.Println(string(body))
+	req := LoginRreq{}
+	err = json.Unmarshal(body, &req)
+	if err != nil {
+		panic(err)
+	}
+	log.Printf("收到登录请求，参数为：%+v\n", req)
+	user := mysql.GetUserForEmail(req.UserName)
+	if user != nil && user.Password == req.PassWord {
+		s := CommonReturnModel{
+			Code:    "200",
+			Message: "登录成功",
+		}
+		b, _ := json.Marshal(s)
+		w.Write(b)
+		return //ok
+	} else {
+		s := CommonReturnModel{
+			Code:    "403",
+			Message: "用户名或密码错误",
+		}
+		b, _ := json.Marshal(s)
+		w.Write(b)
+		return
+	}
 }
 
 //通过参数在List页面向详情页面跳转
