@@ -24,6 +24,7 @@ import (
 	"github.com/Anteoy/liongo/utils/session"
 	"gopkg.in/mgo.v2"
 	"io/ioutil"
+	"github.com/Anteoy/liongo/utils"
 )
 
 type PNoteController struct{}
@@ -113,9 +114,21 @@ func (pNoteController *PNoteController) LoginR(w http.ResponseWriter, r *http.Re
 	log.Printf("收到登录请求，参数为：%+v\n", req)
 	user := mysql.GetUserForEmail(req.UserName)
 	if user != nil && user.Password == req.PassWord {
-		s := CommonReturnModel{
+		token,err := utils.GenToken(1);
+		if err != nil {
+			s := CommonReturnModel{
+				Code:    "500",
+				Message: "服务器生成token失败",
+			}
+			b, _ := json.Marshal(s)
+			w.Write(b)
+			return
+		}
+		fmt.Printf("%s,%+v\n",token,err)
+		s := LoginResModel{
 			Code:    "200",
 			Message: "登录成功",
+			Token: token,
 		}
 		b, _ := json.Marshal(s)
 		w.Write(b)
@@ -151,8 +164,14 @@ func (pNoteController *PNoteController) DataTomongo(notemd *model.Note) {
 }
 
 type CommonReturnModel struct {
-	Code    string `json:"Code"`
+	Code    string `json:"code"`
 	Message string `json:"message"`
+}
+
+type LoginResModel struct {
+	Code    string `json:"code"`
+	Message string `json:"message"`
+	Token string `json:"token"`
 }
 
 //处理pnote上传
@@ -241,6 +260,12 @@ func (pNoteController *PNoteController) PNCommit(w http.ResponseWriter, r *http.
 
 }
 
+type RPNCommitReq struct {
+	Title string `json:"title"`
+	Token string `json:"token"`
+	Content string `json:"content"`
+}
+
 func (pNoteController *PNoteController) RPNCommit(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")             //允许访问所有域
@@ -258,35 +283,67 @@ func (pNoteController *PNoteController) RPNCommit(w http.ResponseWriter, r *http
 	//}
 	//value设值为sessionid
 	if sessA.Get(sessA.SessionID()) == nil {
-		s := CommonReturnModel{
-			Code:    "502",
-			Message: `session 失效，請重新登录！`,
+		// todo tmp close
+		//s := CommonReturnModel{
+		//	Code:    "502",
+		//	Message: `session 失效，請重新登录！`,
+		//}
+		//b, _ := json.Marshal(s)
+		//w.Write(b)
+		//return
+	}
+	s := CommonReturnModel{
+	}
+
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		panic(err)
+	}
+	req := RPNCommitReq{}
+	err = json.Unmarshal(body, &req)
+	if err != nil {
+		panic(err)
+	}
+	if req.Title == "" {
+		s = CommonReturnModel{
+			Code:    "406",
+			Message: "请输入标题..",
 		}
 		b, _ := json.Marshal(s)
 		w.Write(b)
 		return
 	}
+	title := req.Title
+	if req.Content == "" {
+		s = CommonReturnModel{
+			Code:    "406",
+			Message: "请输入正文..",
+		}
+		b, _ := json.Marshal(s)
+		w.Write(b)
+		return
+	}
+	token := req.Token
+	if req.Token == "" {
+		s = CommonReturnModel{
+			Code:    "406",
+			Message: "token为空...",
+		}
+		b, _ := json.Marshal(s)
+		w.Write(b)
+		return
+	}
+	if !utils.ValidateToken(token){
+		s = CommonReturnModel{
+			Code:    "403",
+			Message: "无效token..",
+		}
+		b, _ := json.Marshal(s)
+		w.Write(b)
+		return
+	}
+	content := req.Content
 
-	r.ParseForm()
-	titles := r.Form["title"]
-	title := titles[0]
-	if len(title) == 0 {
-		io.WriteString(w, "请输入标题") //TODO
-		return
-	}
-	contents := r.Form["content"]
-	content := contents[0]
-	if len(content) == 0 {
-		io.WriteString(w, "请输入正文") //TODO
-		return
-	}
-
-	//md处理
-	// 判断是否为空
-	if len(content) == 0 {
-		log.Fatal("md is nil")
-		return
-	}
 	//处理md为html
 	//markdown字符串转为ASCII html代码
 	htmlByte := blackfriday.MarkdownCommon([]byte(content))
@@ -318,10 +375,16 @@ func (pNoteController *PNoteController) RPNCommit(w http.ResponseWriter, r *http
 	sess = <-(chan *mgo.Session)(ch) //must do
 	c := sess.DB("liongo").C("note") //获取数据
 	//存入mongo
-	err := c.Insert(&note)
+	err = c.Insert(&note)
 	if err != nil {
 		log.Fatal(err)
 	}
+	s = CommonReturnModel{
+		Code:    "200",
+		Message: `上传成功`,
+	}
+	b, _ := json.Marshal(s)
+	w.Write(b)
 	return
 
 }
