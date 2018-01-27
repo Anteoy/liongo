@@ -15,4 +15,5 @@ func Router() {
 	//路由上传接口
 	http.HandleFunc("/PNCommit", pNoteController.PNCommit)
 	http.HandleFunc("/RPNCommit", pNoteController.RPNCommit)
+	http.HandleFunc("/upload", pNoteController.UploadBlog)
 }

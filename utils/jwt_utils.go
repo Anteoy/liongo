@@ -9,7 +9,7 @@ import (
 func GenToken(id int) (string,error){
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := make(jwt.MapClaims)
-	claims["exp"] = time.Now().Add(time.Second * time.Duration(10)).Unix()
+	claims["exp"] = time.Now().Add(time.Hour * time.Duration(10)).Unix()
 	claims["iat"] = time.Now().Unix()
 	claims["jti"] = id
 	claims["iss"] = "anteoy.site"
