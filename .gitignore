@@ -34,3 +34,5 @@ _testmain.go
 main/debug
 projectFilesBackup/
 main/run --note
+output
+debug
