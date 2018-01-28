@@ -11,18 +11,23 @@ import (
 
 func Build() {
 	//../views/serve
-	if !utils.IsExists(PUBLISH_DIR) {
+	if utils.IsExists(PUBLISH_DIR) {
 		//创建777权限目录
-		err := os.MkdirAll(PUBLISH_DIR, 0777)
+		err := os.RemoveAll(PUBLISH_DIR)
 		if err != nil {
-			log.Panic("create publish dir error -- " + err.Error())
+			log.Panic("remove all publish dir error -- " + err.Error())
 		}
+	}
+	//创建777权限目录
+	err := os.MkdirAll(PUBLISH_DIR, 0777)
+	if err != nil {
+		log.Panic("create publish dir error -- " + err.Error())
 	}
 	//开始生成渲染文件
 	var rf = new(BaseFactory)
 	rf.Generate(RENDER_DIR)
 	//cp resources
-	err := utils.CopyDir(RENDER_DIR+"/prettify", PUBLISH_DIR+"/prettify")
+	err = utils.CopyDir(RENDER_DIR+"/prettify", PUBLISH_DIR+"/prettify")
 	err = utils.CopyDir(RENDER_DIR+"/js", PUBLISH_DIR+"/js")
 	err = utils.CopyDir(RENDER_DIR+"/css", PUBLISH_DIR+"/css")
 	if err != nil {

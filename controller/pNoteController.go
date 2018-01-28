@@ -25,6 +25,7 @@ import (
 	"gopkg.in/mgo.v2"
 	"io/ioutil"
 	"github.com/Anteoy/liongo/utils"
+	"github.com/Anteoy/liongo/service"
 )
 
 type PNoteController struct{}
@@ -92,7 +93,7 @@ type LoginRreq struct {
 func (pNoteController *PNoteController) LoginR(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")             //允许访问所有域
-	w.Header().Add("Access-Control-Allow-Headers", "Content-Type") //header的类型
+	w.Header().Add("Access-Control-Allow-Headers", "*") //header的类型
 	w.Header().Set("content-type", "application/json")             //返回数据格式是json
 	//start session
 	sess := globalSessions.SessionStart(w, r)
@@ -166,6 +167,7 @@ func (pNoteController *PNoteController) DataTomongo(notemd *model.Note) {
 type CommonReturnModel struct {
 	Code    string `json:"code"`
 	Message string `json:"message"`
+	Data  string `json:"data"`
 }
 
 type LoginResModel struct {
@@ -379,6 +381,7 @@ func (pNoteController *PNoteController) RPNCommit(w http.ResponseWriter, r *http
 	if err != nil {
 		log.Fatal(err)
 	}
+	service.Build()
 	s = CommonReturnModel{
 		Code:    "200",
 		Message: `上传成功`,

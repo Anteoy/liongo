@@ -13,7 +13,7 @@ type ProcessGetNavBarList struct {}
 //生成自定义多余页面导航条 存入navBarList 数组
 //这里配置的示例github导航.
 func (processAddNav *ProcessGetNavBarList)Dispose(dir string)  {
-
+	NavBarsl = []NavConfig{}
 	if !strings.HasSuffix(dir, "/") {
 		dir += "/"
 	}

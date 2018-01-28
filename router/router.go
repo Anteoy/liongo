@@ -16,4 +16,6 @@ func Router() {
 	http.HandleFunc("/PNCommit", pNoteController.PNCommit)
 	http.HandleFunc("/RPNCommit", pNoteController.RPNCommit)
 	http.HandleFunc("/upload", pNoteController.UploadBlog)
+	http.HandleFunc("/delete_blog", pNoteController.DeleteBlog)
+	http.HandleFunc("/get_blog", pNoteController.GetBlog)
 }

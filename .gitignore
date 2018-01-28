@@ -36,3 +36,5 @@ projectFilesBackup/
 main/run --note
 output
 debug
+*.bac
+resources.tar.gz
