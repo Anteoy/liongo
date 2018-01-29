@@ -329,7 +329,6 @@ func (pNoteController *PNoteController) GetBlog(w http.ResponseWriter, r *http.R
 	}
 	fmt.Print("file read OK!")
 
-	service.Build()
 	s = CommonReturnModel{
 		Code:    "200",
 		Message: `获取成功`,

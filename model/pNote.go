@@ -6,11 +6,13 @@ import (
 
 //mongo note struct.
 type Note struct {
+	ID      string     `json:"_id"`
 	Name    string    `json:"name"`
 	Content string    `json:"content"`
 	Title   string    `json:"title"`
 	Date    string    `json:"date"`
 	Time    time.Time `json:"time"`
+	Origin  string 	  `json:"origin"`
 }
 
 //提供note list html
