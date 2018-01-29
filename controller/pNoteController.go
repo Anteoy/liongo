@@ -511,3 +511,104 @@ func (pNoteController *PNoteController) GetPNote(w http.ResponseWriter, r *http.
 	w.Write(b)
 	return
 }
+
+
+func (pNoteController *PNoteController) DeletePNote(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Access-Control-Allow-Origin", "*")             //允许访问所有域
+	w.Header().Add("Access-Control-Allow-Headers", "Content-Type") //header的类型
+	w.Header().Set("content-type", "application/json")             //返回数据格式是json
+	if r.Method == "OPTIONS" {
+		return
+	}
+	//start session
+	sessA := globalSessions.SessionStart(w, r)
+	//test
+	//if sess.Get(sess.SessionID()) == nil {
+	//	io.WriteString(w, "no sesssion")
+	//	return
+	//}
+	//value设值为sessionid
+	if sessA.Get(sessA.SessionID()) == nil {
+		// todo tmp close
+		//s := CommonReturnModel{
+		//	Code:    "502",
+		//	Message: `session 失效，請重新登录！`,
+		//}
+		//b, _ := json.Marshal(s)
+		//w.Write(b)
+		//return
+	}
+	s := CommonReturnModel{
+	}
+
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		panic(err)
+	}
+	req := ReqDeleteBlog{}
+	err = json.Unmarshal(body, &req)
+	if err != nil {
+		s = CommonReturnModel{
+			Code:    "407",
+			Message: "参数不正确...",
+		}
+		b, _ := json.Marshal(s)
+		w.Write(b)
+		return
+	}
+	if req.Title == "" {
+		s = CommonReturnModel{
+			Code:    "406",
+			Message: "请输入标题..",
+		}
+		b, _ := json.Marshal(s)
+		w.Write(b)
+		return
+	}
+	token := req.Token
+	if req.Token == "" {
+		s = CommonReturnModel{
+			Code:    "406",
+			Message: "token为空...",
+		}
+		b, _ := json.Marshal(s)
+		w.Write(b)
+		return
+	}
+	if !utils.ValidateToken(token){
+		s = CommonReturnModel{
+			Code:    "403",
+			Message: "无效token..",
+		}
+		b, _ := json.Marshal(s)
+		w.Write(b)
+		return
+	}
+	//获取session
+	var ch chan *mgo.Session = make(chan *mgo.Session, 1)
+	go mongo.GetMongoSession(ch)
+	var sess *mgo.Session            //must init
+	sess = <-(chan *mgo.Session)(ch) //must do
+	c := sess.DB("liongo").C("note") //获取数据
+	err = c.Remove(bson.M{"title":req.Title,})
+	if err != nil {
+		s = CommonReturnModel{
+			Code:    "503",
+			Message: "mongodb remove 出错:"+err.Error() ,
+		}
+		b, _ := json.Marshal(s)
+		w.Write(b)
+		return
+	}
+
+	service.Build()
+	s = CommonReturnModel{
+		Code:    "200",
+		Message: `删除成功`,
+	}
+	b, _ := json.Marshal(s)
+	w.Write(b)
+	return
+
+}
