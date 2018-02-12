@@ -59,6 +59,18 @@ func (processBlogList *ProcessBlogListPage) Dispose(dir string) {
 		start := i * pageSize
 		end := (i+1)*pageSize
 		curArticle := Articlesl[start:end]
+		var display0 string
+		var display1 string
+		if i == 0 {
+			display0 = "none"
+		}else{
+			display0 = ""
+		}
+		if (i+1)== totalPage {
+			display1 = "none"
+		}else {
+			display1 = ""
+		}
 		m := map[string]interface{}{
 		"ar": curArticle[:],
 		"nav": NavBarsl,
@@ -67,6 +79,8 @@ func (processBlogList *ProcessBlogListPage) Dispose(dir string) {
 		"next": next,
 		"i":i+1,
 		"total":totalPage,
+		"display0": display0,
+		"display1":display1,
 		}
 		exErr := t.Execute(fout, m)
 		if exErr != nil {

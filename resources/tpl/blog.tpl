@@ -31,10 +31,10 @@
 		</div>
 		<div style="margin-bottom:200px;">
             <ul class="pager main-pager">
-                <li class="previous">
+                <li class="previous" style="display:{{.display0}}">
                     <a href="{{.pre}}">← 上一页</a>
                 </li>
-                <li class="next">
+                <li class="next" style="display:{{.display1}}">
                     <a href="{{.next}}">下一页 →</a>
                 </li>
                 <li class="next">
