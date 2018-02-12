@@ -10,6 +10,7 @@ import (
 	. "github.com/Anteoy/liongo/utils"
 	"github.com/Anteoy/liongo/utils/logrus"
 	"strconv"
+	"fmt"
 )
 
 type ProcessBlogListPage struct{}
@@ -43,6 +44,11 @@ func (processBlogList *ProcessBlogListPage) Dispose(dir string) {
 
 	//处理分页
 	totalPage := len(Articlesl)/10
+	fmt.Println("============1",len(Articlesl))
+	//TODO
+	if len(Articlesl)%10 != 0 {
+		totalPage++
+	}
 	//每页显示个数
 	pageSize := 10
 	//当前需要渲染的articlesl
@@ -57,7 +63,13 @@ func (processBlogList *ProcessBlogListPage) Dispose(dir string) {
 		}
 		defer fout.Close()
 		start := i * pageSize
-		end := (i+1)*pageSize
+		var end int
+		//the last
+		if (i+1)== totalPage{
+			end = len(Articlesl)
+		}else{
+			end = (i+1)*pageSize
+		}
 		curArticle := Articlesl[start:end]
 		var display0 string
 		var display1 string
@@ -84,6 +96,7 @@ func (processBlogList *ProcessBlogListPage) Dispose(dir string) {
 		}
 		exErr := t.Execute(fout, m)
 		if exErr != nil {
+			panic(exErr)
 			log.Fatal(exErr)
 		}
 	}
