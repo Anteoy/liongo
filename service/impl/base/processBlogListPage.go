@@ -54,8 +54,15 @@ func (processBlogList *ProcessBlogListPage) Dispose(dir string) {
 	//当前需要渲染的articlesl
 	for i := 0;i < totalPage;i++ {
 		targetFile := PUBLISH_DIR + "/blog_"+ strconv.Itoa(i) + ".html"
-		pre := "http://127.0.0.1:8080" + "/blog_"+ strconv.Itoa(i-1) + ".html"
-		next := 	"http://127.0.0.1:8080" + "/blog_"+ strconv.Itoa(i+1) + ".html"
+		var pre string
+		var next string
+		if os.Getenv("liongo_env") == "online"{
+			pre = "http://anteoy.site" + "/blog_"+ strconv.Itoa(i-1) + ".html"
+			next = 	"http://anteoy.site" + "/blog_"+ strconv.Itoa(i+1) + ".html"
+		}else {
+			pre = "http://127.0.0.1:8080" + "/blog_"+ strconv.Itoa(i-1) + ".html"
+			next = 	"http://127.0.0.1:8080" + "/blog_"+ strconv.Itoa(i+1) + ".html"
+		}
 		fout, err := os.Create(targetFile)
 		if err != nil {
 			logrus.Error("create file " + targetFile + " error!")
