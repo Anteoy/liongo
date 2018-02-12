@@ -28,6 +28,14 @@
 		  </div>
 		 <div id="article-content"> {{.fi.Content|unescaped}} </div>
 		<hr/>
+		<div id="SOHUCS" ></div>
+        <script charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/changyan.js" ></script>
+        <script type="text/javascript">
+            window.changyan.api.config({
+            appid: 'cytroRXMV',
+            conf: 'prod_f03f628ad1f20646fa84b64386060ea1'
+            });
+        </script>
 	</div>
 </div>
 
