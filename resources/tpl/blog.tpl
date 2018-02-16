@@ -37,7 +37,7 @@
                 <li class="next" style="display:{{.display1}}">
                     <a href="{{.next}}">下一页 →</a>
                 </li>
-                <li class="next" style="display:{{.display1}}">
+                <li class="next" >
                     <input id="page_id" style="width: 21px;"></input><a href="javascript:void(0);" onclick="jump()">输入页码，点击跳转</a>
                 </li>
                 <li class="next">
