@@ -7,3 +7,5 @@ install: true
 
 script:
   - go version
+  - ls
+  - go build github.com/Anteoy/liongo/liongo
