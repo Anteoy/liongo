@@ -2,7 +2,7 @@
 <div class="top-nav">
 			<ul>
                 <li><a href="/" >Index</li>
-                <li><a href="/blog_0.html" >Blog</a></li>
+                <li><a href="/blog_1.html" >Blog</a></li>
                 <li><a href="/archive.html">Date</a></li>
 				<li><a href="/classify.html" class="on-sel" class="on-sel">Classify</a></li>
                 <li><a href="/pages/about.html" >About</a></li>
