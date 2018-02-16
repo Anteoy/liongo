@@ -2,15 +2,15 @@ package memory
 
 import (
 	"container/list"
-	"time"
-	"sync"
 	"github.com/Anteoy/liongo/utils/session"
+	"sync"
+	"time"
 )
 
 type SessionStore struct {
-	sid string //session id 唯一标示
-	timeAccessed time.Time //最后访问时间
-	value map[interface{}]interface{} //session 里面存储的值
+	sid          string                      //session id 唯一标示
+	timeAccessed time.Time                   //最后访问时间
+	value        map[interface{}]interface{} //session 里面存储的值
 }
 
 func (st *SessionStore) Set(key, value interface{}) error {
@@ -36,11 +36,10 @@ func (st *SessionStore) SessionID() string {
 	return st.sid
 }
 
-
 type Provider struct {
-	lock sync.Mutex //用来锁
+	lock     sync.Mutex               //用来锁
 	sessions map[string]*list.Element //用来存储在内存
-	list *list.List //用来做 gc
+	list     *list.List               //用来做 gc
 }
 
 func (provider *Provider) SessionInit(sid string) (session.Session, error) {

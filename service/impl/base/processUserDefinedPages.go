@@ -1,23 +1,23 @@
 package impl
 
 import (
-	"strings"
-	"os"
 	"bufio"
-	"io"
-	. "github.com/Anteoy/liongo/utils"
-	. "github.com/Anteoy/liongo/constant"
-	"github.com/Anteoy/go-gypsy/yaml"
-	"strconv"
-	"log"
 	"github.com/Anteoy/blackfriday"
+	"github.com/Anteoy/go-gypsy/yaml"
+	. "github.com/Anteoy/liongo/constant"
+	. "github.com/Anteoy/liongo/utils"
 	"html"
+	"io"
+	"log"
+	"os"
+	"strconv"
+	"strings"
 )
 
 type ProcessUserDefinedPages struct{}
 
 //生成用户自定义的pages
-func (processUserDefinedPages *ProcessUserDefinedPages)Dispose(dir string)  {
+func (processUserDefinedPages *ProcessUserDefinedPages) Dispose(dir string) {
 	//判断结尾是否/
 	if !strings.HasSuffix(dir, "/") {
 		dir += "/"
@@ -72,7 +72,7 @@ func (processUserDefinedPages *ProcessUserDefinedPages)Dispose(dir string)  {
 		p.Content = htmlStr //设置markdown文章内容
 		//log.Println(p.Content)
 		if !IsExists(PUBLISH_DIR + "/pages/") {
-			os.MkdirAll(PUBLISH_DIR +"/pages/", 0777)
+			os.MkdirAll(PUBLISH_DIR+"/pages/", 0777)
 		}
 		targetFile := PUBLISH_DIR + "/pages/" + p.Id + ".html"
 		//创建target html

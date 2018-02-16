@@ -4,10 +4,10 @@ import (
 	. "github.com/Anteoy/liongo/constant"
 )
 
-type ProcessGetClassifies struct {}
+type ProcessGetClassifies struct{}
 
 //分类first处理方法 放入Classifies map中
-func (processClassifies *ProcessGetClassifies)Dispose(dir string)  {
+func (processClassifies *ProcessGetClassifies) Dispose(dir string) {
 	Classifiesm = make(map[string]Category) //key为类别，value为Category包含名字，article数组和长度的Category结构体
 	//对获取到的所有articles进行处理
 	for _, ar := range Articlesl {

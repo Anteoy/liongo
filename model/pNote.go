@@ -6,13 +6,13 @@ import (
 
 //mongo note struct.
 type Note struct {
-	ID      string     `json:"_id"`
+	ID      string    `json:"_id"`
 	Name    string    `json:"name"`
 	Content string    `json:"content"`
 	Title   string    `json:"title"`
 	Date    string    `json:"date"`
 	Time    time.Time `json:"time"`
-	Origin  string 	  `json:"origin"`
+	Origin  string    `json:"origin"`
 }
 
 //提供note list html
@@ -62,6 +62,7 @@ func (y YearNotesl) Swap(i, j int) {
 func (y YearNotesl) Less(i, j int) bool {
 	return y[i].Year > y[j].Year
 }
+
 type Notesl []*Note
 type NotesByDate struct {
 	Notesl

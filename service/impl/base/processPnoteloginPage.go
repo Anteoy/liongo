@@ -1,18 +1,18 @@
 package impl
 
 import (
-	"strings"
-	"os"
-	. "github.com/Anteoy/liongo/utils"
-	. "github.com/Anteoy/liongo/constant"
 	"github.com/Anteoy/go-gypsy/yaml"
+	. "github.com/Anteoy/liongo/constant"
+	. "github.com/Anteoy/liongo/utils"
 	"log"
+	"os"
+	"strings"
 )
 
-type ProcessPnoteloginPage struct {}
+type ProcessPnoteloginPage struct{}
 
 //生成pnote login.html
-func (processPnoteloginPage *ProcessPnoteloginPage)Dispose(root string)  {
+func (processPnoteloginPage *ProcessPnoteloginPage) Dispose(root string) {
 	if !strings.HasSuffix(root, "/") {
 		root += "/"
 	}

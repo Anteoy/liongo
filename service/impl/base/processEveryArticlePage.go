@@ -1,18 +1,18 @@
 package impl
 
 import (
-	"strings"
-	"os"
 	"github.com/Anteoy/go-gypsy/yaml"
 	. "github.com/Anteoy/liongo/constant"
 	. "github.com/Anteoy/liongo/utils"
 	"log"
+	"os"
+	"strings"
 )
 
-type ProcessEveryArticlePage struct {}
+type ProcessEveryArticlePage struct{}
 
 //根据日期生成每一个article的html文件
-func (processEveryArticlePage *ProcessEveryArticlePage)Dispose(root string)  {
+func (processEveryArticlePage *ProcessEveryArticlePage) Dispose(root string) {
 	if !strings.HasSuffix(root, "/") {
 		root += "/"
 	}
@@ -28,7 +28,7 @@ func (processEveryArticlePage *ProcessEveryArticlePage)Dispose(root string)  {
 		//根据时间生成日期类目录 /yyyy/MM/dd
 		p := processArticleUrl(*articleConfig)
 		if !IsExists(PUBLISH_DIR + "/articles/" + p) {
-			os.MkdirAll(PUBLISH_DIR +"/articles/"+p, 0777)
+			os.MkdirAll(PUBLISH_DIR+"/articles/"+p, 0777)
 		}
 		targetFile := PUBLISH_DIR + "/articles/" + articleConfig.Link
 		fout, err := os.Create(targetFile)

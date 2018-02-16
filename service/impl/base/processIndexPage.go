@@ -1,18 +1,17 @@
 package impl
 
 import (
-	"strings"
-	"os"
-	. "github.com/Anteoy/liongo/utils"
-	. "github.com/Anteoy/liongo/constant"
 	"github.com/Anteoy/go-gypsy/yaml"
+	. "github.com/Anteoy/liongo/constant"
+	. "github.com/Anteoy/liongo/utils"
 	"log"
+	"os"
+	"strings"
 )
 
-type ProcessIndexPage struct {}
+type ProcessIndexPage struct{}
 
-func (processIndex *ProcessIndexPage)Dispose(dir string) {
-
+func (processIndex *ProcessIndexPage) Dispose(dir string) {
 
 	if !strings.HasSuffix(dir, "/") {
 		dir += "/"

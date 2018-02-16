@@ -3,12 +3,12 @@ package session
 import (
 	"crypto/rand"
 	"encoding/base64"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
 	"sync"
 	"time"
-	"fmt"
 )
 
 type Manager struct {
@@ -75,7 +75,7 @@ func (manager *Manager) SessionStart(w http.ResponseWriter, r *http.Request) (se
 	}
 	return session
 }
-func (manager *Manager) SessionDestroy(w http.ResponseWriter, r *http.Request){
+func (manager *Manager) SessionDestroy(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie(manager.cookieName)
 	if err != nil || cookie.Value == "" {
 		return
@@ -94,5 +94,5 @@ func (manager *Manager) GC() {
 	manager.lock.Lock()
 	defer manager.lock.Unlock()
 	manager.provider.SessionGC(manager.maxLifeTime)
-	time.AfterFunc(time.Duration(manager.maxLifeTime), func(){ manager.GC() })
+	time.AfterFunc(time.Duration(manager.maxLifeTime), func() { manager.GC() })
 }

@@ -1,20 +1,20 @@
 package controller
 
 import (
-	"io/ioutil"
-	"encoding/json"
-	"net/http"
-	"github.com/Anteoy/liongo/utils"
-	"os"
-	"fmt"
 	"bufio"
+	"encoding/json"
+	"fmt"
 	"github.com/Anteoy/liongo/constant"
 	"github.com/Anteoy/liongo/service"
+	"github.com/Anteoy/liongo/utils"
+	"io/ioutil"
+	"net/http"
+	"os"
 )
 
 type ReqUploadBlog struct {
-	Title string `json:"title"`
-	Token string `json:"token"`
+	Title   string `json:"title"`
+	Token   string `json:"token"`
 	Content string `json:"content"`
 }
 
@@ -44,8 +44,7 @@ func (pNoteController *PNoteController) UploadBlog(w http.ResponseWriter, r *htt
 		//w.Write(b)
 		//return
 	}
-	s := CommonReturnModel{
-	}
+	s := CommonReturnModel{}
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -91,7 +90,7 @@ func (pNoteController *PNoteController) UploadBlog(w http.ResponseWriter, r *htt
 		w.Write(b)
 		return
 	}
-	if !utils.ValidateToken(token){
+	if !utils.ValidateToken(token) {
 		s = CommonReturnModel{
 			Code:    "403",
 			Message: "无效token..",
@@ -101,8 +100,8 @@ func (pNoteController *PNoteController) UploadBlog(w http.ResponseWriter, r *htt
 		return
 	}
 	content := req.Content
-	name := constant.RENDER_DIR +"/"+ constant.POST_DIR+"/"+title + ".md"
-	outputFile, outputError := os.OpenFile( name, os.O_WRONLY|os.O_CREATE, 0666)
+	name := constant.RENDER_DIR + "/" + constant.POST_DIR + "/" + title + ".md"
+	outputFile, outputError := os.OpenFile(name, os.O_WRONLY|os.O_CREATE, 0666)
 	if outputError != nil {
 		fmt.Printf("An error occurred with file opening or creation\n")
 		return
@@ -110,8 +109,8 @@ func (pNoteController *PNoteController) UploadBlog(w http.ResponseWriter, r *htt
 	defer outputFile.Close()
 
 	outputWriter := bufio.NewWriter(outputFile)
-	rs,err := outputWriter.WriteString(content)
-	fmt.Printf("WriteString res:%d,%v\n",rs,err)
+	rs, err := outputWriter.WriteString(content)
+	fmt.Printf("WriteString res:%d,%v\n", rs, err)
 	err = outputWriter.Flush()
 	if err != nil {
 		s = CommonReturnModel{
@@ -133,7 +132,7 @@ func (pNoteController *PNoteController) UploadBlog(w http.ResponseWriter, r *htt
 
 }
 
-type ReqDeleteBlog struct{
+type ReqDeleteBlog struct {
 	Title string `json:"title"`
 	Token string `json:"token"`
 }
@@ -164,8 +163,7 @@ func (pNoteController *PNoteController) DeleteBlog(w http.ResponseWriter, r *htt
 		//w.Write(b)
 		//return
 	}
-	s := CommonReturnModel{
-	}
+	s := CommonReturnModel{}
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -201,7 +199,7 @@ func (pNoteController *PNoteController) DeleteBlog(w http.ResponseWriter, r *htt
 		w.Write(b)
 		return
 	}
-	if !utils.ValidateToken(token){
+	if !utils.ValidateToken(token) {
 		s = CommonReturnModel{
 			Code:    "403",
 			Message: "无效token..",
@@ -210,8 +208,8 @@ func (pNoteController *PNoteController) DeleteBlog(w http.ResponseWriter, r *htt
 		w.Write(b)
 		return
 	}
-	name := constant.RENDER_DIR +"/"+ constant.POST_DIR+"/"+req.Title + ".md"
-	err = os.Remove(name)               //删除文件test.txt
+	name := constant.RENDER_DIR + "/" + constant.POST_DIR + "/" + req.Title + ".md"
+	err = os.Remove(name) //删除文件test.txt
 	if err != nil {
 		fmt.Println("file remove Error!")
 		fmt.Printf("%s", err)
@@ -268,8 +266,7 @@ func (pNoteController *PNoteController) GetBlog(w http.ResponseWriter, r *http.R
 		//w.Write(b)
 		//return
 	}
-	s := CommonReturnModel{
-	}
+	s := CommonReturnModel{}
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -305,7 +302,7 @@ func (pNoteController *PNoteController) GetBlog(w http.ResponseWriter, r *http.R
 		w.Write(b)
 		return
 	}
-	if !utils.ValidateToken(token){
+	if !utils.ValidateToken(token) {
 		s = CommonReturnModel{
 			Code:    "403",
 			Message: "无效token..",
@@ -314,7 +311,7 @@ func (pNoteController *PNoteController) GetBlog(w http.ResponseWriter, r *http.R
 		w.Write(b)
 		return
 	}
-	name := constant.RENDER_DIR +"/"+ constant.POST_DIR+"/"+req.Title + ".md"
+	name := constant.RENDER_DIR + "/" + constant.POST_DIR + "/" + req.Title + ".md"
 	buf, err := ioutil.ReadFile(name)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "File Error: %s\n", err)
@@ -332,7 +329,7 @@ func (pNoteController *PNoteController) GetBlog(w http.ResponseWriter, r *http.R
 	s = CommonReturnModel{
 		Code:    "200",
 		Message: `获取成功`,
-		Data: string(buf),
+		Data:    string(buf),
 	}
 	b, _ := json.Marshal(s)
 	w.Write(b)

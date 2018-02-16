@@ -1,12 +1,12 @@
 package utils
 
 import (
+	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"time"
-	"fmt"
 )
 
-func GenToken(id int) (string,error){
+func GenToken(id int) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := make(jwt.MapClaims)
 	claims["exp"] = time.Now().Add(time.Hour * time.Duration(10)).Unix()
@@ -16,16 +16,16 @@ func GenToken(id int) (string,error){
 	token.Claims = claims
 	tokenString, err := token.SignedString([]byte("anteoy@gmail.com-secret"))
 	if err != nil {
-		fmt.Errorf("gen token 失败, err = %+v\n",err)
+		fmt.Errorf("gen token 失败, err = %+v\n", err)
 		return "", err
 	}
-	return tokenString,nil
+	return tokenString, nil
 }
 
-func ValidateToken(tokenString string) bool{
+func ValidateToken(tokenString string) bool {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		// Don't forget to validate the alg is what you expect:
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok || jwt.SigningMethodHS256.Name != token.Header["alg"]{
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok || jwt.SigningMethodHS256.Name != token.Header["alg"] {
 			return nil, fmt.Errorf("Unexpected signing method: %v\n", token.Header["alg"])
 		}
 		return []byte("anteoy@gmail.com-secret"), nil

@@ -16,7 +16,7 @@ type DataStore struct {
 // 数据连接
 var Session *mgo.Session
 
-func init(){
+func init() {
 	// [mongodb://][user:pass@]host1[:port1][,host2[:port2],...][/database][?options]
 	// mongodb://myuser:mypass@localhost:40001,otherhost:40001/mydb
 	var err error
@@ -41,7 +41,7 @@ func Mgo() {
 
 }
 
-func GetMongoSession(ch chan *mgo.Session){
+func GetMongoSession(ch chan *mgo.Session) {
 	session := Session.Copy()
 	ch <- session //error &session
 }

@@ -19,14 +19,14 @@ import (
 	"github.com/Anteoy/blackfriday"
 	. "github.com/Anteoy/liongo/constant"
 	"github.com/Anteoy/liongo/dao/mongo"
+	"github.com/Anteoy/liongo/service"
+	"github.com/Anteoy/liongo/utils"
 	logrus "github.com/Anteoy/liongo/utils/logrus"
 	_ "github.com/Anteoy/liongo/utils/memory" //must this is the first init ,it cost any time
 	"github.com/Anteoy/liongo/utils/session"
 	"gopkg.in/mgo.v2"
-	"io/ioutil"
-	"github.com/Anteoy/liongo/utils"
-	"github.com/Anteoy/liongo/service"
 	"gopkg.in/mgo.v2/bson"
+	"io/ioutil"
 )
 
 type PNoteController struct{}
@@ -116,7 +116,7 @@ func (pNoteController *PNoteController) LoginR(w http.ResponseWriter, r *http.Re
 	log.Printf("收到登录请求，参数为：%+v\n", req)
 	user := mysql.GetUserForEmail(req.UserName)
 	if user != nil && user.Password == req.PassWord {
-		token,err := utils.GenToken(1);
+		token, err := utils.GenToken(1)
 		if err != nil {
 			s := CommonReturnModel{
 				Code:    "500",
@@ -126,11 +126,11 @@ func (pNoteController *PNoteController) LoginR(w http.ResponseWriter, r *http.Re
 			w.Write(b)
 			return
 		}
-		fmt.Printf("%s,%+v\n",token,err)
+		fmt.Printf("%s,%+v\n", token, err)
 		s := LoginResModel{
 			Code:    "200",
 			Message: "登录成功",
-			Token: token,
+			Token:   token,
 		}
 		b, _ := json.Marshal(s)
 		w.Write(b)
@@ -168,13 +168,13 @@ func (pNoteController *PNoteController) DataTomongo(notemd *model.Note) {
 type CommonReturnModel struct {
 	Code    string `json:"code"`
 	Message string `json:"message"`
-	Data  string `json:"data"`
+	Data    string `json:"data"`
 }
 
 type LoginResModel struct {
 	Code    string `json:"code"`
 	Message string `json:"message"`
-	Token string `json:"token"`
+	Token   string `json:"token"`
 }
 
 //处理pnote上传
@@ -264,8 +264,8 @@ func (pNoteController *PNoteController) PNCommit(w http.ResponseWriter, r *http.
 }
 
 type RPNCommitReq struct {
-	Title string `json:"title"`
-	Token string `json:"token"`
+	Title   string `json:"title"`
+	Token   string `json:"token"`
 	Content string `json:"content"`
 }
 
@@ -295,8 +295,7 @@ func (pNoteController *PNoteController) RPNCommit(w http.ResponseWriter, r *http
 		//w.Write(b)
 		//return
 	}
-	s := CommonReturnModel{
-	}
+	s := CommonReturnModel{}
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -336,7 +335,7 @@ func (pNoteController *PNoteController) RPNCommit(w http.ResponseWriter, r *http
 		w.Write(b)
 		return
 	}
-	if !utils.ValidateToken(token){
+	if !utils.ValidateToken(token) {
 		s = CommonReturnModel{
 			Code:    "403",
 			Message: "无效token..",
@@ -377,12 +376,12 @@ func (pNoteController *PNoteController) RPNCommit(w http.ResponseWriter, r *http
 	var sess *mgo.Session            //must init
 	sess = <-(chan *mgo.Session)(ch) //must do
 	c := sess.DB("liongo").C("note") //获取数据
-	check :=  &model.Note{}
-	err = c.Find(bson.M{"title":req.Title,}).One(check)
-	if err != nil && err.Error() != "not found"{
+	check := &model.Note{}
+	err = c.Find(bson.M{"title": req.Title}).One(check)
+	if err != nil && err.Error() != "not found" {
 		s = CommonReturnModel{
 			Code:    "503",
-			Message: "mongodb find 出错:"+err.Error() ,
+			Message: "mongodb find 出错:" + err.Error(),
 		}
 		b, _ := json.Marshal(s)
 		w.Write(b)
@@ -393,8 +392,8 @@ func (pNoteController *PNoteController) RPNCommit(w http.ResponseWriter, r *http
 	if check.Title != "" {
 		fmt.Println("call upsert...")
 		note.ID = check.ID
-		_,err = c.Upsert(bson.M{"title":note.Title},note)
-	}else{
+		_, err = c.Upsert(bson.M{"title": note.Title}, note)
+	} else {
 		//存入mongo
 		err = c.Insert(&note)
 	}
@@ -411,7 +410,6 @@ func (pNoteController *PNoteController) RPNCommit(w http.ResponseWriter, r *http
 	return
 
 }
-
 
 func (pNoteController *PNoteController) GetPNote(w http.ResponseWriter, r *http.Request) {
 
@@ -439,8 +437,7 @@ func (pNoteController *PNoteController) GetPNote(w http.ResponseWriter, r *http.
 		//w.Write(b)
 		//return
 	}
-	s := CommonReturnModel{
-	}
+	s := CommonReturnModel{}
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -476,7 +473,7 @@ func (pNoteController *PNoteController) GetPNote(w http.ResponseWriter, r *http.
 		w.Write(b)
 		return
 	}
-	if !utils.ValidateToken(token){
+	if !utils.ValidateToken(token) {
 		s = CommonReturnModel{
 			Code:    "403",
 			Message: "无效token..",
@@ -491,12 +488,12 @@ func (pNoteController *PNoteController) GetPNote(w http.ResponseWriter, r *http.
 	var sess *mgo.Session            //must init
 	sess = <-(chan *mgo.Session)(ch) //must do
 	c := sess.DB("liongo").C("note") //获取数据
-	check :=  &model.Note{}
-	err = c.Find(bson.M{"title":req.Title,}).One(check)
+	check := &model.Note{}
+	err = c.Find(bson.M{"title": req.Title}).One(check)
 	if err != nil {
 		s = CommonReturnModel{
 			Code:    "503",
-			Message: "mongodb find 出错:"+err.Error() ,
+			Message: "mongodb find 出错:" + err.Error(),
 		}
 		b, _ := json.Marshal(s)
 		w.Write(b)
@@ -505,13 +502,12 @@ func (pNoteController *PNoteController) GetPNote(w http.ResponseWriter, r *http.
 	s = CommonReturnModel{
 		Code:    "200",
 		Message: `获取成功`,
-		Data: check.Origin,
+		Data:    check.Origin,
 	}
 	b, _ := json.Marshal(s)
 	w.Write(b)
 	return
 }
-
 
 func (pNoteController *PNoteController) DeletePNote(w http.ResponseWriter, r *http.Request) {
 
@@ -539,8 +535,7 @@ func (pNoteController *PNoteController) DeletePNote(w http.ResponseWriter, r *ht
 		//w.Write(b)
 		//return
 	}
-	s := CommonReturnModel{
-	}
+	s := CommonReturnModel{}
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -576,7 +571,7 @@ func (pNoteController *PNoteController) DeletePNote(w http.ResponseWriter, r *ht
 		w.Write(b)
 		return
 	}
-	if !utils.ValidateToken(token){
+	if !utils.ValidateToken(token) {
 		s = CommonReturnModel{
 			Code:    "403",
 			Message: "无效token..",
@@ -591,11 +586,11 @@ func (pNoteController *PNoteController) DeletePNote(w http.ResponseWriter, r *ht
 	var sess *mgo.Session            //must init
 	sess = <-(chan *mgo.Session)(ch) //must do
 	c := sess.DB("liongo").C("note") //获取数据
-	err = c.Remove(bson.M{"title":req.Title,})
+	err = c.Remove(bson.M{"title": req.Title})
 	if err != nil {
 		s = CommonReturnModel{
 			Code:    "503",
-			Message: "mongodb remove 出错:"+err.Error() ,
+			Message: "mongodb remove 出错:" + err.Error(),
 		}
 		b, _ := json.Marshal(s)
 		w.Write(b)

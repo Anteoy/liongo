@@ -1,28 +1,27 @@
 package impl
 
 import (
-	"strings"
+	"bufio"
+	"github.com/Anteoy/blackfriday"
+	"github.com/Anteoy/go-gypsy/yaml"
+	. "github.com/Anteoy/liongo/constant"
+	"github.com/Anteoy/liongo/utils"
+	"html"
+	"io"
 	"io/ioutil"
+	"log"
 	"os"
 	"regexp"
-	"github.com/Anteoy/liongo/utils"
-	. "github.com/Anteoy/liongo/constant"
-	"github.com/Anteoy/go-gypsy/yaml"
-	"time"
-	"log"
-	"bufio"
-	"io"
-	"strconv"
-	"html"
-	"github.com/Anteoy/blackfriday"
 	"sort"
+	"strconv"
+	"strings"
+	"time"
 )
 
-type ProcessGetPostsArticle struct {}
-
+type ProcessGetPostsArticle struct{}
 
 //加载posts文件夹下的md博文信息
-func (processPosts *ProcessGetPostsArticle)Dispose(dir string)  {
+func (processPosts *ProcessGetPostsArticle) Dispose(dir string) {
 
 	//添加后缀
 	if !strings.HasSuffix(dir, "/") {
@@ -54,9 +53,9 @@ func (processPosts *ProcessGetPostsArticle)Dispose(dir string)  {
 			fileName := fileInfo.Name()
 			//获取posts文件夹下md文件信息 原始markdownstring config ArticleConfig
 			//返回md正文，读取md配置组合，error，组装配置到articleConfig
-			mardownStr, articleConfig, err := processArticleFile(dir +POST_DIR+"/"+fileName, fileName)
+			mardownStr, articleConfig, err := processArticleFile(dir+POST_DIR+"/"+fileName, fileName)
 			if err != nil {
-				log.Println("preprocess article file error!"+ fileName)
+				log.Println("preprocess article file error!" + fileName)
 				os.Exit(1)
 			}
 			//去掉文件.md后缀
@@ -76,7 +75,7 @@ func (processPosts *ProcessGetPostsArticle)Dispose(dir string)  {
 			//装配摘要Abstract
 			if articleConfig.Abstract == "" {
 				var limit int = 1000
-				rs := []rune(htmlStr)//int32
+				rs := []rune(htmlStr) //int32
 				if len(rs) < 1000 {
 					limit = len(rs)
 				}
@@ -203,5 +202,3 @@ func addAndSortArticles(arInfo ArticleConfig) {
 	log.Println(len(Articlesl))
 	sort.Sort(ByDate{Articlesl})
 }
-
-
