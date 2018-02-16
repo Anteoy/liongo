@@ -8,4 +8,4 @@ install: true
 script:
   - go version
   - ls
-  - go build github.com/Anteoy/liongo/liongo
+  - go build -o build-ci github.com/Anteoy/liongo/liongo
