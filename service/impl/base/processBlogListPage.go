@@ -56,13 +56,16 @@ func (processBlogList *ProcessBlogListPage) Dispose(dir string) {
 		targetFile := PUBLISH_DIR + "/blog_"+ strconv.Itoa(i+1) + ".html"
 		var pre string
 		var next string
+		var jumpUrl string
 		//update count + 1
 		if os.Getenv("liongo_env") == "online"{
 			pre = "http://anteoy.site" + "/blog_"+ strconv.Itoa(i-1+1) + ".html"
 			next = 	"http://anteoy.site" + "/blog_"+ strconv.Itoa(i+1+1) + ".html"
+			jumpUrl = "https://anteoy.site/blog_"
 		}else {
 			pre = "http://127.0.0.1:8080" + "/blog_"+ strconv.Itoa(i-1+1) + ".html"
 			next = 	"http://127.0.0.1:8080" + "/blog_"+ strconv.Itoa(i+1+1) + ".html"
+			jumpUrl = "http://127.0.0.1:8080/blog_"
 		}
 		fout, err := os.Create(targetFile)
 		if err != nil {
@@ -101,6 +104,7 @@ func (processBlogList *ProcessBlogListPage) Dispose(dir string) {
 		"total":totalPage,
 		"display0": display0,
 		"display1":display1,
+		"jump_url":jumpUrl,
 		}
 		exErr := t.Execute(fout, m)
 		if exErr != nil {

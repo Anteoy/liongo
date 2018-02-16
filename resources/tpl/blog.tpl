@@ -37,6 +37,9 @@
                 <li class="next" style="display:{{.display1}}">
                     <a href="{{.next}}">下一页 →</a>
                 </li>
+                <li class="next" style="display:{{.display1}}">
+                    <input id="page_id" style="width: 21px;"></input><a href="javascript:void(0);" onclick="jump()">输入页码，点击跳转</a>
+                </li>
                 <li class="next">
                     <div>当前第{{.i}}页;共{{.total}}页</div>
                 </li>
@@ -44,4 +47,14 @@
         </div>
 	</div>
 </div>
+<script type="text/javascript">
+    function jump(){
+        var page_id=document.getElementById('page_id').value
+        if (page_id==0 || page_id == undefined){
+            alert("请输入需要跳转的页码，然后再次点击跳转")
+        }
+        console.log("page_id:", page_id)
+        window.location = "{{.jump_url}}" + page_id + ".html";
+    }
+</script>
 {{template "footer"}}
