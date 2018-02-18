@@ -40,3 +40,10 @@ liongo run at 8989
 liongo new [yourblogtitle]
 ```
 It will generate the article file in the build file,and you can update the file to build you site
+### extra
+another thing is the article manager and pnote manager -> lionreact  
+you can find it at:
+
+[lionreact](https://github.com/Anteoy/lionreact)
+
+It support the curd for articles to manage articles and nodes easy.
