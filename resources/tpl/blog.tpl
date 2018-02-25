@@ -20,7 +20,7 @@
             {{range .ar}}
                 <div class="article">
                     <p class="title"><a href="/articles/{{.Link}}">{{.Title}}</a></p>
-                    <p class="abstract">&lt;abstract&gt;: {{.Abstract}}&nbsp;&nbsp;<a href="/articles/{{.Link}}">Read more</a></p>
+                    <p class="abstract">&lt;摘要&gt;: {{.Abstract}}&nbsp;&nbsp;<a href="/articles/{{.Link}}">Read more</a></p>
                     <p class="meta">Author {{.Author}} | Posted {{.Date}} | Tags
                     {{range .Tags}}
                     <a class="tag" href="/tag.html#{{.Name}}">{{.Name}}</a>
