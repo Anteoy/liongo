@@ -7,10 +7,9 @@ liongo,an engine that can power for your blog by [Golang](https://golang.org).
 
 ## how to get liongo
 
-1. setup your gopath and gobin
+1. setup your gopath and gobin eg. export GOPATH=$PWD
 2. go get -x github.com/Anteoy/liongo
 3. go install  github.com/Anteoy/liongo/liongo
-4. copy the folder "resources" to the parent directory of folder gobin
 ## how to use liongo
 
 Liongo now supports the following features
