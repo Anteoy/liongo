@@ -60,7 +60,7 @@ func (processPosts *ProcessGetPostsArticle) Dispose(dir string) {
 				os.Exit(1)
 			}
 			//去掉文件.md后缀
-			htmlName := strings.TrimSuffix(fileName, ".md")
+			//htmlName := strings.TrimSuffix(fileName, ".md")
 			//根据.md中配置生成年月日文件路径字符串 返回html前一级路径(年月日路径字符串)
 			p := processArticleUrl(articleConfig)
 			log.Println(p)
@@ -72,7 +72,7 @@ func (processPosts *ProcessGetPostsArticle) Dispose(dir string) {
 			htmlStr = re.ReplaceAllString(htmlStr, `<pre class="prettyprint linenums">${1}</pre>`)
 			//增加正文和链接 组装ArticleConfig
 			articleConfig.Content = htmlStr
-			articleConfig.Link = p + htmlName + ".html"
+			articleConfig.Link = p + articleConfig.Id + ".html"
 			//装配摘要Abstract
 			if articleConfig.Abstract == "" {
 				var limit int = 1000
