@@ -15,6 +15,7 @@ type ArticleConfig struct {
 	Link      string      //博客链接
 	Content   string      //完整内容
 	Nav       []NavConfig
+	Id        string      //博客唯一id
 }
 
 //ArticleConfig slice(sl)

@@ -16,6 +16,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"fmt"
 )
 
 type ProcessGetPostsArticle struct{}
@@ -144,6 +145,9 @@ func processArticleFile(filePath, fileName string) (string, ArticleConfig, error
 	title, err := config.Get("title")
 	//获取时间
 	date, err := config.Get("date")
+	//获取id
+	id, err := config.Get("id")
+	fmt.Println(id)
 	//获取标签
 	tagCount, err := config.Count("tags")
 	if err != nil {
@@ -173,7 +177,7 @@ func processArticleFile(filePath, fileName string) (string, ArticleConfig, error
 
 	shortDate := t.UTC().Format("Jan 2, 2006")
 
-	arInfo := ArticleConfig{title, date, shortDate, cat, tags, abstract, author, t, "", "", NavBarsl}
+	arInfo := ArticleConfig{title, date, shortDate, cat, tags, abstract, author, t, "", "", NavBarsl,id}
 
 	//log.Println(markdownStr)
 	return markdownStr, arInfo, nil
