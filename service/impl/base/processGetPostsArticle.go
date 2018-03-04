@@ -2,6 +2,7 @@ package impl
 
 import (
 	"bufio"
+	"fmt"
 	"github.com/Anteoy/blackfriday"
 	"github.com/Anteoy/go-gypsy/yaml"
 	. "github.com/Anteoy/liongo/constant"
@@ -16,7 +17,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"fmt"
 )
 
 type ProcessGetPostsArticle struct{}
@@ -123,7 +123,7 @@ func processArticleFile(filePath, fileName string) (string, ArticleConfig, error
 		} else {
 			//使用行级对md文件进行标识
 			content := string(buf)
-			if content == "---" {
+			if content == "---" && flag < 2 {
 				flag++
 			}
 			if flag == 2 {
@@ -131,7 +131,7 @@ func processArticleFile(filePath, fileName string) (string, ArticleConfig, error
 					//获取article 正文markdownStr
 					markdownStr += content + "\n"
 				}
-			} else {
+			} else if flag < 2 {
 				//获取article正文前配置信息
 				yamlStr += content + "\n"
 			}
@@ -177,7 +177,7 @@ func processArticleFile(filePath, fileName string) (string, ArticleConfig, error
 
 	shortDate := t.UTC().Format("Jan 2, 2006")
 
-	arInfo := ArticleConfig{title, date, shortDate, cat, tags, abstract, author, t, "", "", NavBarsl,id}
+	arInfo := ArticleConfig{title, date, shortDate, cat, tags, abstract, author, t, "", "", NavBarsl, id}
 
 	//log.Println(markdownStr)
 	return markdownStr, arInfo, nil
