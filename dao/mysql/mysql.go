@@ -17,6 +17,9 @@ func init() {
 	if os.Getenv("liongo_env") == "online" {
 		db, err = sql.Open("mysql", "root:123@tcp(localhost:3306)/liongo?charset=utf8")
 		checkErr(err)
+	} else if os.Getenv("liongo_env") == "compose" { //compose online
+		db, err = sql.Open("mysql", "root:123@tcp(mysql:3306)/liongo?charset=utf8")
+		checkErr(err)
 	} else { //compose local
 		db, err = sql.Open("mysql", "root:123@tcp(mysql:3306)/liongo?charset=utf8")
 		checkErr(err)

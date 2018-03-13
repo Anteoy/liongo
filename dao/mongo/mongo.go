@@ -26,6 +26,11 @@ func init() {
 		if err != nil {
 			panic(err)
 		}
+	} else if os.Getenv("liongo_env") == "compose" { //compose online
+		Session, err = mgo.Dial("mongodb://mongodb:27017")
+		if err != nil {
+			panic(err)
+		}
 	} else { //compose local
 		Session, err = mgo.Dial("mongodb://mongodb:27017")
 		if err != nil {
