@@ -7,14 +7,20 @@ import (
 	m "github.com/Anteoy/liongo/model"
 	"github.com/Anteoy/liongo/utils/logrus"
 	_ "github.com/go-sql-driver/mysql"
+	"os"
 )
 
 var db *sql.DB
 
 func init() {
 	var err error
-	db, err = sql.Open("mysql", "root:123@tcp(localhost:3306)/liongo?charset=utf8")
-	checkErr(err)
+	if os.Getenv("liongo_env") == "online" {
+		db, err = sql.Open("mysql", "root:123@tcp(localhost:3306)/liongo?charset=utf8")
+		checkErr(err)
+	} else { //compose local
+		db, err = sql.Open("mysql", "root:123@tcp(mysql:3306)/liongo?charset=utf8")
+		checkErr(err)
+	}
 	db.SetMaxOpenConns(2000)
 	db.SetMaxIdleConns(1000)
 	db.Ping()

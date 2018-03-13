@@ -2,6 +2,7 @@ package mongo
 
 import (
 	"gopkg.in/mgo.v2"
+	"os"
 )
 
 type Person struct {
@@ -20,11 +21,17 @@ func init() {
 	// [mongodb://][user:pass@]host1[:port1][,host2[:port2],...][/database][?options]
 	// mongodb://myuser:mypass@localhost:40001,otherhost:40001/mydb
 	var err error
-	Session, err = mgo.Dial("mongodb://localhost:27017")
-	if err != nil {
-		panic(err)
+	if os.Getenv("liongo_env") == "online" {
+		Session, err = mgo.Dial("mongodb://localhost:27017")
+		if err != nil {
+			panic(err)
+		}
+	} else { //compose local
+		Session, err = mgo.Dial("mongodb://mongodb:27017")
+		if err != nil {
+			panic(err)
+		}
 	}
-
 	// Optional. Switch the session to a monotonic behavior.
 	Session.SetMode(mgo.Monotonic, true)
 }
