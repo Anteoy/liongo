@@ -1,7 +1,7 @@
 ## 当前测试版服务器发布说明
 1. 打包
     `export GOPATH=$PWD`
-    `go build -o blog_server github.com/Anteoy/liongo/main/`
+    `go build -o blog_server github.com/Anteoy/liongo/liongo/`
 2. blog_server放入deploy中app并使用git clone 资源文件resources,再按照示例deploy拷贝资源文件到deploy目录
 3. 将deploy目录压缩后发送至服务器
     `scp ./deploy.tar.gz name@ip:/home/...`

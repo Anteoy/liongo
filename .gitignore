@@ -39,3 +39,4 @@ debug
 *.bac
 resources.tar.gz
 .vscode
+appServer
