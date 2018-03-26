@@ -11,7 +11,11 @@ services:
      - liongo_env=compose
   mongodb:
     image: "mongo:3.2.18"
+    volumes:
+      - mongo_data:/data/db
   mysql:
     image: "mysql:5.7.21"
+    volumes:
+      - mysql_data:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=123
