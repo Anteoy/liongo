@@ -32,7 +32,7 @@ func init() {
 			panic(err)
 		}
 	} else { //compose local
-		Session, err = mgo.Dial("mongodb://mongodb:27017")
+		Session, err = mgo.Dial("mongodb://127.0.0.1:27017")
 		if err != nil {
 			panic(err)
 		}
