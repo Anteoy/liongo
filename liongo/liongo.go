@@ -37,9 +37,7 @@ func main() {
 		}
 		service.Build()
 		log.Debug("Listen at ", httpPort)
-		// http://localhost:8080/images/site/coding.png
 		http.Handle("/", http.FileServer(http.Dir("../views/serve")))
-		// http://localhost:8080/resources/images/site/coding.png
 		http.HandleFunc("/resources/images/site/", func(w http.ResponseWriter, r *http.Request) {
 			fmt.Printf("r.URL.Path = %s,r.URL.Path[1:] = %s\n", r.URL.Path, r.URL.Path[1:])
 			//相对路径 否则必须同级
