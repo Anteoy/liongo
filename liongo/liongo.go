@@ -8,6 +8,7 @@ import (
 	"github.com/Anteoy/liongo/service"
 	log "github.com/Anteoy/liongo/utils/logrus"
 	"net/http"
+	_ "net/http/pprof"
 	"os"
 	"strings"
 )
