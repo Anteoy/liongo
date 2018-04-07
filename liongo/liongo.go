@@ -7,15 +7,19 @@ import (
 	"github.com/Anteoy/liongo/router"
 	"github.com/Anteoy/liongo/service"
 	log "github.com/Anteoy/liongo/utils/logrus"
+	"net"
 	"net/http"
 	_ "net/http/pprof"
 	"os"
+	"runtime/pprof"
 	"strings"
+	"time"
 )
 
 var httpPort = ":8080"
 
 func main() {
+	defer fmt.Println("the latest defer printed")
 	flag.Parse()
 	args := flag.Args()
 	argsLength := len(args)
@@ -29,6 +33,29 @@ func main() {
 	case "build":
 		service.Build()
 	case "run":
+		if os.Getenv("liongo_env") == "pprof" {
+			//cpu monitor
+			f, err := os.OpenFile("cpu.prof", os.O_RDWR|os.O_CREATE, 0644)
+			defer func() {
+				fmt.Println("defer f close")
+				f.Close()
+			}()
+			defer pprof.StopCPUProfile()
+			if err != nil {
+				log.Fatal(err)
+			}
+			pprof.StartCPUProfile(f)
+			//mem monitor
+			fm, err := os.OpenFile("mem.out", os.O_RDWR|os.O_CREATE, 0644)
+			if err != nil {
+				log.Fatal(err)
+			}
+			pprof.WriteHeapProfile(fm)
+			defer fm.Close()
+			// go tool pprof liongo cpu.prof
+			// go tool pprof liongo mem.out
+			// top pv web(svg graphviz need)
+		}
 		if argsLength == 3 && strings.EqualFold(args[1], "-p") {
 			httpPort = ":" + args[2]
 		}
@@ -44,10 +71,21 @@ func main() {
 			//相对路径 否则必须同级
 			http.ServeFile(w, r, "../"+r.URL.Path[1:])
 		})
-		err := http.ListenAndServe(httpPort, nil)
+		//err := http.ListenAndServe(httpPort, nil)
+		//if err != nil {
+		//	log.Fatal("Start error", err)
+		//}
+		svr := http.Server{Handler: nil}
+		l, err := net.Listen("tcp", httpPort)
 		if err != nil {
-			log.Fatal("Start error", err)
+			log.Fatal("start error", err)
 		}
+		if os.Getenv("liongo_env") == "pprof" {
+			time.Sleep(time.Second * 20)
+			go l.Close()
+		}
+		svr.Serve(l)
+		fmt.Println("for close printed?")
 	case "new":
 		args2 := args[1]
 		//如果第二个参数为空 则直接返回并输出提示信息
