@@ -62,7 +62,7 @@ func (processUserDefinedPages *ProcessUserDefinedPages) Dispose(dir string) {
 		}
 
 		//转化位二进制html
-		htmlByte := blackfriday.MarkdownCommon([]byte(markdownStr))
+		htmlByte := blackfriday.Run([]byte(markdownStr))
 		//转化位htmlstrings
 		htmlStr := html.UnescapeString(string(htmlByte))
 		//-1无限制完全替换

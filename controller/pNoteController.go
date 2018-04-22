@@ -220,7 +220,7 @@ func (pNoteController *PNoteController) PNCommit(w http.ResponseWriter, r *http.
 	}
 	//处理md为html
 	//markdown字符串转为ASCII html代码
-	htmlByte := blackfriday.MarkdownCommon([]byte(content))
+	htmlByte := blackfriday.Run([]byte(content))
 	//反转义实体如“& lt;”成为“<” 把byte转位strings
 	htmlStr := html.UnescapeString(string(htmlByte))
 	//正则匹配并替换
@@ -348,7 +348,7 @@ func (pNoteController *PNoteController) RPNCommit(w http.ResponseWriter, r *http
 
 	//处理md为html
 	//markdown字符串转为ASCII html代码
-	htmlByte := blackfriday.MarkdownCommon([]byte(content))
+	htmlByte := blackfriday.Run([]byte(content))
 	//反转义实体如“& lt;”成为“<” 把byte转位strings
 	htmlStr := html.UnescapeString(string(htmlByte))
 	//正则匹配并替换

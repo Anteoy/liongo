@@ -65,7 +65,7 @@ func (processPosts *ProcessGetPostsArticle) Dispose(dir string) {
 			p := processArticleUrl(articleConfig)
 			log.Println(p)
 			//markdown字符串转为ASCII html代码 []byte(mardownStr) string强转为[]byte
-			htmlByte := blackfriday.MarkdownCommon([]byte(mardownStr))
+			htmlByte := blackfriday.Run([]byte(mardownStr))
 			//反转义实体如“& lt;”成为“<” 把byte转位strings
 			htmlStr := html.UnescapeString(string(htmlByte))
 			re := regexp.MustCompile(`<pre><code>([\s\S]*?)</code></pre>`)

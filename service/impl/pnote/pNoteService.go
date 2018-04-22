@@ -68,7 +68,7 @@ func (p *PNoteService) DealNoteUpload(md string) error {
 	}
 	//处理md为html
 	//markdown字符串转为ASCII html代码
-	htmlByte := blackfriday.MarkdownCommon([]byte(md))
+	htmlByte := blackfriday.Run([]byte(md))
 	//反转义实体如“& lt;”成为“<” 把byte转位strings
 	htmlStr := html.UnescapeString(string(htmlByte))
 	//正则匹配并替换
