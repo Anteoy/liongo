@@ -20,8 +20,11 @@ func init() {
 	} else if os.Getenv("liongo_env") == "compose" { //compose online
 		db, err = sql.Open("mysql", "root:123@tcp(mysql:3306)/liongo?charset=utf8")
 		checkErr(err)
-	} else { //compose local
+	} else if os.Getenv("liongo_env") == "compose_local" { //compose local
 		db, err = sql.Open("mysql", "root:123@tcp(mysql:3306)/liongo?charset=utf8")
+		checkErr(err)
+	} else {
+		db, err = sql.Open("mysql", "root:123@tcp(127.0.0.1:3306)/liongo?charset=utf8")
 		checkErr(err)
 	}
 	db.SetMaxOpenConns(2000)
