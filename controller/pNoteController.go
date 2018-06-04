@@ -35,7 +35,7 @@ type PNoteController struct{}
 var globalSessions *session.Manager
 
 func init() {
-	globalSessions, _ = session.NewSessionManager("memory", "goSessionid", 3600)
+	globalSessions, _ = session.NewSessionManager("memory", "goSessionid", int64(time.Hour*24*30))
 	go globalSessions.GC()
 }
 

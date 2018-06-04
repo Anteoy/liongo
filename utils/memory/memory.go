@@ -2,6 +2,7 @@ package memory
 
 import (
 	"container/list"
+	"fmt"
 	"github.com/Anteoy/liongo/utils/session"
 	"sync"
 	"time"
@@ -72,6 +73,7 @@ func (provider *Provider) SessionDestroy(sid string) error {
 }
 
 func (provider *Provider) SessionGC(maxLifeTime int64) {
+	fmt.Println("start session gc...")
 	provider.lock.Lock()
 	defer provider.lock.Unlock()
 	for {
