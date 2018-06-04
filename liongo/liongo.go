@@ -11,6 +11,7 @@ import (
 	"net/http"
 	_ "net/http/pprof"
 	"os"
+	"runtime"
 	"runtime/pprof"
 	"strings"
 	"time"
@@ -75,6 +76,7 @@ func main() {
 		//if err != nil {
 		//	log.Fatal("Start error", err)
 		//}
+		runtime.GC()
 		svr := http.Server{Handler: nil}
 		l, err := net.Listen("tcp", httpPort)
 		if err != nil {
