@@ -25,7 +25,7 @@ func main() {
 	args := flag.Args()
 	argsLength := len(args)
 	//判断输入命令长度
-	if argsLength == 0 || argsLength > 3 {
+	if argsLength == 0 || argsLength > 5 {
 		UseInfo()
 		os.Exit(1)
 	}
@@ -61,6 +61,11 @@ func main() {
 			httpPort = ":" + args[2]
 		}
 		if argsLength == 2 && strings.EqualFold(args[1], "--note") {
+			log.Debug("starting run with note !!!")
+			router.Router()
+		}
+		if argsLength == 4 && strings.EqualFold(args[1], "--note") && strings.EqualFold(args[2], "-h") {
+			cst.SEARCH_URL = args[3]
 			log.Debug("starting run with note !!!")
 			router.Router()
 		}

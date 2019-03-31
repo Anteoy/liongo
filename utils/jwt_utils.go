@@ -12,7 +12,7 @@ func GenToken(id int) (string, error) {
 	claims["exp"] = time.Now().Add(time.Hour * time.Duration(10)).Unix()
 	claims["iat"] = time.Now().Unix()
 	claims["jti"] = id
-	claims["iss"] = "anteoy.site"
+	claims["iss"] = "www.allocmem.com"
 	token.Claims = claims
 	tokenString, err := token.SignedString([]byte("anteoy@gmail.com-secret"))
 	if err != nil {

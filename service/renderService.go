@@ -60,3 +60,15 @@ func (baseFactory *BaseFactory) Generate(rootDir string) {
 	pNoteService.GetNotesFromMongo(cst.YamlData, nil, nil)
 
 }
+
+type SearchFactory struct{}
+
+func (baseFactory *SearchFactory) Generate(rootDir string) {
+	//博客初始化处理 获得yamlmapdata
+	yp := utils.YamlParser{}
+	cst.YamlData = yp.Parse(rootDir)
+
+	//加载posts文件下md文件到slice
+	var dispose ifbase.Dispose = &base.ProcessGetPostsArticle{}
+	dispose.Dispose(rootDir)
+}

@@ -15,8 +15,10 @@ type ArticleConfig struct {
 	Link      string      //博客链接
 	Content   string      //完整内容
 	Nav       []NavConfig
-	Id        string      //博客唯一id
+	Id        string //博客唯一id
 }
+
+var SEARCH_URL = "127.0.0.1:9200"
 
 //ArticleConfig slice(sl)
 type ArticleConfigsl []*ArticleConfig

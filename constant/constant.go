@@ -21,6 +21,7 @@ The commands are:
 
 	INDEX_TPL      = "index"
 	BLOG_LIST_TPL  = "blog"
+	SEARCH_TPL     = "search"
 	POSTS_TPL      = "posts"
 	PAGES_TPL      = "pages"
 	ARCHIVE_TPL    = "archive"
