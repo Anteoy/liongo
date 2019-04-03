@@ -88,19 +88,29 @@ func (pNoteController *PNoteController) Login(w http.ResponseWriter, r *http.Req
 
 }
 
+type OauthReq struct {
+	Code   string `json:"code"`
+	ClientId   string `json:"client_id"`
+	ClientSecret string `json:"client_secret"`
+}
+
 func (pNoteController *PNoteController) Oauth(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")             //允许访问所有域
 	w.Header().Add("Access-Control-Allow-Headers", "Content-Type") //header的类型
+	w.Header().Set("content-type", "application/json")
+	paramIn, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		panic(err)
+	}
+	reqStruct := OauthReq{}
+	err = json.Unmarshal(paramIn, &reqStruct)
 	r.ParseForm()
-	code := r.Form["code"]
-	client_id := r.Form["client_id"]
-	client_secret := r.Form["client_secret"]
-
 	// post form提交
 	// params:=url.Values{}
 	// params.Set("ads","fdsfs")  //这两种都可以
-	params := url.Values{"code": {code[0]}, "client_id": {client_id[0]}, "client_secret": {client_secret[0]}}
+	params := url.Values{"code": {reqStruct.Code}, "client_id": {reqStruct.ClientId}, "client_secret": {reqStruct.ClientSecret}}
+	fmt.Println("参数code: ",reqStruct.Code)
 	url := "https://github.com/login/oauth/access_token"
 	req, err := http.NewRequest("POST", url, strings.NewReader(params.Encode()))
 	if err != nil {
