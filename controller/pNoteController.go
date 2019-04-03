@@ -27,6 +27,8 @@ import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"io/ioutil"
+	"net/url"
+	"strings"
 )
 
 type PNoteController struct{}
@@ -84,6 +86,42 @@ func (pNoteController *PNoteController) Login(w http.ResponseWriter, r *http.Req
 	//yamlData := yp.Parse("../resources")
 	//pNoteService.GetNoteByName(ss,yamlData,w,r)
 
+}
+
+func (pNoteController *PNoteController) Oauth(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Access-Control-Allow-Origin", "*")             //允许访问所有域
+	w.Header().Add("Access-Control-Allow-Headers", "Content-Type") //header的类型
+	r.ParseForm()
+	code := r.Form["code"]
+	client_id := r.Form["client_id"]
+	client_secret := r.Form["client_secret"]
+
+	// post form提交
+	// params:=url.Values{}
+	// params.Set("ads","fdsfs")  //这两种都可以
+	params := url.Values{"code": {code[0]}, "client_id": {client_id[0]}, "client_secret": {client_secret[0]}}
+	url := "https://github.com/login/oauth/access_token"
+	req, err := http.NewRequest("POST", url, strings.NewReader(params.Encode()))
+	if err != nil {
+		panic(err)
+	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Set("Accept","application/json")
+	req.Header.Set("User-Agent","allocmem_server")
+	res, err := http.DefaultClient.Do(req)
+	defer res.Body.Close()
+	body, err:= ioutil.ReadAll(res.Body)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(string(body))
+
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(string(body))
+	w.Write(body)
 }
 
 type LoginRreq struct {

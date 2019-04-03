@@ -21,4 +21,6 @@ func Router() {
 	http.HandleFunc("/delete_pnote", pNoteController.DeletePNote)
 	http.HandleFunc("/get_blog", pNoteController.GetBlog)
 	http.HandleFunc("/get_pnote", pNoteController.GetPNote)
+	//github oauth
+	http.HandleFunc("/oauth",pNoteController.Oauth)
 }
