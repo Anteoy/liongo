@@ -3,10 +3,10 @@ package impl
 import (
 	"bufio"
 	"fmt"
-	"github.com/Anteoy/blackfriday"
 	"github.com/Anteoy/go-gypsy/yaml"
 	. "github.com/Anteoy/liongo/constant"
 	"github.com/Anteoy/liongo/utils"
+	"github.com/russross/blackfriday/v2"
 	"html"
 	"io"
 	"io/ioutil"

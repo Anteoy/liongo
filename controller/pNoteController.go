@@ -16,7 +16,7 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/Anteoy/blackfriday"
+	"github.com/russross/blackfriday/v2"
 	. "github.com/Anteoy/liongo/constant"
 	"github.com/Anteoy/liongo/dao/mongo"
 	"github.com/Anteoy/liongo/service"

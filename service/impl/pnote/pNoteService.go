@@ -1,6 +1,7 @@
 package pnote
 
 import (
+	log "github.com/Anteoy/liongo/utils/logrus"
 	"html"
 	"html/template"
 	"net/http"
@@ -9,7 +10,7 @@ import (
 	"sort"
 	"time"
 
-	"github.com/Anteoy/blackfriday"
+	"github.com/russross/blackfriday/v2"
 	"github.com/Anteoy/go-gypsy/yaml"
 	. "github.com/Anteoy/liongo/constant"
 	"github.com/Anteoy/liongo/dao/mongo"
@@ -18,7 +19,6 @@ import (
 	. "github.com/Anteoy/liongo/utils"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	"qiniupkg.com/x/log.v7"
 )
 
 type PNoteService struct{}

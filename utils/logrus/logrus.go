@@ -1,7 +1,7 @@
 package logrus
 
 import (
-	"github.com/Sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	"os"
 )
 
@@ -60,6 +60,7 @@ var (
 	// Logf
 	Debugf   = logrus.Debugf
 	Printf   = logrus.Printf
+	Println   = logrus.Println
 	Infof    = logrus.Infof
 	Warnf    = logrus.Warnf
 	Warningf = logrus.Warningf

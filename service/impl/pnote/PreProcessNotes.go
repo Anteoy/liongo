@@ -3,9 +3,9 @@ package pnote
 import (
 	"github.com/Anteoy/liongo/dao/mongo"
 	. "github.com/Anteoy/liongo/model"
+	log "github.com/Anteoy/liongo/utils/logrus"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	"qiniupkg.com/x/log.v7"
 	"sort"
 	"strconv"
 )

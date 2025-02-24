@@ -2,7 +2,7 @@ package impl
 
 import (
 	"bufio"
-	"github.com/Anteoy/blackfriday"
+	"github.com/russross/blackfriday/v2"
 	"github.com/Anteoy/go-gypsy/yaml"
 	. "github.com/Anteoy/liongo/constant"
 	. "github.com/Anteoy/liongo/utils"
